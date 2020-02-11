@@ -65,10 +65,6 @@ public class BirtService {
 		}
 		final File loggingProperties = configuration.loggingPropertiesFile;
 		LogManager.getLogManager().readConfiguration(new FileInputStream(loggingProperties));
-		final File logDir = new File("./log");
-		if (!logDir.exists()) {
-			logDir.mkdir();
-		}
 		final java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
 		final Handler[] handlers = rootLogger.getHandlers();
 		for (final Handler handler : handlers) {
