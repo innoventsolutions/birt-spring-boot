@@ -11,7 +11,7 @@ package com.innoventsolutions.brrs.report;
 
 import java.util.Map;
 
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
