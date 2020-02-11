@@ -10,9 +10,10 @@
 package com.innoventsolutions.brrs;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 // having 2 spring boot applications makes mvn package fail
-// @SpringBootApplication
+@SpringBootApplication
 public class BirtEngineApplication {
 	public static void main(final String[] args) {
 		SpringApplication.run(BirtEngineApplication.class, args);

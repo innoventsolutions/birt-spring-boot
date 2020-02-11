@@ -10,9 +10,7 @@
 package com.innoventsolutions.brrs.report;
 
 import java.util.Map;
-
-import org.jetbrains.annotations.NotNull;
-
+import com.sun.istack.internal.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -22,7 +20,9 @@ import lombok.ToString;
  *
  * @author Steve Schafer, Innovent Solutions Inc.
  */
-@AllArgsConstructor @Getter @ToString
+@AllArgsConstructor
+@Getter
+@ToString
 public class ReportRun {
 	public final @NotNull String designFile;
 	public final String nameForHumans;
@@ -30,6 +30,5 @@ public class ReportRun {
 	public final @NotNull String outputFile;
 	public final boolean runThenRender;
 	public final Map<String, Object> parameters;
-
 
 }
