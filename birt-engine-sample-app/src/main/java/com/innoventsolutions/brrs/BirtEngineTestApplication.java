@@ -23,8 +23,7 @@ public class BirtEngineTestApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		URL rptdesignUrl = this.getClass().getResource("test.rptdesign");
-		String designFile = rptdesignUrl.getPath();
+		String designFile = "/disk1/home/innovent/projects/birt-spring-boot-starter-mvn/test.rptdesign";
 		ReportRun reportRun = new ReportRun(designFile, "Test Report", "pdf", "test.pdf", true, new HashMap<>());
 		runnerService.runReport(reportRun);
 	}

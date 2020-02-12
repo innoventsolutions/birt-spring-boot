@@ -70,7 +70,7 @@ public class RunnerService {
 	public RunnerService(final ConfigService configService) throws IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, IOException, BirtException {
 		this.configService = configService;
-		this.threadPool = Executors.newFixedThreadPool(configService.threadCount);
+		this.threadPool = Executors.newFixedThreadPool(configService.getThreadCount());
 	}
 
 	@PostConstruct
