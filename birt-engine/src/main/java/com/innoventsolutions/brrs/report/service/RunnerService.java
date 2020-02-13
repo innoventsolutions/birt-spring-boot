@@ -66,7 +66,7 @@ public class RunnerService {
 	@Autowired
 	private BirtService birtService;
 
-	@Autowired
+	// Autowired not needed
 	public RunnerService(final ConfigService configService) throws IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, IOException, BirtException {
 		this.configService = configService;

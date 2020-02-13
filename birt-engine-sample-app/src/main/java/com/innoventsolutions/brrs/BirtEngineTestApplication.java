@@ -5,12 +5,13 @@ import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.innoventsolutions.brrs.report.ReportRun;
 import com.innoventsolutions.brrs.report.service.RunnerService;
 
 // if this annotation is not commented out then run will execute
-// @SpringBootApplication
+@SpringBootApplication
 public class BirtEngineTestApplication implements CommandLineRunner {
 
 	@Autowired

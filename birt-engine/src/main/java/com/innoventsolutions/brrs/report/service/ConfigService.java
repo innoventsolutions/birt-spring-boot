@@ -12,11 +12,10 @@ package com.innoventsolutions.brrs.report.service;
 import java.io.File;
 import java.util.regex.Pattern;
 
-import org.springframework.stereotype.Service;
-
 import lombok.Getter;
 import lombok.Setter;
 
+// if this is a service, autoconfig doesn't work
 // @Service
 @Getter
 @Setter

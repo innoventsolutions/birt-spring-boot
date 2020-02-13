@@ -13,6 +13,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.1.4.RELEASE</version>
+		<relativePath></relativePath>
 	</parent>
 
 	<properties>
@@ -34,7 +35,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-            <version>${spring-boot.version}</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
@@ -51,7 +51,6 @@
 		<dependency>
 		    <groupId>org.junit.jupiter</groupId>
 		    <artifactId>junit-jupiter-api</artifactId>
-		    <version>5.6.0</version>
 		    <scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -61,7 +60,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>${spring-boot.version}</version>
 				<configuration>
         			<mainClass>com.innoventsolutions.brrs.BirtWebApplication</mainClass>
         			<layout>JAR</layout>
@@ -77,7 +75,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -86,10 +83,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
                 <configuration>
                     <archive>
                         <manifest>
+                        	<!-- This is apparently ignored.  It always runs all applications. -->
                             <mainClass>com.innoventsolutions.brrs.BirtEngineTestApplication</mainClass>
                         </manifest>
                     </archive>
