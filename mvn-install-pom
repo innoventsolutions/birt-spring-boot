@@ -1,0 +1,8 @@
+#!/bin/sh
+mvn install:install-file \
+  -Dfile="$HOME/projects/birt-spring-boot-starter-mvn/birt-spring-boot-starter/pom.xml" \
+  -DgroupId="com.innoventsolutions.birt-spring-boot-modules" \
+  -DartifactId="birt-spring-boot-starter" \
+  -Dversion=0.0.1 \
+  -Dpackaging=pom \
+  -DgeneratePom=true

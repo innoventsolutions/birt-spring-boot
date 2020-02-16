@@ -24,7 +24,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.innoventsolutions.birt-spring-boot-modules</groupId>
+			<groupId>com.innoventsolutions.birt-spring-boot-modules</groupId>
 			<artifactId>birt-spring-boot-starter</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>

@@ -7,7 +7,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 
     <parent>
-        <groupId>org.innoventsolutions.birt-spring-boot-modules</groupId>
+        <groupId>com.innoventsolutions.birt-spring-boot-modules</groupId>
         <artifactId>spring-boot-custom-starter</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
@@ -24,12 +24,12 @@
 			<version>${spring-boot.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.innoventsolutions.birt-spring-boot-modules</groupId>
+			<groupId>com.innoventsolutions.birt-spring-boot-modules</groupId>
 			<artifactId>birt-spring-boot-autoconfigure</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>org.innoventsolutions.birt-spring-boot-modules</groupId>
+			<groupId>com.innoventsolutions.birt-spring-boot-modules</groupId>
 			<artifactId>birt-engine</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
