@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -27,10 +28,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import javax.annotation.PostConstruct;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 
 import org.eclipse.birt.core.exception.BirtException;
+import org.eclipse.birt.core.framework.Platform;
+import org.eclipse.birt.report.engine.api.EngineConfig;
+import org.eclipse.birt.report.engine.api.EngineConstants;
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.HTMLActionHandler;
 import org.eclipse.birt.report.engine.api.HTMLCompleteImageHandler;
@@ -41,6 +46,7 @@ import org.eclipse.birt.report.engine.api.IParameterDefnBase;
 import org.eclipse.birt.report.engine.api.IRenderTask;
 import org.eclipse.birt.report.engine.api.IReportDocument;
 import org.eclipse.birt.report.engine.api.IReportEngine;
+import org.eclipse.birt.report.engine.api.IReportEngineFactory;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
 import org.eclipse.birt.report.engine.api.IRunTask;
@@ -48,11 +54,12 @@ import org.eclipse.birt.report.engine.api.PDFRenderOption;
 import org.eclipse.birt.report.engine.api.RenderOption;
 import org.eclipse.birt.report.engine.api.UnsupportedFormatException;
 import org.eclipse.birt.report.model.api.ParameterHandle;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.innoventsolutions.brrs.report.ReportRun;
 import com.innoventsolutions.brrs.report.ReportRunStatus;
 import com.innoventsolutions.brrs.report.exception.BadRequestException;
+import com.innoventsolutions.brrs.report.exception.RunnerException;
+import com.innoventsolutions.brrs.report.util.BatchFormatter;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,23 +67,140 @@ import lombok.extern.slf4j.Slf4j;
 public class RunnerService {
 	private static final SimpleDateFormat PARAM_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private final ConfigService configService;
-	public IReportEngine engine = null;
+	private IReportEngine engine = null;
 	public final ExecutorService threadPool;
 	public final Map<UUID, ReportRunStatus> reports = new HashMap<>();
-	@Autowired
-	private BirtService birtService;
 
 	// Autowired not needed
 	public RunnerService(final ConfigService configService) throws IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, IOException, BirtException {
+			InvocationTargetException, IOException, RunnerException {
 		this.configService = configService;
 		this.threadPool = Executors.newFixedThreadPool(configService.getThreadCount());
+		this.engine = getReportEngine();
 	}
 
-	@PostConstruct
-	public void initializeEngine() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			IOException, BirtException {
-		this.engine = birtService.getReportEngine();
+	private IReportEngine getReportEngine() throws IOException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, RunnerException {
+		log.info("getReportEngine");
+		final EngineConfig config = new EngineConfig();
+		log.info("birtRuntimeHome = " + configService.birtRuntimeHome);
+		if (configService.birtRuntimeHome != null) {
+			final String birtHome = configService.birtRuntimeHome.getAbsolutePath();
+			if (configService.isActuate) {
+				config.setBIRTHome(birtHome);
+			} else {
+				config.setEngineHome(birtHome);
+			}
+		}
+		if (configService.resourcePath != null) {
+			final String resourceDir = configService.resourcePath.getAbsolutePath();
+			config.setResourcePath(resourceDir);
+		}
+		final String scriptlibFileNames = getScriptLibFileNames();
+		if (scriptlibFileNames != null) {
+			config.setProperty(EngineConstants.WEBAPP_CLASSPATH_KEY, scriptlibFileNames);
+		}
+		final File loggingProperties = configService.loggingPropertiesFile;
+		LogManager.getLogManager().readConfiguration(new FileInputStream(loggingProperties));
+		final java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
+		final Handler[] handlers = rootLogger.getHandlers();
+		for (final Handler handler : handlers) {
+			handler.setFormatter(new BatchFormatter());
+		}
+		// control debug of BIRT components.
+		final File loggingDirFile = configService.loggingDir == null ? new File("./log") : configService.loggingDir;
+		if (!loggingDirFile.exists()) {
+			loggingDirFile.mkdirs();
+		}
+		config.setLogConfig(loggingDirFile.getAbsolutePath(), Level.WARNING);
+		return configService.isActuate ? getActuateReportEngine(config) : getReportEngine(config);
+	}
+
+	private static IReportEngine getReportEngine(final EngineConfig config) throws RunnerException {
+		System.out.println("before Platform startup");
+		try {
+			Platform.startup(config);
+		} catch (final BirtException e) {
+			throw new RunnerException("Failed to start platform", e);
+		}
+		System.out.println("after Platform startup");
+		final IReportEngineFactory factory = (IReportEngineFactory) Platform
+				.createFactoryObject(IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY);
+		if (factory == null) {
+			System.out.println("Could not create report engine factory");
+			throw new NullPointerException("Could not create report engine factory");
+		}
+		final IReportEngine engine = factory.createReportEngine(config);
+		if (engine == null) {
+			System.out.println("Could not create report engine");
+			throw new NullPointerException("Could not create report engine");
+		}
+		return engine;
+	}
+
+	private static IReportEngine getActuateReportEngine(final EngineConfig config)
+			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, RunnerException {
+		try {
+			Platform.startup(config);
+		} catch (final BirtException e) {
+			throw new RunnerException("Failed to start platform", e);
+		}
+		final Object factoryObjectForReflection = Platform
+				.createFactoryObject("com.actuate.birt.report.engine.ActuateReportEngineFactory"
+				/* IActuateReportEngineFactory. EXTENSION_ACTUATE_REPORT_ENGINE_FACTORY */
+				);
+		// when using the Actuate Report Engine Factory, the return type is
+		// not exposed publicly, so you cannot instantiate the factory
+		// under normal conditions.
+		// but we can use reflection to call the createReportEngine method
+		// and get the commercial report engine running as opposed to the
+		// open source one, which
+		// will give access to all the commercial emitters
+		final Class<?> factoryClass = factoryObjectForReflection.getClass();
+		final Method[] methods = factoryClass.getDeclaredMethods();
+		IReportEngine reportEngine = null;
+		for (final Method m : methods) {
+			final String name = m.getName();
+			m.setAccessible(true);
+			if (name.equals("createReportEngine")) {
+				reportEngine = (IReportEngine) m.invoke(factoryObjectForReflection, config);
+			}
+		}
+		return reportEngine;
+	}
+
+	/*
+	 * The engine needs to see a list of each jar file concatenated as a string
+	 * using the standard file system separator to divide the files
+	 */
+	private String getScriptLibFileNames() {
+		if (configService.scriptLib == null) {
+			return null;
+		}
+		if (!configService.scriptLib.exists()) {
+			configService.scriptLib.mkdirs();
+		}
+		final File[] files = configService.scriptLib.listFiles(new JarFilter());
+		final StringBuilder sb = new StringBuilder();
+		String sep = "";
+		final String fileSeparatorString = new String(new char[] { File.pathSeparatorChar });
+		if (files != null) {
+			for (int i = 0; i < files.length; i++) {
+				sb.append(sep);
+				sep = fileSeparatorString;
+				sb.append(files[i].getAbsolutePath());
+			}
+		}
+		return sb.toString();
+	}
+
+	private static class JarFilter implements FilenameFilter {
+		private final String extension = ".jar";
+
+		@Override
+		public boolean accept(final File dir, final String name) {
+			return name.toLowerCase().endsWith(extension);
+		}
 	}
 
 	public UUID startReport(final ReportRun reportRun) throws BadRequestException, SQLException {
@@ -120,7 +244,7 @@ public class RunnerService {
 
 	@SuppressWarnings("unchecked")
 	public List<Exception> runReport(final ReportRun reportRun)
-			throws EngineException, IOException, BadRequestException, SQLException {
+			throws IOException, BadRequestException, SQLException, RunnerException {
 		log.info("runReport reportRun = " + reportRun);
 		IReportRunnable design;
 		try {
@@ -129,6 +253,8 @@ public class RunnerService {
 			design = engine.openReportDesign(fis);
 		} catch (final FileNotFoundException e) {
 			throw new BadRequestException(404, "Design file not found");
+		} catch (final EngineException e) {
+			throw new RunnerException("Failed to open report design", e);
 		}
 		final IGetParameterDefinitionTask pdTask = engine.createGetParameterDefinitionTask(design);
 		final IEngineTask task;
@@ -161,11 +287,34 @@ public class RunnerService {
 				task.setParameterValue(key, convertParameterValue(key, paramValue, dataType));
 			}
 		}
+		log.info("getRenderOptions");
+		final String format = reportRun.format;
+		RenderOption options = null;
+		if (format.equalsIgnoreCase(RenderOption.OUTPUT_FORMAT_HTML)) {
+			final HTMLRenderOption htmlOption = new HTMLRenderOption();
+			htmlOption.setOutputFormat(RenderOption.OUTPUT_FORMAT_HTML);
+			htmlOption.setActionHandler(new HTMLActionHandler());
+			htmlOption.setImageHandler(new HTMLCompleteImageHandler());
+			htmlOption.setBaseImageURL(configService.baseImageURL);
+			htmlOption.setImageDirectory("images");
+			options = htmlOption;
+		}
+		if (format.equalsIgnoreCase(RenderOption.OUTPUT_FORMAT_PDF)) {
+			options = new PDFRenderOption();
+			options.setOutputFormat(RenderOption.OUTPUT_FORMAT_PDF);
+		} else {
+			options = new RenderOption();
+			options.setOutputFormat(format.toLowerCase());
+		}
+		final File outputFile = new File(configService.outputDirectory, reportRun.outputFile);
+		log.info("getRenderOptions outputFile = " + outputFile);
+		outputFile.getParentFile().mkdirs();
+		options.setOutputFileName(outputFile.getAbsolutePath());
+		options.setOutputFormat(format);
 		log.info("validating parameters");
 		task.validateParameters();
 		if (task instanceof IRunAndRenderTask) {
 			final IRunAndRenderTask rrTask = (IRunAndRenderTask) task;
-			final RenderOption options = getRenderOptions(reportRun);
 			rrTask.setRenderOption(options);
 			log.info("run-and-render report");
 			try {
@@ -177,7 +326,7 @@ public class RunnerService {
 						.equals(e.getClass().getName())) {
 					throw new BadRequestException(406, e.getMessage());
 				}
-				throw e;
+				throw new RunnerException("Run-and-render task failed", e);
 			}
 		} else if (task instanceof IRunTask) {
 			final IRunTask runTask = (IRunTask) task;
@@ -200,18 +349,28 @@ public class RunnerService {
 						.equals(e.getClass().getName())) {
 					throw new BadRequestException(406, e.getMessage());
 				}
-				throw e;
+				throw new RunnerException("Run task failed", e);
 			}
-			final IReportDocument rptdoc = engine.openReportDocument(docFile.getAbsolutePath());
+			IReportDocument rptdoc;
+			try {
+				rptdoc = engine.openReportDocument(docFile.getAbsolutePath());
+			} catch (final EngineException e) {
+				throw new RunnerException("Failed to open document file", e);
+			}
 			final IRenderTask renderTask = engine.createRenderTask(rptdoc);
-			final RenderOption options = getRenderOptions(reportRun);
 			renderTask.setRenderOption(options);
-			final long totalVisiblePageCount = renderTask.getTotalPage();
-			renderTask.setPageRange("1-" + totalVisiblePageCount);
+			try {
+				final long totalVisiblePageCount = renderTask.getTotalPage();
+				renderTask.setPageRange("1-" + totalVisiblePageCount);
+			} catch (final EngineException e) {
+				throw new RunnerException("Failed to set page range for render", e);
+			}
 			try {
 				renderTask.render();
 			} catch (final UnsupportedFormatException e) {
 				throw new BadRequestException(406, "Unsupported output format");
+			} catch (final EngineException e) {
+				throw new RunnerException("Failed to render report", e);
 			}
 			renderTask.close();
 		}
@@ -296,34 +455,6 @@ public class RunnerService {
 			}
 		}
 		return paramValue;
-	}
-
-	private RenderOption getRenderOptions(final ReportRun reportRun) {
-		log.info("getRenderOptions");
-		final String format = reportRun.format;
-		RenderOption options = null;
-		if (format.equalsIgnoreCase(RenderOption.OUTPUT_FORMAT_HTML)) {
-			final HTMLRenderOption htmlOption = new HTMLRenderOption();
-			htmlOption.setOutputFormat(RenderOption.OUTPUT_FORMAT_HTML);
-			htmlOption.setActionHandler(new HTMLActionHandler());
-			htmlOption.setImageHandler(new HTMLCompleteImageHandler());
-			htmlOption.setBaseImageURL(configService.baseImageURL);
-			htmlOption.setImageDirectory("images");
-			options = htmlOption;
-		}
-		if (format.equalsIgnoreCase(RenderOption.OUTPUT_FORMAT_PDF)) {
-			options = new PDFRenderOption();
-			options.setOutputFormat(RenderOption.OUTPUT_FORMAT_PDF);
-		} else {
-			options = new RenderOption();
-			options.setOutputFormat(format.toLowerCase());
-		}
-		final File outputFile = new File(configService.outputDirectory, reportRun.outputFile);
-		log.info("getRenderOptions outputFile = " + outputFile);
-		outputFile.getParentFile().mkdirs();
-		options.setOutputFileName(outputFile.getAbsolutePath());
-		options.setOutputFormat(format);
-		return options;
 	}
 
 	@SuppressWarnings("unused")

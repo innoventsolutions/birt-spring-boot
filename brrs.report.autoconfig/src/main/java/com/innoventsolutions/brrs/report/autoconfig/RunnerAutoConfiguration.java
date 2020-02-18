@@ -3,7 +3,6 @@ package com.innoventsolutions.brrs.report.autoconfig;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.birt.core.exception.BirtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -11,6 +10,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.innoventsolutions.brrs.report.exception.RunnerException;
 import com.innoventsolutions.brrs.report.service.ConfigService;
 import com.innoventsolutions.brrs.report.service.RunnerService;
 
@@ -25,7 +25,7 @@ public class RunnerAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ConfigService runnerConfig() {
 		// String userHome = System.getProperty("user.home");
-		ConfigService config = new ConfigService();
+		final ConfigService config = new ConfigService();
 		config.setOutputDirectory(runnerProperties.getOutputDirectory());
 		config.setWorkspace(runnerProperties.getWorkspace());
 		config.setBirtRuntimeHome(runnerProperties.getBirtRuntimeHome());
@@ -44,8 +44,8 @@ public class RunnerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public RunnerService runner(ConfigService runnerConfig) throws IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, IOException, BirtException {
+	public RunnerService runner(final ConfigService runnerConfig) throws IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, IOException, RunnerException {
 		return new RunnerService(runnerConfig);
 	}
 }

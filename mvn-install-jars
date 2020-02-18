@@ -1,3 +1,0 @@
-#!/bin/sh
-# arg 1 - root directory to search for jar files
-find "$1" -wholename "*/target/*.jar" -exec ./mvn-install-jar "{}" \;
