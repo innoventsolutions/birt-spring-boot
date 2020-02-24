@@ -6,7 +6,7 @@
 	<groupId>com.innoventsolutions</groupId>
 	<artifactId>birt-engine-test</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>birt-engine-test</name>
+	<name>birt-engine-sample-app</name>
 	<description>BIRT Report Engine</description>
 
 	<parent>
@@ -61,7 +61,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-        			<mainClass>com.innoventsolutions.brrs.BirtWebApplication</mainClass>
+        			<mainClass>com.innoventsolutions.birt.BirtWebApplication</mainClass>
         			<layout>JAR</layout>
     			</configuration>
 				<executions>
@@ -87,7 +87,7 @@
                     <archive>
                         <manifest>
                         	<!-- This is apparently ignored.  It always runs all applications. -->
-                            <mainClass>com.innoventsolutions.brrs.BirtEngineTestApplication</mainClass>
+                            <mainClass>com.innoventsolutions.birt.BirtEngineTestApplication</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

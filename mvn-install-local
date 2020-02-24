@@ -21,7 +21,7 @@ mvn install:install-file \
   -Dpackaging=jar \
   -DgeneratePom=true
 mvn install:install-file \
-  -Dfile="$HOME/projects/birt-spring-boot-starter-mvn/brrs.report.autoconfig/target/birt-spring-boot-autoconfigure-0.0.1-SNAPSHOT.jar" \
+  -Dfile="$HOME/projects/birt-spring-boot-starter-mvn/birt-engine-autoconfig/target/birt-spring-boot-autoconfigure-0.0.1-SNAPSHOT.jar" \
   -DgroupId="com.innoventsolutions.birt-spring-boot-modules" \
   -DartifactId="birt-spring-boot-autoconfigure" \
   -Dversion=0.0.1-SNAPSHOT \

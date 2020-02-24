@@ -19,7 +19,7 @@
         <module>birt-engine</module>
         <module>birt-engine-sample-app</module>
         <module>birt-spring-boot-starter</module>
-        <module>brrs.report.autoconfig</module>
+        <module>birt-engine-autoconfig</module>
     </modules>
 
     <dependencies>
