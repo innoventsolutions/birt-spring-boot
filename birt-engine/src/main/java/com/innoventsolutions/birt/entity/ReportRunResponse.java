@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ******************************************************************************/
-package com.innoventsolutions.birt.report;
+package com.innoventsolutions.birt.entity;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -17,15 +17,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ReportRunStatus {
-	public final ReportRun reportRun;
+public class ReportRunResponse<InputStreamResource>   {
+	public final ExecuteRequest reportRun;
 	public final Date startTime;
 	private Date reportFinishTime = null;
 	private Date finishTime = null;
 	private final List<Exception> errors = new ArrayList<>();
 	private final Map<String, Exception> emailErrors = new HashMap<>();
 
-	public ReportRunStatus(final ReportRun reportRun) {
+	public ReportRunResponse(final ExecuteRequest reportRun) {
 		this.reportRun = reportRun;
 		this.startTime = new Date();
 	}
@@ -71,7 +71,7 @@ public class ReportRunStatus {
 		return finishTimeLong - startTimeLong;
 	}
 
-	public ReportRun getReportRun() {
+	public ExecuteRequest getReportRun() {
 		return reportRun;
 	}
 

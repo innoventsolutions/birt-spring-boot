@@ -1,4 +1,4 @@
-package com.innoventsolutions.birt.report.exception;
+package com.innoventsolutions.birt.exception;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -7,8 +7,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ******************************************************************************/
-package com.innoventsolutions.birt.report;
+package com.innoventsolutions.birt.entity;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
@@ -22,15 +23,21 @@ import lombok.ToString;
  *
  * @author Steve Schafer, Innovent Solutions Inc.
  */
-@AllArgsConstructor
 @Getter
 @ToString
-public class ReportRun {
+@AllArgsConstructor
+public class ExecuteRequest {
 	public final @NotNull String designFile;
 	public final String nameForHumans;
 	public final @NotNull String format;
-	public final @NotNull String outputFile;
-	public final boolean runThenRender;
-	public final Map<String, Object> parameters;
+	public final @NotNull Map<String, Object> parameters;
+
+	// Don't use Lombok want to have a empty parameter string 
+	public ExecuteRequest(String designFile, String nameForHumans, String format) {
+		this.designFile = designFile;
+		this.nameForHumans = nameForHumans;
+		this.format = format;
+		this.parameters = new HashMap<String, Object>();
+	}
 
 }

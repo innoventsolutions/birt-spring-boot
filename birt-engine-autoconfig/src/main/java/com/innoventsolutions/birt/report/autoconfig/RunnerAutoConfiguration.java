@@ -10,9 +10,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.innoventsolutions.birt.report.exception.RunnerException;
-import com.innoventsolutions.birt.report.service.ConfigService;
-import com.innoventsolutions.birt.report.service.RunnerService;
+import com.innoventsolutions.birt.entity.exception.RunnerException;
+import com.innoventsolutions.birt.entity.service.ConfigService;
+import com.innoventsolutions.birt.entity.service.RunnerService;
 
 @Configuration
 @ConditionalOnClass(RunnerService.class)

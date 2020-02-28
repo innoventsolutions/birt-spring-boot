@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ******************************************************************************/
-package com.innoventsolutions.birt.report.exception;
+package com.innoventsolutions.birt.exception;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -30,12 +30,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.innoventsolutions.birt.report.ReportRun;
-import com.innoventsolutions.birt.report.ReportRunStatus;
+import com.innoventsolutions.birt.entity.ExecuteRequest;
+import com.innoventsolutions.birt.entity.ReportRunResponse;
+import com.innoventsolutions.birt.entity.exception.BadRequestException;
+import com.innoventsolutions.birt.entity.service.RunnerService;
 import com.innoventsolutions.birt.report.entity.BaseRequest;
 import com.innoventsolutions.birt.report.entity.RunRequest;
-import com.innoventsolutions.birt.report.exception.BadRequestException;
-import com.innoventsolutions.birt.report.service.RunnerService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,10 +47,10 @@ public class JobController {
 
 	@GetMapping("/test")
 	@ResponseBody
-	public ResponseEntity<Map<UUID, ReportRunStatus>> getTest(@RequestBody final BaseRequest request) {
+	public ResponseEntity<Map<UUID, ReportRunResponse>> getTest(@RequestBody final BaseRequest request) {
 		log.info("getTest " + request);
-		final Map<UUID, ReportRunStatus> status = runner.getStatusAll();
-		return new ResponseEntity<Map<UUID, ReportRunStatus>>(status, HttpStatus.OK);
+		final Map<UUID, ReportRunResponse> status = runner.getStatusAll();
+		return new ResponseEntity<Map<UUID, ReportRunResponse>>(status, HttpStatus.OK);
 	}
 
 	@PostMapping("/run")
@@ -60,7 +60,7 @@ public class JobController {
 		try {
 			final String format = runner.getFormat(request.getFormat());
 			final String outputFilename = UUID.randomUUID() + "." + format;
-			final ReportRun reportRun = new ReportRun(request.getDesignFile(), null, format, outputFilename,
+			final com.innoventsolutions.birt.entity.BaseRequest reportRun = new ExecuteRequest(request.getDesignFile(), null, format, outputFilename,
 					request.isRunThenRender(), runner.fixParameterTypes(request.getParameters()));
 			final List<Exception> exceptions = runner.runReport(reportRun);
 			if (!exceptions.isEmpty()) {

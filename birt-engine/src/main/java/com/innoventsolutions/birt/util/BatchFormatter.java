@@ -7,7 +7,7 @@
  * 
  * SPDX-License-Identifier: EPL-2.0
  ******************************************************************************/
-package com.innoventsolutions.birt.report.util;
+package com.innoventsolutions.birt.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
