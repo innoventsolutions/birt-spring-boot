@@ -104,12 +104,16 @@ public abstract class BaseReportService {
 		IReportRunnable design;
 		
 		try {
+			String fileName = execRequest.getDesignFile();
 			File designFile;
-			if (execRequest.getDesignFile().equalsIgnoreCase("TEST")) {
+			if (fileName.equalsIgnoreCase("TEST")) {
 				designFile = new File(getClass().getClassLoader().getResource("test.rptdesign").getFile());
 			} else {
 				designFile = getDesignFile(execRequest);
 			}
+	
+			if (fileName.indexOf(File.separator) < 0)
+				designFile = new File(getClass().getClassLoader().getResource(fileName).getFile());
 
 			final FileInputStream fis = new FileInputStream(designFile);
 			design = engineService.getEngine().openReportDesign(fis);
