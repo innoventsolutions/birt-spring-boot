@@ -9,14 +9,13 @@
  ******************************************************************************/
 package com.innoventsolutions.birt.service;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
@@ -41,10 +40,9 @@ public class ReportRunService extends BaseReportService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void execute(final HttpServletResponse response, final ExecuteRequest excecuteRequest) throws BadRequestException {
+	public OutputStream execute(final ExecuteRequest excecuteRequest) throws BadRequestException {
 		log.info("runReport reportRun = " + excecuteRequest);
-
-		response.setHeader("Content-Disposition", "attachment;filename=testx.pdf");
+		ByteArrayOutputStream oStream = new ByteArrayOutputStream();
 		try {
 			IReportRunnable design = getRunnableReportDesign(excecuteRequest);
 			// Run Reports will only do a RunAndRender
@@ -59,13 +57,7 @@ public class ReportRunService extends BaseReportService {
 			final String format = excecuteRequest.format;
 			RenderOption options = configureRenderOptions(format);
 
-			options.setOutputStream(response.getOutputStream());
-			final File outputFile = new File(engineService.getOutputDirectory(), "test_stream.pdf");
-
-			// TODO setup the streaming, get rid of the file usage
-			log.info("getRenderOptions outputFile = " + outputFile);
-			outputFile.getParentFile().mkdirs();
-			options.setOutputFileName(outputFile.getAbsolutePath());
+			options.setOutputStream(oStream);
 
 			rrTask.setRenderOption(options);
 			log.info("run-and-render report");
@@ -94,6 +86,9 @@ public class ReportRunService extends BaseReportService {
 			log.error("Failure to Run Report: " + e1.getMessage());
 
 		}
+
+		// log.info("Report generated, stream size is: " +  oStream.g);
+		return oStream;
 
 	}
 
