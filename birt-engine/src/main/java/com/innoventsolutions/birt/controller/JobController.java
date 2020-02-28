@@ -1,14 +1,15 @@
 package com.innoventsolutions.birt.controller;
 
-import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
@@ -30,8 +31,8 @@ public class JobController {
 	@Autowired
 	private ReportRunService runner;
 
-	@GetMapping("/test")
-	public ResponseEntity<StreamingResponseBody> getTest(final HttpServletResponse response) {
+	@GetMapping("/testPDF")
+	public ResponseEntity<StreamingResponseBody> getTestPDF(final HttpServletResponse response) {
 		log.info("getTest ");
 
 		String rptDesign = "TEST";
@@ -39,8 +40,31 @@ public class JobController {
 		String format = "PDF";
 		ExecuteRequest request = new ExecuteRequest(rptDesign, humanName, format);
 
-		response.setContentType(MediaType.APPLICATION_PDF.toString());
-		response.setHeader("Content-Disposition", "attachment;filename=" + request.getNameForHumans());
+		return executeRunReport(request, response);
+
+	}
+	
+	@GetMapping("/testHTML")
+	public ResponseEntity<StreamingResponseBody> getTestHTML(final HttpServletResponse response) {
+		log.info("getTest ");
+
+		String rptDesign = "C:/workspace/BIRT_INNO/birt-spring-boot-starter/birt-engine/src/main/resources/param_test.rptdesign";
+		String humanName = "Test Parameter Report";
+		String format = "HTML";
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("paramString", "Ginger");
+		params.put("paramDate", "2010-09-09");
+		params.put("paramBoolean", true);
+		params.put("paramDecimal", 1111.3333);
+		params.put("paramInteger", 98765); 
+		ExecuteRequest request = new ExecuteRequest(rptDesign, humanName, format, params);
+
+		return executeRunReport(request, response);
+
+	}
+	
+	@GetMapping("/runReport")
+	private ResponseEntity<StreamingResponseBody> executeRunReport(@RequestBody final ExecuteRequest request, final HttpServletResponse response) {
 		StreamingResponseBody stream = out -> {
 			try {
 				
@@ -53,7 +77,7 @@ public class JobController {
 		};
 		log.info("steaming response {} ", stream);
 		return new ResponseEntity(stream, HttpStatus.OK);
-
 	}
+
 
 }

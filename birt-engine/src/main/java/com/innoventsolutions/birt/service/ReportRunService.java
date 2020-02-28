@@ -9,7 +9,6 @@
  ******************************************************************************/
 package com.innoventsolutions.birt.service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -42,22 +41,24 @@ public class ReportRunService extends BaseReportService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void execute(final ExecuteRequest excecuteRequest, final HttpServletResponse response) throws BadRequestException {
-		log.info("runReport reportRun = " + excecuteRequest);
+	public void execute(final ExecuteRequest request, final HttpServletResponse response) throws BadRequestException {
+		log.info("runReport reportRun = " + request);
 		try {
 			OutputStream oStream = response.getOutputStream();
-			IReportRunnable design = getRunnableReportDesign(excecuteRequest);
+			IReportRunnable design = getRunnableReportDesign(request);
 			// Run Reports will only do a RunAndRender
 			final IRunAndRenderTask rrTask = (IRunAndRenderTask) engineService.getEngine().createRunAndRenderTask(design);
 			// TODO Does not make sense 
 			final Map<String, Object> appContext = rrTask.getAppContext();
 			rrTask.setAppContext(appContext);
 
-			configureParameters(excecuteRequest, design, rrTask);
+			configureParameters(request, design, rrTask);
 
 			log.info("getRenderOptions");
-			final String format = excecuteRequest.format;
+			final String format = request.format;
 			RenderOption options = configureRenderOptions(format);
+			response.setContentType(getMediaType(format).toString());
+			response.setHeader("Content-Disposition", "attachment;filename=" + request.getOutputName() + "." + format);
 
 			options.setOutputStream(oStream);
 

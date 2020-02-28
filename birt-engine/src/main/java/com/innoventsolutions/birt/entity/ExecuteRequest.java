@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -25,17 +26,17 @@ import lombok.ToString;
  */
 @Getter
 @ToString
-@AllArgsConstructor
+@AllArgsConstructor @NoArgsConstructor
 public class ExecuteRequest {
-	public final @NotNull String designFile;
-	public final String nameForHumans;
-	public final @NotNull String format;
-	public final @NotNull Map<String, Object> parameters;
+	public @NotNull String designFile;
+	public @NotNull String outputName;
+	public @NotNull String format;
+	public @NotNull Map<String, Object> parameters;
 
 	// Don't use Lombok want to have a empty parameter string 
 	public ExecuteRequest(String designFile, String nameForHumans, String format) {
 		this.designFile = designFile;
-		this.nameForHumans = nameForHumans;
+		this.outputName = nameForHumans;
 		this.format = format;
 		this.parameters = new HashMap<String, Object>();
 	}
