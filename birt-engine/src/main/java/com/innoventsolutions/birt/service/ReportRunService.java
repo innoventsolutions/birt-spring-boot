@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
@@ -40,10 +42,10 @@ public class ReportRunService extends BaseReportService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public OutputStream execute(final ExecuteRequest excecuteRequest) throws BadRequestException {
+	public void execute(final ExecuteRequest excecuteRequest, final HttpServletResponse response) throws BadRequestException {
 		log.info("runReport reportRun = " + excecuteRequest);
-		ByteArrayOutputStream oStream = new ByteArrayOutputStream();
 		try {
+			OutputStream oStream = response.getOutputStream();
 			IReportRunnable design = getRunnableReportDesign(excecuteRequest);
 			// Run Reports will only do a RunAndRender
 			final IRunAndRenderTask rrTask = (IRunAndRenderTask) engineService.getEngine().createRunAndRenderTask(design);
@@ -86,9 +88,6 @@ public class ReportRunService extends BaseReportService {
 			log.error("Failure to Run Report: " + e1.getMessage());
 
 		}
-
-		// log.info("Report generated, stream size is: " +  oStream.g);
-		return oStream;
 
 	}
 

@@ -20,6 +20,8 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
+import javax.annotation.PostConstruct;
+
 import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.birt.core.framework.Platform;
 import org.eclipse.birt.report.engine.api.EngineConfig;
@@ -47,6 +49,7 @@ public class BirtEngineService {
 	public BirtEngineService()  {
 	}
 	
+	@PostConstruct
 	public IReportEngine getEngine() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, RunnerException{
 		if (engine == null) {
 			log.info("Instantiate Report Engine");

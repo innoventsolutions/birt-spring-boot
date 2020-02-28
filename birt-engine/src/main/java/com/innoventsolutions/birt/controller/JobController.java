@@ -34,7 +34,7 @@ public class JobController {
 	public ResponseEntity<StreamingResponseBody> getTest(final HttpServletResponse response) {
 		log.info("getTest ");
 
-		String rptDesign = "C:/workspace/BIRT_INNO/birt-spring-boot-starter/birt-engine/src/main/resources/test.rptdesign";
+		String rptDesign = "TEST";
 		String humanName = "Test Report";
 		String format = "PDF";
 		ExecuteRequest request = new ExecuteRequest(rptDesign, humanName, format);
@@ -43,9 +43,8 @@ public class JobController {
 		response.setHeader("Content-Disposition", "attachment;filename=" + request.getNameForHumans());
 		StreamingResponseBody stream = out -> {
 			try {
-				OutputStream oStream = runner.execute( request);
 				
-				oStream.close();
+				runner.execute( request, response);
 				
 			} catch (BadRequestException e) {
 				// TODO Auto-generated catch block
