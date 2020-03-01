@@ -7,11 +7,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ******************************************************************************/
-package com.innoventsolutions.birt.report.entity;
+package com.innoventsolutions.birt.report.controller;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.stereotype.Controller;
 
-@Getter @Setter
-public class BaseRequest {
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+public class SampleJobController {
+
+
+
 }
