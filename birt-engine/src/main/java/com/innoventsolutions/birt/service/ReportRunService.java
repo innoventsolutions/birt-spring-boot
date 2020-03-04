@@ -76,7 +76,7 @@ public class ReportRunService extends BaseReportService {
 			}
 			final List<Exception> exceptions = new ArrayList<>();
 			final List<EngineException> errors = rrTask.getErrors();
-			if (errors != null) {
+			if (errors != null && errors.size() > 0) {
 				for (final EngineException exception : errors) {
 					exceptions.add(exception);
 				}

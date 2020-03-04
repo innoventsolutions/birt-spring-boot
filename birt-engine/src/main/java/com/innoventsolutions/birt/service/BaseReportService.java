@@ -109,11 +109,19 @@ public abstract class BaseReportService {
 			if (fileName.equalsIgnoreCase("TEST")) {
 				designFile = new File(getClass().getClassLoader().getResource("test.rptdesign").getFile());
 			} else {
-				designFile = getDesignFile(execRequest);
+				designFile = new File(execRequest.designFile);
+				// Design file does not exist, look for it in the classpath
+				if (!designFile.exists()) {
+					designFile = new File(getClass().getClassLoader().getResource(fileName).getFile());	
+				}
+					
+				// still no design file, look for it in the workspace directory
+				if (!designFile.exists() && !designFile.isAbsolute()) {
+					designFile = new File(engineService.getWorkspace(), execRequest.designFile);
+				}
+
 			}
 	
-			if (fileName.indexOf(File.separator) < 0)
-				designFile = new File(getClass().getClassLoader().getResource(fileName).getFile());
 
 			final FileInputStream fis = new FileInputStream(designFile);
 			design = engineService.getEngine().openReportDesign(fis);
@@ -158,13 +166,6 @@ public abstract class BaseReportService {
 
 	}
 
-	protected File getDesignFile(final ExecuteRequest execRequest) {
-		File designFile = new File(execRequest.designFile);
-		if (!designFile.isAbsolute()) {
-			designFile = new File(engineService.getWorkspace(), execRequest.designFile);
-		}
-		return designFile;
-	}
 
 	protected MediaType getMediaType(final String format) {
 		if ("pdf".equalsIgnoreCase(format)) {
