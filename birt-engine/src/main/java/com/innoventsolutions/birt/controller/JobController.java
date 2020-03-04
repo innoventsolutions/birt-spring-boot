@@ -48,7 +48,7 @@ public class JobController {
 	public ResponseEntity<StreamingResponseBody> getTestHTML(final HttpServletResponse response) {
 		log.info("getTest ");
 
-		String rptDesign = "C:/workspace/BIRT_INNO/birt-spring-boot-starter/birt-engine/src/main/resources/param_test.rptdesign";
+		String rptDesign = "param_test.rptdesign";
 		String humanName = "Test Parameter Report";
 		String format = "HTML";
 		Map<String, Object> params = new HashMap<String, Object>();
