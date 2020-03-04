@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,7 +29,6 @@ import org.eclipse.birt.report.engine.api.RenderOption;
 import org.eclipse.birt.report.model.api.ParameterHandle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 
 import com.innoventsolutions.birt.entity.ExecuteRequest;
 import com.innoventsolutions.birt.exception.BadRequestException;
@@ -46,7 +46,7 @@ public abstract class BaseReportService {
 	public BaseReportService() {
 		super();
 	}
-	
+
 	@SuppressWarnings("unused")
 	protected static Object getFieldObject(final String fieldString) {
 		if ("true".equalsIgnoreCase(fieldString)) {
@@ -99,12 +99,12 @@ public abstract class BaseReportService {
 		return options;
 	}
 
-	protected IReportRunnable getRunnableReportDesign(final ExecuteRequest execRequest)
-			throws IllegalAccessException, InvocationTargetException, IOException, RunnerException, BadRequestException {
+	protected IReportRunnable getRunnableReportDesign(final ExecuteRequest execRequest) throws IllegalAccessException,
+			InvocationTargetException, IOException, RunnerException, BadRequestException {
 		IReportRunnable design;
-		
+
 		try {
-			String fileName = execRequest.getDesignFile();
+			final String fileName = execRequest.getDesignFile();
 			File designFile;
 			if (fileName.equalsIgnoreCase("TEST")) {
 				designFile = new File(getClass().getClassLoader().getResource("test.rptdesign").getFile());
@@ -112,16 +112,19 @@ public abstract class BaseReportService {
 				designFile = new File(execRequest.designFile);
 				// Design file does not exist, look for it in the classpath
 				if (!designFile.exists()) {
-					designFile = new File(getClass().getClassLoader().getResource(fileName).getFile());	
+					final URL url = getClass().getClassLoader().getResource(fileName);
+					if (url == null) {
+						throw new BadRequestException(404, "Design file not found");
+					}
+					designFile = new File(url.getFile());
 				}
-					
+
 				// still no design file, look for it in the workspace directory
 				if (!designFile.exists() && !designFile.isAbsolute()) {
 					designFile = new File(engineService.getWorkspace(), execRequest.designFile);
 				}
 
 			}
-	
 
 			final FileInputStream fis = new FileInputStream(designFile);
 			design = engineService.getEngine().openReportDesign(fis);
@@ -133,8 +136,9 @@ public abstract class BaseReportService {
 		return design;
 	}
 
-	protected void configureParameters(final ExecuteRequest execRequest, final IReportRunnable design, final IEngineTask task)
-			throws IllegalAccessException, InvocationTargetException, IOException, RunnerException, BadRequestException {
+	protected void configureParameters(final ExecuteRequest execRequest, final IReportRunnable design,
+			final IEngineTask task) throws IllegalAccessException, InvocationTargetException, IOException,
+			RunnerException, BadRequestException {
 
 		log.info("configure parameters");
 
@@ -166,7 +170,6 @@ public abstract class BaseReportService {
 
 	}
 
-
 	protected MediaType getMediaType(final String format) {
 		if ("pdf".equalsIgnoreCase(format)) {
 			return MediaType.APPLICATION_PDF;
@@ -190,7 +193,8 @@ public abstract class BaseReportService {
 			return MediaType.parseMediaType("application/vnd.ms-powerpoint");
 		}
 		if ("pptx".equalsIgnoreCase(format)) {
-			return MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.presentationml.presentation");
+			return MediaType
+					.parseMediaType("application/vnd.openxmlformats-officedocument.presentationml.presentation");
 		}
 		if (".odp".equalsIgnoreCase(format)) {
 			return MediaType.parseMediaType("application/vnd.oasis.opendocument.presentation");
@@ -204,7 +208,8 @@ public abstract class BaseReportService {
 		return MediaType.APPLICATION_OCTET_STREAM;
 	}
 
-	protected Object convertParameterValue(final String name, final Object paramValue, final Object dataType) throws BadRequestException {
+	protected Object convertParameterValue(final String name, final Object paramValue, final Object dataType)
+			throws BadRequestException {
 		if (paramValue instanceof String) {
 			final String stringValue = (String) paramValue;
 			if ("integer".equals(dataType)) {
@@ -319,7 +324,8 @@ public abstract class BaseReportService {
 		final Object subValue = map.get("value");
 		if (!(subValue instanceof String)) {
 			log.error("parameter sub-value is not a string");
-			throw new BadRequestException(406, "Parameter " + name + " is an object but the value field is missing or isn't a string");
+			throw new BadRequestException(406,
+					"Parameter " + name + " is an object but the value field is missing or isn't a string");
 		}
 		if ("date".equals(type)) {
 			final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -328,7 +334,8 @@ public abstract class BaseReportService {
 				return new java.sql.Date(date.getTime());
 			} catch (final ParseException e) {
 				log.error("parameter date sub-value is malformed");
-				throw new BadRequestException(406, "Parameter " + name + " is an object and the type is date but the value isn't a valid date");
+				throw new BadRequestException(406,
+						"Parameter " + name + " is an object and the type is date but the value isn't a valid date");
 			}
 		}
 		if ("datetime".equals(type)) {
@@ -338,7 +345,8 @@ public abstract class BaseReportService {
 				return new java.sql.Date(date.getTime());
 			} catch (final ParseException e) {
 				log.error("parameter date sub-value is malformed");
-				throw new BadRequestException(406, "Parameter " + name + " is an object and the type is datetime but the value isn't a valid datetime");
+				throw new BadRequestException(406, "Parameter " + name
+						+ " is an object and the type is datetime but the value isn't a valid datetime");
 			}
 		}
 		if ("time".equals(type)) {
@@ -348,11 +356,13 @@ public abstract class BaseReportService {
 				return new java.sql.Time(date.getTime());
 			} catch (final ParseException e) {
 				log.error("parameter date sub-value is malformed");
-				throw new BadRequestException(406, "Parameter " + name + " is an object and the type is time but the value isn't a valid time");
+				throw new BadRequestException(406,
+						"Parameter " + name + " is an object and the type is time but the value isn't a valid time");
 			}
 		}
 		log.error("unrecognized parameter value type: " + type);
-		throw new BadRequestException(406, "Parameter " + name + " is an object and the type field is present but is not recognized");
+		throw new BadRequestException(406,
+				"Parameter " + name + " is an object and the type field is present but is not recognized");
 	}
 
 }

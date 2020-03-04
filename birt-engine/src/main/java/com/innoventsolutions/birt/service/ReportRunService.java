@@ -41,14 +41,14 @@ public class ReportRunService extends BaseReportService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void execute(final ExecuteRequest request, final HttpServletResponse response) throws BadRequestException {
+	public void execute(final ExecuteRequest request, final HttpServletResponse response) {
 		log.info("runReport reportRun = " + request);
 		try {
-			OutputStream oStream = response.getOutputStream();
-			IReportRunnable design = getRunnableReportDesign(request);
+			final OutputStream oStream = response.getOutputStream();
+			final IReportRunnable design = getRunnableReportDesign(request);
 			// Run Reports will only do a RunAndRender
-			final IRunAndRenderTask rrTask = (IRunAndRenderTask) engineService.getEngine().createRunAndRenderTask(design);
-			// TODO Does not make sense 
+			final IRunAndRenderTask rrTask = engineService.getEngine().createRunAndRenderTask(design);
+			// TODO Does not make sense
 			final Map<String, Object> appContext = rrTask.getAppContext();
 			rrTask.setAppContext(appContext);
 
@@ -56,7 +56,7 @@ public class ReportRunService extends BaseReportService {
 
 			log.info("getRenderOptions");
 			final String format = request.format;
-			RenderOption options = configureRenderOptions(format);
+			final RenderOption options = configureRenderOptions(format);
 			response.setContentType(getMediaType(format).toString());
 			response.setHeader("Content-Disposition", "attachment;filename=" + request.getOutputName() + "." + format);
 
@@ -69,7 +69,8 @@ public class ReportRunService extends BaseReportService {
 			} catch (final UnsupportedFormatException e) {
 				throw new BadRequestException(406, "Unsupported output format");
 			} catch (final Exception e) {
-				if ("org.eclipse.birt.report.engine.api.impl.ParameterValidationException".equals(e.getClass().getName())) {
+				if ("org.eclipse.birt.report.engine.api.impl.ParameterValidationException"
+						.equals(e.getClass().getName())) {
 					throw new BadRequestException(406, e.getMessage());
 				}
 				throw new RunnerException("Run-and-render task failed", e);
@@ -82,12 +83,20 @@ public class ReportRunService extends BaseReportService {
 				}
 
 			}
-
-		} catch (IllegalAccessException | InvocationTargetException | IOException | RunnerException | BadRequestException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			log.error("Failure to Run Report: " + e1.getMessage());
-
+		} catch (final BadRequestException e1) {
+			try {
+				response.sendError(e1.getCode(), e1.getReason());
+			} catch (final IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (IllegalAccessException | InvocationTargetException | IOException | RunnerException e1) {
+			try {
+				response.sendError(500, e1.getMessage());
+			} catch (final IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}
