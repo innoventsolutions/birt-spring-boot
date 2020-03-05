@@ -9,15 +9,30 @@
  ******************************************************************************/
 package com.innoventsolutions.birt;
 
+import java.util.concurrent.Executor;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-@SpringBootApplication  
-//@ComponentScan(basePackageClasses = { BirtConfig.class })
+@SpringBootApplication
+@EnableAsync
 public class BirtEngineApplication {
-	
+
 	public static void main(final String[] args) {
 		SpringApplication.run(BirtEngineApplication.class, args);
 	}
-	
+
+	@Bean
+	public Executor taskExecutor() {
+		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		executor.setCorePoolSize(2);
+		executor.setMaxPoolSize(2);
+		executor.setQueueCapacity(500);
+		executor.setThreadNamePrefix("SubmitJob-");
+		executor.initialize();
+		return executor;
+	}
 }
