@@ -80,20 +80,34 @@ public class JobController {
 	@GetMapping("/testSubmit")
 	public ResponseEntity<SubmitResponse> getTestSubmit(final HttpServletResponse htppResponse) {
 		log.info("testSubmit ");
+		
+		SubmitResponse outerResponse = new SubmitResponse(new ExecuteRequest());
 
 		final String rptDesign = "param_test.rptdesign";
-		final String humanName = "Test Parameter Report";
-		final String format = "PDF";
-		final Map<String, Object> params = new HashMap<String, Object>();
-		params.put("paramString", "Ginger");
-		params.put("paramDate", "2010-09-09");
-		params.put("paramBoolean", true);
-		params.put("paramDecimal", 1111.3333);
-		params.put("paramInteger", 98765);
-		params.put("delay", 10);
-		final ExecuteRequest request = new ExecuteRequest(rptDesign, humanName, format, params);
+		int min = 1;
+		int max = 10;
+		for (int i = 0; i < 100; i++) {
+			
+			int delay = ((int) (Math.random()*(max - min))) + min;
+			final String outputName = "Test_" + i;
+			String format = "PDF";
+			if ((i % 2)/2 == 0)
+				format = "HTML";
+			
+			final Map<String, Object> params = new HashMap<String, Object>();
+			params.put("paramString", "Ginger");
+			params.put("paramDate", "2010-09-09");
+			params.put("paramBoolean", true);
+			params.put("paramDecimal", (i*1.9)*i);
+			params.put("paramInteger", i);
+			params.put("delay", delay);
+			final ExecuteRequest request = new ExecuteRequest(rptDesign, outputName, format, params);
 
-		return executeSubmitJob(request, htppResponse);
+			executeSubmitJob(request, htppResponse);
+			
+		}
+
+		return new ResponseEntity<SubmitResponse>(outerResponse, HttpStatus.OK);
 
 	}
 
@@ -103,6 +117,7 @@ public class JobController {
 
 		SubmitResponse submitResponse = new SubmitResponse(request);
 		CompletableFuture.supplyAsync(() ->  submitter.executeRunThenRender(submitResponse, httpResponse));
+		
 		
 		return new ResponseEntity<SubmitResponse>(submitResponse, HttpStatus.OK);
 	}

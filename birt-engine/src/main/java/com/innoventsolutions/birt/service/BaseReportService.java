@@ -140,7 +140,7 @@ public abstract class BaseReportService {
 			final IEngineTask task) throws IllegalAccessException, InvocationTargetException, IOException,
 			RunnerException, BadRequestException {
 
-		log.info("configure parameters");
+		log.debug("configure parameters");
 
 		final IGetParameterDefinitionTask pdTask = engineService.getEngine().createGetParameterDefinitionTask(design);
 		for (final String key : execRequest.parameters.keySet()) {
@@ -151,13 +151,13 @@ public abstract class BaseReportService {
 			}
 			final ParameterHandle handle = (ParameterHandle) defn.getHandle();
 			final Object dataType = handle.getProperty("dataType");
-			log.info(" param " + key + " = " + paramValue + ", type = " + dataType + " " + defn.getTypeName());
+			log.debug(" param " + key + " = " + paramValue + ", type = " + dataType + " " + defn.getTypeName());
 			if (paramValue instanceof Object[]) {
 				final Object[] values = (Object[]) paramValue;
-				log.info(" param " + key + " " + values.length);
+				log.debug(" param " + key + " " + values.length);
 				for (int i = 0; i < values.length; i++) {
 					final Object value = values[i];
-					log.info("   value " + i + " " + value + " " + value.getClass().getName());
+					log.debug("   value " + i + " " + value + " " + value.getClass().getName());
 					values[i] = convertParameterValue(key + "(" + i + ")", value, dataType);
 				}
 				task.setParameterValue(key, values);
@@ -165,7 +165,7 @@ public abstract class BaseReportService {
 				task.setParameterValue(key, convertParameterValue(key, paramValue, dataType));
 			}
 		}
-		log.info("validating parameters");
+		log.debug("validating parameters");
 		task.validateParameters();
 
 	}

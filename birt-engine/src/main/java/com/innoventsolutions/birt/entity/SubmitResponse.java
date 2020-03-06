@@ -12,7 +12,12 @@ public class SubmitResponse {
 	private String rptDocName;
 	private String outFileName;
 	private Date submitTime;
+	private Date runBegin;
+	private Date runFinish;	
+	private Date renderBegin;
+	private Date renderFinish;
 	private ExecuteRequest request;
+	
 	
 	public SubmitResponse(ExecuteRequest request) {
 		this.request = request;

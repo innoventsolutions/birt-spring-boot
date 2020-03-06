@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -48,15 +49,17 @@ public class SubmitJobService extends BaseReportService {
 
 	@Async
 	public CompletableFuture<SubmitResponse> executeRunThenRender(final SubmitResponse submitResponse, final HttpServletResponse httpResponse) {
-		final SubmitResponse runResponse = executeRun(submitResponse, httpResponse);
-		final SubmitResponse renderResponse = executeRender(runResponse, httpResponse);
-		return CompletableFuture.completedFuture(renderResponse);
+		CompletableFuture<SubmitResponse> runThenRender = CompletableFuture.supplyAsync(() -> executeRun(submitResponse, httpResponse))
+			.thenApply(l -> executeRender(submitResponse, httpResponse));
+
+		return runThenRender;
 	}
 
 	
 	@SuppressWarnings("unchecked")
 	public SubmitResponse executeRender(final SubmitResponse submitResponse, final HttpServletResponse response) {
 
+		submitResponse.setRenderBegin(new Date());
 		log.info("submitJob (Render) = " + submitResponse.getRequest());
 		ExecuteRequest request = submitResponse.getRequest();
 
@@ -128,12 +131,13 @@ public class SubmitJobService extends BaseReportService {
 			}
 		}
 
+		submitResponse.setRenderFinish(new Date());
 		return submitResponse;
 	}
 
 	@SuppressWarnings("unchecked")
 	public SubmitResponse executeRun(final SubmitResponse submitResponse, final HttpServletResponse response) {
-
+		submitResponse.setRunBegin(new Date());
 		log.info("submitJob (Run) = " + submitResponse.getRequest());
 
 		try {
@@ -185,6 +189,7 @@ public class SubmitJobService extends BaseReportService {
 			}
 		}
 
+		submitResponse.setRunFinish(new Date());
 		return submitResponse;
 	}
 
