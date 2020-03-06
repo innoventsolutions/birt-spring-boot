@@ -2,8 +2,8 @@ package com.innoventsolutions.birt.controller;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,6 +30,10 @@ public class JobController {
 	public JobController() {
 		log.info("Create Job Controller");
 	}
+	
+	private final Executor executor = Executors.newFixedThreadPool(10);
+	
+	
 
 	@Autowired
 	private ReportRunService runner;
@@ -117,7 +121,7 @@ public class JobController {
 			final HttpServletResponse httpResponse) {
 
 		SubmitResponse submitResponse = new SubmitResponse(request);
-		submitter.executeRunThenRender(submitResponse, httpResponse);
+		submitter.executeRunThenRender(submitResponse, httpResponse, executor);
 		
 		
 		return new ResponseEntity<SubmitResponse>(submitResponse, HttpStatus.OK);

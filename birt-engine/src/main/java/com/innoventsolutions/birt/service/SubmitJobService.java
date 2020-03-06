@@ -43,24 +43,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class SubmitJobService extends BaseReportService {
-	
-	@Autowired 
-	Executor submitJobExecutor;
-	
+
 	@Autowired
 	public SubmitJobService() {
 		log.info("Start RunService");
 	}
 
 	@Async
-	public CompletableFuture<SubmitResponse> executeRunThenRender(final SubmitResponse submitResponse, final HttpServletResponse httpResponse) {
-		CompletableFuture<SubmitResponse> runThenRender = CompletableFuture.supplyAsync(() -> executeRun(submitResponse, httpResponse))
-			.thenApply(l -> executeRender(submitResponse, httpResponse));
-		
+	public CompletableFuture<SubmitResponse> executeRunThenRender(final SubmitResponse submitResponse, final HttpServletResponse httpResponse, final Executor executor) {
+		log.info("RunThenRender: " + submitResponse.getRequest().getOutputName());
+		CompletableFuture<SubmitResponse> runThenRender = CompletableFuture.supplyAsync((() -> executeRun(submitResponse, httpResponse)), executor)
+				.thenApply(l -> executeRender(submitResponse, httpResponse));
+
 		return runThenRender;
 	}
 
-	
 	@SuppressWarnings("unchecked")
 	public SubmitResponse executeRender(final SubmitResponse submitResponse, final HttpServletResponse response) {
 
@@ -143,7 +140,7 @@ public class SubmitJobService extends BaseReportService {
 	@SuppressWarnings("unchecked")
 	public SubmitResponse executeRun(final SubmitResponse submitResponse, final HttpServletResponse response) {
 		submitResponse.setRunBegin(new Date());
-		log.info("submitJob (Run) Thread: " + Thread.currentThread()  + submitResponse.getRequest() );
+		log.info("submitJob (Run) Thread: " + Thread.currentThread() + submitResponse.getRequest());
 
 		try {
 			final IReportRunnable design = getRunnableReportDesign(submitResponse.getRequest());
