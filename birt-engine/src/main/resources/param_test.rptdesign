@@ -2,6 +2,11 @@
 <report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
     <property name="createdBy">Eclipse BIRT Designer Version 4.8.0.v201806261756</property>
     <property name="units">in</property>
+    <method name="initialize"><![CDATA[reportContext.setParameterValue("start", new java.util.Date());
+if (reportContext.getParameterValue("delay") > 0 ){
+	java.util.concurrent.TimeUnit.SECONDS.sleep(reportContext.getParameterValue("delay"));
+}
+]]></method>
     <property name="iconFile">/templates/blank_report.gif</property>
     <property name="bidiLayoutOrientation">ltr</property>
     <property name="imageDPI">96</property>
@@ -75,6 +80,34 @@
             <property name="controlType">check-box</property>
             <structure name="format"/>
         </scalar-parameter>
+        <scalar-parameter name="delay" id="78">
+            <text-property name="promptText">Delay in Seconds</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">integer</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">0</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="start" id="88">
+            <property name="hidden">true</property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">dateTime</property>
+            <property name="distinct">true</property>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
     </parameters>
     <page-setup>
         <simple-master-page name="Simple MasterPage" id="2">
@@ -117,6 +150,24 @@
                 <structure>
                     <property name="name">pStr</property>
                     <expression name="expression" type="javascript">params["paramString"].value</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">start</property>
+                    <expression name="expression" type="javascript">Formatter.format(params["start"].value,"kk:ss.mmm")</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">finish</property>
+                    <expression name="expression" type="javascript">Formatter.format(new java.util.Date(),"kk:ss.mmm")</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">delay</property>
+                    <expression name="expression" type="javascript">params["delay"].value</expression>
                     <property name="dataType">string</property>
                     <property name="allowExport">true</property>
                 </structure>
@@ -194,6 +245,48 @@
                 <cell id="60">
                     <data id="76">
                         <property name="resultSetColumn">pBool</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="90">
+                <cell id="91">
+                    <label id="93">
+                        <text-property name="text">delay</text-property>
+                    </label>
+                </cell>
+                <cell id="92">
+                    <data id="94">
+                        <property name="resultSetColumn">delay</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="79">
+                <cell id="80">
+                    <label id="85">
+                        <text-property name="text">Start</text-property>
+                    </label>
+                </cell>
+                <cell id="81">
+                    <data id="87">
+                        <structure name="dateTimeFormat">
+                            <property name="category">Unformatted</property>
+                        </structure>
+                        <property name="resultSetColumn">start</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="82">
+                <cell id="83">
+                    <label id="86">
+                        <text-property name="text">Finish</text-property>
+                    </label>
+                </cell>
+                <cell id="84">
+                    <data id="89">
+                        <structure name="dateTimeFormat">
+                            <property name="category">Unformatted</property>
+                        </structure>
+                        <property name="resultSetColumn">finish</property>
                     </data>
                 </cell>
             </row>

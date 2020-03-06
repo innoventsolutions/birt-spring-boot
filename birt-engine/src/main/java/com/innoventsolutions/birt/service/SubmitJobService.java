@@ -46,26 +46,35 @@ public class SubmitJobService extends BaseReportService {
 		log.info("Start RunService");
 	}
 
-	@SuppressWarnings("unchecked")
 	@Async
-	public CompletableFuture<SubmitResponse> executeRender(final SubmitResponse submitResponse, final HttpServletResponse response) {
-		
+	public CompletableFuture<SubmitResponse> executeRunThenRender(final SubmitResponse submitResponse, final HttpServletResponse httpResponse) {
+		final SubmitResponse runResponse = executeRun(submitResponse, httpResponse);
+		final SubmitResponse renderResponse = executeRender(runResponse, httpResponse);
+		return CompletableFuture.completedFuture(renderResponse);
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	public SubmitResponse executeRender(final SubmitResponse submitResponse, final HttpServletResponse response) {
+
 		log.info("submitJob (Render) = " + submitResponse.getRequest());
 		ExecuteRequest request = submitResponse.getRequest();
+
+		IReportDocument rptdoc = null;
 		try {
 			IReportEngine engine = engineService.getEngine();
 			final File rptDocFile = new File(engineService.getOutputDirectory(), submitResponse.getRptDocName());
 			final File outputFile = new File(engineService.getOutputDirectory(), submitResponse.getOutFileName());
-			final IReportDocument rptdoc = engine.openReportDocument(rptDocFile.getAbsolutePath());
-			final IRenderTask renderTask = engine.createRenderTask(rptdoc);
+			rptdoc = engine.openReportDocument(rptDocFile.getAbsolutePath());
+			IRenderTask renderTask = engine.createRenderTask(rptdoc);
 			// TODO Does not make sense
 			final Map<String, Object> appContext = renderTask.getAppContext();
-			
+
 			log.info("Rendering doc: " + request.getOutputName() + " to " + request.getFormat());
-			
+
 			final String format = request.format;
 			final RenderOption options = configureRenderOptions(format);
-			
+
 			outputFile.getParentFile().mkdirs();
 			options.setOutputFileName(outputFile.getAbsolutePath());
 			options.setOutputFormat(format);
@@ -78,8 +87,7 @@ public class SubmitJobService extends BaseReportService {
 			} catch (final UnsupportedFormatException e) {
 				throw new BadRequestException(406, "Unsupported output format");
 			} catch (final Exception e) {
-				if ("org.eclipse.birt.report.engine.api.impl.ParameterValidationException"
-						.equals(e.getClass().getName())) {
+				if ("org.eclipse.birt.report.engine.api.impl.ParameterValidationException".equals(e.getClass().getName())) {
 					throw new BadRequestException(406, e.getMessage());
 				}
 				throw new RunnerException("Run Task failed", e);
@@ -90,8 +98,9 @@ public class SubmitJobService extends BaseReportService {
 				for (final EngineException exception : errors) {
 					exceptions.add(exception);
 				}
-
 			}
+
+			rptdoc.close();
 		} catch (final BadRequestException e1) {
 			try {
 				response.sendError(e1.getCode(), e1.getReason());
@@ -112,18 +121,21 @@ public class SubmitJobService extends BaseReportService {
 		} catch (IllegalArgumentException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		} finally {
+			// Failure to close the report doc will result in a locked file
+			if (rptdoc != null) {
+				rptdoc.close();
+			}
 		}
-		
-		return CompletableFuture.completedFuture(submitResponse);
+
+		return submitResponse;
 	}
 
 	@SuppressWarnings("unchecked")
-	@Async
-	public CompletableFuture<SubmitResponse> executeRun(final SubmitResponse submitResponse, final HttpServletResponse response) {
-		
-	
+	public SubmitResponse executeRun(final SubmitResponse submitResponse, final HttpServletResponse response) {
+
 		log.info("submitJob (Run) = " + submitResponse.getRequest());
-		
+
 		try {
 			final IReportRunnable design = getRunnableReportDesign(submitResponse.getRequest());
 			// Run Reports will only do a RunAndRender
@@ -132,12 +144,11 @@ public class SubmitJobService extends BaseReportService {
 			final Map<String, Object> appContext = rTask.getAppContext();
 			rTask.setAppContext(appContext);
 			configureParameters(submitResponse.getRequest(), design, rTask);
-			
+
 			File rptDocFile = new File(engineService.getOutputDirectory(), submitResponse.getRptDocName());
 			String rptDoc = rptDocFile.getAbsolutePath();
 			log.info("Creating rpt doc: " + rptDoc);
 			rTask.setReportDocument(rptDoc);
-			
 
 			log.info("run report");
 			try {
@@ -145,8 +156,7 @@ public class SubmitJobService extends BaseReportService {
 			} catch (final UnsupportedFormatException e) {
 				throw new BadRequestException(406, "Unsupported output format");
 			} catch (final Exception e) {
-				if ("org.eclipse.birt.report.engine.api.impl.ParameterValidationException"
-						.equals(e.getClass().getName())) {
+				if ("org.eclipse.birt.report.engine.api.impl.ParameterValidationException".equals(e.getClass().getName())) {
 					throw new BadRequestException(406, e.getMessage());
 				}
 				throw new RunnerException("Run Task failed", e);
@@ -174,8 +184,8 @@ public class SubmitJobService extends BaseReportService {
 				e.printStackTrace();
 			}
 		}
-		
-		return CompletableFuture.completedFuture(submitResponse);
+
+		return submitResponse;
 	}
 
 }

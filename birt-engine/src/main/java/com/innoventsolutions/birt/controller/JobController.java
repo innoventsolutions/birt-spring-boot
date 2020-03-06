@@ -2,6 +2,7 @@ package com.innoventsolutions.birt.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -89,6 +90,7 @@ public class JobController {
 		params.put("paramBoolean", true);
 		params.put("paramDecimal", 1111.3333);
 		params.put("paramInteger", 98765);
+		params.put("delay", 10);
 		final ExecuteRequest request = new ExecuteRequest(rptDesign, humanName, format, params);
 
 		return executeSubmitJob(request, htppResponse);
@@ -98,11 +100,9 @@ public class JobController {
 	@GetMapping("/submitReport")
 	private ResponseEntity<SubmitResponse> executeSubmitJob(@RequestBody final ExecuteRequest request,
 			final HttpServletResponse httpResponse) {
-		
+
 		SubmitResponse submitResponse = new SubmitResponse(request);
-		
-		submitter.executeRun(submitResponse, httpResponse);
-		submitter.executeRender(submitResponse, httpResponse);
+		CompletableFuture.supplyAsync(() ->  submitter.executeRunThenRender(submitResponse, httpResponse));
 		
 		return new ResponseEntity<SubmitResponse>(submitResponse, HttpStatus.OK);
 	}
