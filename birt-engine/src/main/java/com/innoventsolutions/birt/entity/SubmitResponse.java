@@ -16,6 +16,7 @@ public class SubmitResponse {
 	private Date runFinish;	
 	private Date renderBegin;
 	private Date renderFinish;
+	private StatusEnum status ; 
 	private ExecuteRequest request;
 	
 	
@@ -26,9 +27,13 @@ public class SubmitResponse {
 		this.jobid = request.getOutputName() + "_" + String.valueOf(id);
 		this.rptDocName = jobid + ".rptdocument";
 		this.outFileName = jobid + "." + request.getFormat();
+		this.status = StatusEnum.INIT;
+		
 		log.info("Create response for: " + rptDocName);
 	}
 	
-	
+	public enum StatusEnum {
+    INIT, RUN, RENDER, COMPLETE, CANCELLED, EXCEPTION, UNKNOWN
+}
 
 }

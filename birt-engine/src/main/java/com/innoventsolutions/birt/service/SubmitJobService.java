@@ -10,6 +10,8 @@
 package com.innoventsolutions.birt.service;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ import org.springframework.stereotype.Service;
 
 import com.innoventsolutions.birt.entity.ExecuteRequest;
 import com.innoventsolutions.birt.entity.SubmitResponse;
+import com.innoventsolutions.birt.entity.SubmitResponse.StatusEnum;
 import com.innoventsolutions.birt.exception.BadRequestException;
 import com.innoventsolutions.birt.exception.RunnerException;
 
@@ -47,9 +50,9 @@ public class SubmitJobService extends BaseReportService {
 
 	@Autowired
 	ExecutorService executor;
-	
+
 	ForkJoinPool submitPool = new ForkJoinPool(10);
-	
+
 	@Autowired
 	public SubmitJobService() {
 		log.info("Start RunService");
@@ -58,7 +61,7 @@ public class SubmitJobService extends BaseReportService {
 	@Async
 	public CompletableFuture<SubmitResponse> executeRunThenRender(final SubmitResponse submitResponse, final HttpServletResponse httpResponse) {
 		log.info("RunThenRender: " + submitResponse.getRequest().getOutputName());
-		
+
 		// to use Fork/join change the executor to submitPool (or opposite)
 		CompletableFuture<SubmitResponse> runThenRender = CompletableFuture.supplyAsync((() -> executeRun(submitResponse, httpResponse)), executor)
 				.thenApply(l -> executeRender(submitResponse, httpResponse));
@@ -66,11 +69,19 @@ public class SubmitJobService extends BaseReportService {
 		return runThenRender;
 	}
 
+	public FileInputStream getReport(SubmitResponse job) throws FileNotFoundException {
+
+		File f = new File(engineService.getOutputDirectory(), job.getOutFileName());
+		return new FileInputStream(f);
+		
+	}
+
 	@SuppressWarnings("unchecked")
 	public SubmitResponse executeRender(final SubmitResponse submitResponse, final HttpServletResponse response) {
 
+		submitResponse.setStatus(StatusEnum.RUN);
 		submitResponse.setRenderBegin(new Date());
-		log.info("submitJob (Render) = " + submitResponse.getRequest());
+		log.info("submitJob (Render) = " + submitResponse.getRequest() + "[" + submitResponse.getJobid() + "]");
 		ExecuteRequest request = submitResponse.getRequest();
 
 		IReportDocument rptdoc = null;
@@ -147,6 +158,7 @@ public class SubmitJobService extends BaseReportService {
 
 	@SuppressWarnings("unchecked")
 	public SubmitResponse executeRun(final SubmitResponse submitResponse, final HttpServletResponse response) {
+		submitResponse.setStatus(StatusEnum.RENDER);
 		submitResponse.setRunBegin(new Date());
 		log.info("submitJob (Run) Thread: " + Thread.currentThread() + submitResponse.getRequest());
 
@@ -200,6 +212,8 @@ public class SubmitJobService extends BaseReportService {
 		}
 
 		submitResponse.setRunFinish(new Date());
+		submitResponse.setStatus(StatusEnum.COMPLETE);
+
 		return submitResponse;
 	}
 

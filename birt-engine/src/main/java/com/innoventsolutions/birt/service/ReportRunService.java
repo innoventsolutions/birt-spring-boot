@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import com.innoventsolutions.birt.entity.ExecuteRequest;
 import com.innoventsolutions.birt.exception.BadRequestException;
 import com.innoventsolutions.birt.exception.RunnerException;
+import com.innoventsolutions.birt.util.Util;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,7 +58,7 @@ public class ReportRunService extends BaseReportService {
 			log.info("getRenderOptions");
 			final String format = request.format;
 			final RenderOption options = configureRenderOptions(format);
-			response.setContentType(getMediaType(format).toString());
+			response.setContentType(Util.getMediaType(format).toString());
 			response.setHeader("Content-Disposition", "attachment;filename=" + request.getOutputName() + "." + format);
 
 			options.setOutputStream(oStream);
