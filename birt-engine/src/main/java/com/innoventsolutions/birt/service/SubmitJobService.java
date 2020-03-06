@@ -73,7 +73,7 @@ public class SubmitJobService extends BaseReportService {
 
 		File f = new File(engineService.getOutputDirectory(), job.getOutFileName());
 		return new FileInputStream(f);
-		
+
 	}
 
 	@SuppressWarnings("unchecked")

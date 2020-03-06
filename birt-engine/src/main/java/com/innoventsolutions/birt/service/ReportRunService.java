@@ -70,8 +70,7 @@ public class ReportRunService extends BaseReportService {
 			} catch (final UnsupportedFormatException e) {
 				throw new BadRequestException(406, "Unsupported output format");
 			} catch (final Exception e) {
-				if ("org.eclipse.birt.report.engine.api.impl.ParameterValidationException"
-						.equals(e.getClass().getName())) {
+				if ("org.eclipse.birt.report.engine.api.impl.ParameterValidationException".equals(e.getClass().getName())) {
 					throw new BadRequestException(406, e.getMessage());
 				}
 				throw new RunnerException("Run-and-render task failed", e);

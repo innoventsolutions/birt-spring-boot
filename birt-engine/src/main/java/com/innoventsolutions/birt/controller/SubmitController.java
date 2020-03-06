@@ -40,7 +40,7 @@ public class SubmitController {
 	private SubmitJobService submitter;
 
 	@GetMapping("/testSubmit")
-	public ResponseEntity<SubmitResponse> getTestSubmit(@RequestBody(required=false) Integer numToRun, final HttpServletResponse htppResponse) {
+	public ResponseEntity<SubmitResponse> getTestSubmit(@RequestBody(required = false) Integer numToRun, final HttpServletResponse htppResponse) {
 		log.info("testSubmit ");
 
 		if (numToRun == null)
@@ -117,20 +117,17 @@ public class SubmitController {
 		}
 		if (StatusEnum.COMPLETE != getJobStatus(jobFuture)) {
 			return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}		
+		}
 		try {
-		SubmitResponse submitReponse = jobFuture.get();
-		FileInputStream fis = submitter.getReport(submitReponse);
-		final HttpHeaders headers = new HttpHeaders();
-		headers.set("Content-Disposition", "attachment; filename=\"" + submitReponse.getOutFileName() + "\"");
-		
-		InputStreamResource resource = new InputStreamResource(fis);
+			SubmitResponse submitReponse = jobFuture.get();
+			FileInputStream fis = submitter.getReport(submitReponse);
+			final HttpHeaders headers = new HttpHeaders();
+			headers.set("Content-Disposition", "attachment; filename=\"" + submitReponse.getOutFileName() + "\"");
 
-		MediaType contentType = Util.getMediaType(submitReponse.getRequest().getFormat());
-    return ResponseEntity.ok()
-            .headers(headers)
-            .contentType(contentType)
-            .body(resource);
+			InputStreamResource resource = new InputStreamResource(fis);
+
+			MediaType contentType = Util.getMediaType(submitReponse.getRequest().getFormat());
+			return ResponseEntity.ok().headers(headers).contentType(contentType).body(resource);
 		} catch (Exception e) {
 			return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}

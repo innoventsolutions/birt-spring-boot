@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class JobStatus {
 	private String jobid;
-	
+
 }

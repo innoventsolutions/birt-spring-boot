@@ -9,7 +9,6 @@
  ******************************************************************************/
 package com.innoventsolutions.birt;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -29,14 +28,14 @@ public class BirtEngineApplication {
 	@Bean(name = "submitJobExecutor")
 	public ExecutorService taskExecutor() {
 		ExecutorService executor = Executors.newFixedThreadPool(10);
-	
-/*		
-		executor.setCorePoolSize(5);
-		executor.setMaxPoolSize(8);
-		executor.setQueueCapacity(500);
-		executor.setThreadNamePrefix("SubmitJob-");
-		executor.initialize();
-*/
+
+		/*		
+				executor.setCorePoolSize(5);
+				executor.setMaxPoolSize(8);
+				executor.setQueueCapacity(500);
+				executor.setThreadNamePrefix("SubmitJob-");
+				executor.initialize();
+		*/
 		return executor;
 	}
 }

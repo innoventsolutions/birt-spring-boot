@@ -10,7 +10,7 @@ public class TestCF {
 	}
 
 	public static void main(String[] args) throws Exception {
-		
+
 		System.out.println("Current Thread " + Thread.currentThread());
 		CompletableFuture.runAsync(() -> System.out.println("Run async in completable future " + Thread.currentThread()));
 
@@ -29,11 +29,16 @@ public class TestCF {
 
 		System.out.println(welcomeText.get());
 
-
-		CompletableFuture<Integer> welcomeNext = CompletableFuture.supplyAsync(() -> slowGet())
-				.thenApplyAsync(b -> {System.out.println("s2: " + Thread.currentThread()); return b - 2;})
-				.thenApplyAsync(k -> {System.out.println("s3: " + Thread.currentThread()); return k * 3;})
-				.thenApply(l -> {System.out.println("The result is " + l); return l*l; });
+		CompletableFuture<Integer> welcomeNext = CompletableFuture.supplyAsync(() -> slowGet()).thenApplyAsync(b -> {
+			System.out.println("s2: " + Thread.currentThread());
+			return b - 2;
+		}).thenApplyAsync(k -> {
+			System.out.println("s3: " + Thread.currentThread());
+			return k * 3;
+		}).thenApply(l -> {
+			System.out.println("The result is " + l);
+			return l * l;
+		});
 
 		System.out.println(welcomeNext.get());
 

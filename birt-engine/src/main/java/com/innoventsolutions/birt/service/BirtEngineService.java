@@ -46,33 +46,33 @@ public class BirtEngineService {
 	private IReportEngine engine = null;
 
 	@Autowired
-	public BirtEngineService()  {
+	public BirtEngineService() {
 	}
-	
+
 	@PostConstruct
-	public IReportEngine getEngine() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, RunnerException{
+	public IReportEngine getEngine() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, RunnerException {
 		if (engine == null) {
 			log.info("Instantiate Report Engine");
 			this.engine = getReportEngine();
 		}
 		return engine;
 	}
-	
+
 	// Pass up required configuration parameters, does it make sense to just have the calling classes use the configuration directly?
 	public String getBaseImageURL() {
 		return birtConfig.getBaseImageURL();
 	}
-	
+
 	public File getOutputDirectory() {
 		return birtConfig.getOutputDirectory();
 	}
-	
+
 	public File getWorkspace() {
 		return birtConfig.getWorkspace();
 	}
-	
+
 	private IReportEngine getReportEngine() throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, RunnerException {
-	
+
 		log.info("getReportEngine");
 		final EngineConfig config = new EngineConfig();
 		log.info("birtRuntimeHome = " + birtConfig.getBirtRuntimeHome());
@@ -197,7 +197,6 @@ public class BirtEngineService {
 			return name.toLowerCase().endsWith(extension);
 		}
 	}
-
 
 	public void shutdown() {
 		// there is really no place this can be done

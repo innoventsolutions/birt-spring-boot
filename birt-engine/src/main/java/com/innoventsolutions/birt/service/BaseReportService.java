@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.innoventsolutions.birt.entity.ExecuteRequest;
 import com.innoventsolutions.birt.exception.BadRequestException;
 import com.innoventsolutions.birt.exception.RunnerException;
-import com.innoventsolutions.birt.service.BirtEngineService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -99,8 +98,8 @@ public abstract class BaseReportService {
 		return options;
 	}
 
-	protected IReportRunnable getRunnableReportDesign(final ExecuteRequest execRequest) throws IllegalAccessException,
-			InvocationTargetException, IOException, RunnerException, BadRequestException {
+	protected IReportRunnable getRunnableReportDesign(final ExecuteRequest execRequest)
+			throws IllegalAccessException, InvocationTargetException, IOException, RunnerException, BadRequestException {
 		IReportRunnable design;
 
 		try {
@@ -136,9 +135,8 @@ public abstract class BaseReportService {
 		return design;
 	}
 
-	protected void configureParameters(final ExecuteRequest execRequest, final IReportRunnable design,
-			final IEngineTask task) throws IllegalAccessException, InvocationTargetException, IOException,
-			RunnerException, BadRequestException {
+	protected void configureParameters(final ExecuteRequest execRequest, final IReportRunnable design, final IEngineTask task)
+			throws IllegalAccessException, InvocationTargetException, IOException, RunnerException, BadRequestException {
 
 		log.debug("configure parameters");
 
@@ -170,8 +168,7 @@ public abstract class BaseReportService {
 
 	}
 
-	protected Object convertParameterValue(final String name, final Object paramValue, final Object dataType)
-			throws BadRequestException {
+	protected Object convertParameterValue(final String name, final Object paramValue, final Object dataType) throws BadRequestException {
 		if (paramValue instanceof String) {
 			final String stringValue = (String) paramValue;
 			if ("integer".equals(dataType)) {
@@ -286,8 +283,7 @@ public abstract class BaseReportService {
 		final Object subValue = map.get("value");
 		if (!(subValue instanceof String)) {
 			log.error("parameter sub-value is not a string");
-			throw new BadRequestException(406,
-					"Parameter " + name + " is an object but the value field is missing or isn't a string");
+			throw new BadRequestException(406, "Parameter " + name + " is an object but the value field is missing or isn't a string");
 		}
 		if ("date".equals(type)) {
 			final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -296,8 +292,7 @@ public abstract class BaseReportService {
 				return new java.sql.Date(date.getTime());
 			} catch (final ParseException e) {
 				log.error("parameter date sub-value is malformed");
-				throw new BadRequestException(406,
-						"Parameter " + name + " is an object and the type is date but the value isn't a valid date");
+				throw new BadRequestException(406, "Parameter " + name + " is an object and the type is date but the value isn't a valid date");
 			}
 		}
 		if ("datetime".equals(type)) {
@@ -307,8 +302,7 @@ public abstract class BaseReportService {
 				return new java.sql.Date(date.getTime());
 			} catch (final ParseException e) {
 				log.error("parameter date sub-value is malformed");
-				throw new BadRequestException(406, "Parameter " + name
-						+ " is an object and the type is datetime but the value isn't a valid datetime");
+				throw new BadRequestException(406, "Parameter " + name + " is an object and the type is datetime but the value isn't a valid datetime");
 			}
 		}
 		if ("time".equals(type)) {
@@ -318,13 +312,11 @@ public abstract class BaseReportService {
 				return new java.sql.Time(date.getTime());
 			} catch (final ParseException e) {
 				log.error("parameter date sub-value is malformed");
-				throw new BadRequestException(406,
-						"Parameter " + name + " is an object and the type is time but the value isn't a valid time");
+				throw new BadRequestException(406, "Parameter " + name + " is an object and the type is time but the value isn't a valid time");
 			}
 		}
 		log.error("unrecognized parameter value type: " + type);
-		throw new BadRequestException(406,
-				"Parameter " + name + " is an object and the type field is present but is not recognized");
+		throw new BadRequestException(406, "Parameter " + name + " is an object and the type field is present but is not recognized");
 	}
 
 }

@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
+@Setter
 @Component
 @ConfigurationProperties(prefix = "birt.runner")
 public class BirtConfig {
@@ -26,7 +27,7 @@ public class BirtConfig {
 	private boolean isActuate;
 	private Pattern unsecuredDesignFilePattern;
 	private Pattern unsecuredOperationPattern;
-	
+
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();

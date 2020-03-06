@@ -17,7 +17,6 @@ class BirtEngineApplicationTest {
 		SpringApplication.run(BirtEngineApplicationTest.class, args);
 	}
 
-
 	public void run(final String... args) throws Exception {
 		final String designFile = "/disk1/home/innovent/projects/birt-spring-boot-starter-mvn/test.rptdesign";
 		final ExecuteRequest reportRun = new ExecuteRequest(designFile, "Test Report", "pdf");

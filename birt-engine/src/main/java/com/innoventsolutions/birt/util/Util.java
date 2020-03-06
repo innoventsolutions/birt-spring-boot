@@ -31,8 +31,7 @@ public class Util {
 			return MediaType.parseMediaType("application/vnd.ms-powerpoint");
 		}
 		if ("pptx".equalsIgnoreCase(format)) {
-			return MediaType
-					.parseMediaType("application/vnd.openxmlformats-officedocument.presentationml.presentation");
+			return MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.presentationml.presentation");
 		}
 		if (".odp".equalsIgnoreCase(format)) {
 			return MediaType.parseMediaType("application/vnd.oasis.opendocument.presentation");
@@ -45,7 +44,5 @@ public class Util {
 		}
 		return MediaType.APPLICATION_OCTET_STREAM;
 	}
-
-
 
 }
