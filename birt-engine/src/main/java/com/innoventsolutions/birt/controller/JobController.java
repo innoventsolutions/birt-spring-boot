@@ -3,6 +3,7 @@ package com.innoventsolutions.birt.controller;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -89,7 +90,7 @@ public class JobController {
 		for (int i = 0; i < 100; i++) {
 			
 			int delay = ((int) (Math.random()*(max - min))) + min;
-			final String outputName = "Test_" + i;
+			final String outputName = "Test_" + i + " d(" + delay + ")";
 			String format = "PDF";
 			if ((i % 2)/2 == 0)
 				format = "HTML";
@@ -110,13 +111,13 @@ public class JobController {
 		return new ResponseEntity<SubmitResponse>(outerResponse, HttpStatus.OK);
 
 	}
-
+	
 	@GetMapping("/submitReport")
 	private ResponseEntity<SubmitResponse> executeSubmitJob(@RequestBody final ExecuteRequest request,
 			final HttpServletResponse httpResponse) {
 
 		SubmitResponse submitResponse = new SubmitResponse(request);
-		CompletableFuture.supplyAsync(() ->  submitter.executeRunThenRender(submitResponse, httpResponse));
+		submitter.executeRunThenRender(submitResponse, httpResponse);
 		
 		
 		return new ResponseEntity<SubmitResponse>(submitResponse, HttpStatus.OK);

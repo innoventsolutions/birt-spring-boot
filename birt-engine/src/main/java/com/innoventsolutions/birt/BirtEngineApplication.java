@@ -25,7 +25,7 @@ public class BirtEngineApplication {
 		SpringApplication.run(BirtEngineApplication.class, args);
 	}
 
-	@Bean
+	@Bean(name = "submitJobExecutor")
 	public Executor taskExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 		executor.setCorePoolSize(2);
