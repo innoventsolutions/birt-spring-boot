@@ -31,10 +31,6 @@ public class JobController {
 		log.info("Create Job Controller");
 	}
 	
-	private final Executor executor = Executors.newFixedThreadPool(10);
-	
-	
-
 	@Autowired
 	private ReportRunService runner;
 	@Autowired
@@ -121,7 +117,7 @@ public class JobController {
 			final HttpServletResponse httpResponse) {
 
 		SubmitResponse submitResponse = new SubmitResponse(request);
-		submitter.executeRunThenRender(submitResponse, httpResponse, executor);
+		submitter.executeRunThenRender(submitResponse, httpResponse);
 		
 		
 		return new ResponseEntity<SubmitResponse>(submitResponse, HttpStatus.OK);

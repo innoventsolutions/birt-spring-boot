@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -45,12 +46,15 @@ import lombok.extern.slf4j.Slf4j;
 public class SubmitJobService extends BaseReportService {
 
 	@Autowired
+	ExecutorService executor;
+	
+	@Autowired
 	public SubmitJobService() {
 		log.info("Start RunService");
 	}
 
 	@Async
-	public CompletableFuture<SubmitResponse> executeRunThenRender(final SubmitResponse submitResponse, final HttpServletResponse httpResponse, final Executor executor) {
+	public CompletableFuture<SubmitResponse> executeRunThenRender(final SubmitResponse submitResponse, final HttpServletResponse httpResponse) {
 		log.info("RunThenRender: " + submitResponse.getRequest().getOutputName());
 		CompletableFuture<SubmitResponse> runThenRender = CompletableFuture.supplyAsync((() -> executeRun(submitResponse, httpResponse)), executor)
 				.thenApply(l -> executeRender(submitResponse, httpResponse));
