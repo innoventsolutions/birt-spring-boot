@@ -40,7 +40,7 @@ public class SubmitController {
 	private SubmitJobService submitter;
 
 	@GetMapping("/testSubmit")
-	public ResponseEntity<SubmitResponse> getTestSubmit(@RequestBody Integer numToRun, final HttpServletResponse htppResponse) {
+	public ResponseEntity<SubmitResponse> getTestSubmit(@RequestBody(required=false) Integer numToRun, final HttpServletResponse htppResponse) {
 		log.info("testSubmit ");
 
 		if (numToRun == null)

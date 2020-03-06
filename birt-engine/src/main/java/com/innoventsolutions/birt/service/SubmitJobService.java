@@ -105,7 +105,6 @@ public class SubmitJobService extends BaseReportService {
 			options.setOutputFileName(outputFile.getAbsolutePath());
 			renderTask.setRenderOption(options);
 
-			log.info("run report");
 			try {
 				renderTask.render();
 			} catch (final UnsupportedFormatException e) {
@@ -176,7 +175,6 @@ public class SubmitJobService extends BaseReportService {
 			log.info("Creating rpt doc: " + rptDoc);
 			rTask.setReportDocument(rptDoc);
 
-			log.info("run report");
 			try {
 				rTask.run();
 			} catch (final UnsupportedFormatException e) {
