@@ -17,8 +17,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -48,6 +48,8 @@ public class SubmitJobService extends BaseReportService {
 	@Autowired
 	ExecutorService executor;
 	
+	ForkJoinPool submitPool = new ForkJoinPool(10);
+	
 	@Autowired
 	public SubmitJobService() {
 		log.info("Start RunService");
@@ -56,6 +58,8 @@ public class SubmitJobService extends BaseReportService {
 	@Async
 	public CompletableFuture<SubmitResponse> executeRunThenRender(final SubmitResponse submitResponse, final HttpServletResponse httpResponse) {
 		log.info("RunThenRender: " + submitResponse.getRequest().getOutputName());
+		
+		// to use Fork/join change the executor to submitPool (or opposite)
 		CompletableFuture<SubmitResponse> runThenRender = CompletableFuture.supplyAsync((() -> executeRun(submitResponse, httpResponse)), executor)
 				.thenApply(l -> executeRender(submitResponse, httpResponse));
 
