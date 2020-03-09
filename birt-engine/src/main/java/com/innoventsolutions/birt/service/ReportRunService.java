@@ -15,6 +15,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -36,6 +38,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class ReportRunService extends BaseReportService {
+	@Autowired
+	ExecutorService taskExecutorService;
+	
 	@Autowired
 	public ReportRunService() {
 		log.info("Start RunService");

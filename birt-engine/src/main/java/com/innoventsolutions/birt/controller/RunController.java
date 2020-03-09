@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,12 +63,13 @@ public class RunController {
 
 	}
 
+	@Async
 	@GetMapping("/runReport")
-	private ResponseEntity<StreamingResponseBody> executeRunReport(@RequestBody final ExecuteRequest request, final HttpServletResponse response) {
+	public ResponseEntity<StreamingResponseBody> executeRunReport(@RequestBody final ExecuteRequest request, final HttpServletResponse response) {
 		final StreamingResponseBody stream = out -> {
 			runner.execute(request, response);
 		};
-		log.info("steaming response {} ", stream);
+		log.info("streaming response {} ", stream);
 		return new ResponseEntity<StreamingResponseBody>(stream, HttpStatus.OK);
 	}
 

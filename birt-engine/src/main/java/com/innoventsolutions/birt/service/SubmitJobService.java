@@ -49,7 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SubmitJobService extends BaseReportService {
 
 	@Autowired
-	ExecutorService executor;
+	ExecutorService executorService;
 
 	ForkJoinPool submitPool = new ForkJoinPool(10);
 
@@ -63,7 +63,7 @@ public class SubmitJobService extends BaseReportService {
 		log.info("RunThenRender: " + submitResponse.getRequest().getOutputName());
 
 		// to use Fork/join change the executor to submitPool (or opposite)
-		CompletableFuture<SubmitResponse> runThenRender = CompletableFuture.supplyAsync((() -> executeRun(submitResponse, httpResponse)), executor)
+		CompletableFuture<SubmitResponse> runThenRender = CompletableFuture.supplyAsync((() -> executeRun(submitResponse, httpResponse)), executorService)
 				.thenApply(l -> executeRender(submitResponse, httpResponse));
 
 		return runThenRender;

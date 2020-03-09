@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -24,7 +25,7 @@ import lombok.ToString;
  *
  * @author Steve Schafer, Innovent Solutions Inc.
  */
-@Getter
+@Getter @Setter
 @ToString
 @AllArgsConstructor @NoArgsConstructor
 public class ExecuteRequest {
