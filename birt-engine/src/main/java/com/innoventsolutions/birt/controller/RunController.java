@@ -6,13 +6,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import com.innoventsolutions.birt.entity.ExecuteRequest;
 import com.innoventsolutions.birt.service.ReportRunService;
@@ -32,20 +28,18 @@ public class RunController {
 	private ReportRunService runner;
 
 	@GetMapping("/testPDF")
-	public ResponseEntity<StreamingResponseBody> getTestPDF(final HttpServletResponse response) {
+	public void getTestPDF(final HttpServletResponse response) {
 		log.info("testPDF ");
 
 		final String rptDesign = "TEST";
 		final String humanName = "Test Report";
 		final String format = "PDF";
 		final ExecuteRequest request = new ExecuteRequest(rptDesign, humanName, format);
-
-		return executeRunReport(request, response);
-
+		executeRunReport(request, response);
 	}
 
 	@GetMapping("/testHTML")
-	public ResponseEntity<StreamingResponseBody> getTestHTML(final HttpServletResponse response) {
+	public void getTestHTML(final HttpServletResponse response) {
 		log.info("testHTML ");
 
 		final String rptDesign = "param_test.rptdesign";
@@ -58,19 +52,12 @@ public class RunController {
 		params.put("paramDecimal", 1111.3333);
 		params.put("paramInteger", 98765);
 		final ExecuteRequest request = new ExecuteRequest(rptDesign, humanName, format, params);
-
-		return executeRunReport(request, response);
-
+		executeRunReport(request, response);
 	}
 
-	@Async
 	@GetMapping("/runReport")
-	public ResponseEntity<StreamingResponseBody> executeRunReport(@RequestBody final ExecuteRequest request, final HttpServletResponse response) {
-		final StreamingResponseBody stream = out -> {
-			runner.execute(request, response);
-		};
-		log.info("streaming response {} ", stream);
-		return new ResponseEntity<StreamingResponseBody>(stream, HttpStatus.OK);
+	public void executeRunReport(@RequestBody final ExecuteRequest request, final HttpServletResponse response) {
+		runner.execute(request, response);
 	}
 
 }

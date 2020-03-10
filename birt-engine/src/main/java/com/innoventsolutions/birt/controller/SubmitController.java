@@ -40,7 +40,7 @@ public class SubmitController {
 	private SubmitJobService submitter;
 
 	@GetMapping("/testSubmit")
-	public ResponseEntity<SubmitResponse> getTestSubmit(@RequestBody(required = false) Integer numToRun, final HttpServletResponse htppResponse) {
+	public ResponseEntity<SubmitResponse> getTestSubmit(@RequestBody(required = false) Integer numToRun, final HttpServletResponse httpResponse) {
 		log.info("testSubmit ");
 
 		if (numToRun == null)
@@ -68,7 +68,7 @@ public class SubmitController {
 			params.put("delay", delay);
 			final ExecuteRequest request = new ExecuteRequest(rptDesign, outputName, format, params);
 
-			executeSubmitJob(request, htppResponse);
+			executeSubmitJob(request, httpResponse);
 
 		}
 
