@@ -98,33 +98,27 @@ public abstract class BaseReportService {
 		return options;
 	}
 
+	/*
+	 * 
+	 */
 	protected IReportRunnable getRunnableReportDesign(final ExecuteRequest execRequest)
 			throws IllegalAccessException, InvocationTargetException, IOException, RunnerException, BadRequestException {
 		IReportRunnable design;
 
 		try {
-			final String fileName = execRequest.getDesignFile();
-			File designFile;
+			String fileName = execRequest.getDesignFile();
 			if (fileName.equalsIgnoreCase("TEST")) {
-				designFile = new File(getClass().getClassLoader().getResource("test.rptdesign").getFile());
-			} else {
-				designFile = new File(execRequest.designFile);
-				// Design file does not exist, look for it in the classpath
-				if (!designFile.exists()) {
-					final URL url = getClass().getClassLoader().getResource(fileName);
-					if (url == null) {
-						throw new BadRequestException(404, "Design file not found");
-					}
-					designFile = new File(url.getFile());
-				}
-
-				// still no design file, look for it in the workspace directory
-				if (!designFile.exists() && !designFile.isAbsolute()) {
-					designFile = new File(engineService.getWorkspace(), execRequest.designFile);
-				}
-
+				fileName = "test.rptdesign";
 			}
-
+			File designFile;
+	
+			designFile = new File(execRequest.designFile);
+			
+			// not a full qualified file, look in design file dir
+			if (!designFile.exists()) {
+				designFile = new File(engineService.getDesignDir(), execRequest.designFile);
+			}
+			
 			final FileInputStream fis = new FileInputStream(designFile);
 			design = engineService.getEngine().openReportDesign(fis);
 		} catch (final FileNotFoundException e) {

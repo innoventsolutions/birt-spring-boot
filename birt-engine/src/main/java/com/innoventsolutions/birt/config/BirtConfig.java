@@ -1,7 +1,6 @@
 package com.innoventsolutions.birt.config;
 
 import java.io.File;
-import java.util.regex.Pattern;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -14,19 +13,17 @@ import lombok.Setter;
 @Component
 @ConfigurationProperties(prefix = "birt.runner")
 public class BirtConfig {
-	private File outputDirectory;
 	private File workspace;
-	private File birtRuntimeHome;
-	private File resourcePath;
-	private File scriptLib;
-	private File loggingPropertiesFile;
+	private File designDir;
 	private File loggingDir;
-	private String reportFormat;
+	private File outputDir;
+	private File resourceDir;
+	private File scriptLibDir;
 	private String baseImageURL;
+	private File birtRuntimeHome;
+	private String reportFormat;
 	private int threadCount;
 	private boolean isActuate;
-	private Pattern unsecuredDesignFilePattern;
-	private Pattern unsecuredOperationPattern;
 
 	@Override
 	public String toString() {

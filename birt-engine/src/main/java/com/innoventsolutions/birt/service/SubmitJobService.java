@@ -71,7 +71,7 @@ public class SubmitJobService extends BaseReportService {
 
 	public FileInputStream getReport(SubmitResponse job) throws FileNotFoundException {
 
-		File f = new File(engineService.getOutputDirectory(), job.getOutFileName());
+		File f = new File(engineService.getOutputDir(), job.getOutFileName());
 		return new FileInputStream(f);
 
 	}
@@ -87,8 +87,8 @@ public class SubmitJobService extends BaseReportService {
 		IReportDocument rptdoc = null;
 		try {
 			IReportEngine engine = engineService.getEngine();
-			final File rptDocFile = new File(engineService.getOutputDirectory(), submitResponse.getRptDocName());
-			final File outputFile = new File(engineService.getOutputDirectory(), submitResponse.getOutFileName());
+			final File rptDocFile = new File(engineService.getOutputDir(), submitResponse.getRptDocName());
+			final File outputFile = new File(engineService.getOutputDir(), submitResponse.getOutFileName());
 			rptdoc = engine.openReportDocument(rptDocFile.getAbsolutePath());
 			IRenderTask renderTask = engine.createRenderTask(rptdoc);
 			// TODO Does not make sense
@@ -170,7 +170,7 @@ public class SubmitJobService extends BaseReportService {
 			rTask.setAppContext(appContext);
 			configureParameters(submitResponse.getRequest(), design, rTask);
 
-			File rptDocFile = new File(engineService.getOutputDirectory(), submitResponse.getRptDocName());
+			File rptDocFile = new File(engineService.getOutputDir(), submitResponse.getRptDocName());
 			String rptDoc = rptDocFile.getAbsolutePath();
 			log.info("Creating rpt doc: " + rptDoc);
 			rTask.setReportDocument(rptDoc);

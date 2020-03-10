@@ -63,12 +63,16 @@ public class BirtEngineService {
 		return birtConfig.getBaseImageURL();
 	}
 
-	public File getOutputDirectory() {
-		return birtConfig.getOutputDirectory();
+	public File getOutputDir() {
+		return birtConfig.getOutputDir();
 	}
 
 	public File getWorkspace() {
 		return birtConfig.getWorkspace();
+	}
+
+	public File getDesignDir() {
+		return birtConfig.getDesignDir();
 	}
 
 	private IReportEngine getReportEngine() throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, RunnerException {
@@ -84,8 +88,8 @@ public class BirtEngineService {
 				config.setEngineHome(birtHome);
 			}
 		}
-		if (birtConfig.getResourcePath() != null) {
-			final String resourceDir = birtConfig.getResourcePath().getAbsolutePath();
+		if (birtConfig.getResourceDir() != null) {
+			final String resourceDir = birtConfig.getResourceDir().getAbsolutePath();
 			config.setResourcePath(resourceDir);
 		}
 		final String scriptlibFileNames = getScriptLibFileNames();
@@ -97,14 +101,6 @@ public class BirtEngineService {
 	}
 
 	private void configureLogging(final EngineConfig config) throws IOException, FileNotFoundException {
-		final File loggingProperties = birtConfig.getLoggingPropertiesFile();
-		//TODO is loggingProperties required?
-		LogManager.getLogManager().readConfiguration(new FileInputStream(loggingProperties));
-		final java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
-		final Handler[] handlers = rootLogger.getHandlers();
-		for (final Handler handler : handlers) {
-			handler.setFormatter(new BatchFormatter());
-		}
 		// control debug of BIRT components.
 		final File loggingDirFile = birtConfig.getLoggingDir() == null ? new File("./log") : birtConfig.getLoggingDir();
 		if (!loggingDirFile.exists()) {
@@ -169,13 +165,13 @@ public class BirtEngineService {
 	 * using the standard file system separator to divide the files
 	 */
 	private String getScriptLibFileNames() {
-		if (birtConfig.getScriptLib() == null) {
+		if (birtConfig.getScriptLibDir() == null) {
 			return null;
 		}
-		if (!birtConfig.getScriptLib().exists()) {
-			birtConfig.getScriptLib().mkdirs();
+		if (!birtConfig.getScriptLibDir().exists()) {
+			birtConfig.getScriptLibDir().mkdirs();
 		}
-		final File[] files = birtConfig.getScriptLib().listFiles(new JarFilter());
+		final File[] files = birtConfig.getScriptLibDir().listFiles(new JarFilter());
 		final StringBuilder sb = new StringBuilder();
 		String sep = "";
 		final String fileSeparatorString = new String(new char[] { File.pathSeparatorChar });
