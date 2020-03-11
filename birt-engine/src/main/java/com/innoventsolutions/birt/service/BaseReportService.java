@@ -116,9 +116,9 @@ public abstract class BaseReportService {
 			
 			// not a full qualified file, look in design file dir
 			if (!designFile.exists()) {
-				designFile = new File(engineService.getDesignDir(), execRequest.designFile);
+				designFile = new File(engineService.getDesignDir(), fileName);
 			}
-			
+			log.debug("Design File: " + designFile.getAbsolutePath());
 			final FileInputStream fis = new FileInputStream(designFile);
 			design = engineService.getEngine().openReportDesign(fis);
 		} catch (final FileNotFoundException e) {
