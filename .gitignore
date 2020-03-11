@@ -4,6 +4,7 @@ target/
 !**/src/main/**
 !**/src/test/**
 .attach*
+output/
 
 ### STS ###
 .apt_generated

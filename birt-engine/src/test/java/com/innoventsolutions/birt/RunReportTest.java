@@ -9,14 +9,11 @@
  ******************************************************************************/
 package com.innoventsolutions.birt;
 
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -75,9 +72,10 @@ public class RunReportTest {
 
 	@Before
 	public void setUp() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context).apply(documentationConfiguration(this.restDocumentation)).build();
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String dateString = df.format(new Date());
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
+				.apply(documentationConfiguration(this.restDocumentation)).build();
+		final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		final String dateString = df.format(new Date());
 		// get full path to report design file (which is in a different package)
 	}
 
@@ -91,19 +89,21 @@ public class RunReportTest {
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		log.info("testRunReport request = " + requestString);
-		
+
 		final MvcResult statusResult = this.mockMvc
-				.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
 				.andDo(document("runReport",
-						requestFields(fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION), 
+						requestFields(fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
 								fieldWithPath("format").description(FORMAT_DESCRIPTION),
-								fieldWithPath("outputName").optional().type(JsonFieldType.STRING).description(PARAMETERS_DESCRIPTION),
-								subsectionWithPath("parameters").optional().type(JsonFieldType.OBJECT).description(PARAMETERS_DESCRIPTION)
-								)))
-				
-				
+								fieldWithPath("outputName").optional().type(JsonFieldType.STRING)
+										.description(PARAMETERS_DESCRIPTION),
+								subsectionWithPath("parameters").optional().type(JsonFieldType.OBJECT)
+										.description(PARAMETERS_DESCRIPTION))))
+
 				.andReturn();
-		
+
 	}
 
 }
