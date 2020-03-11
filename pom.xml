@@ -20,6 +20,7 @@
         <module>birt-engine-sample-app</module>
         <module>birt-spring-boot-starter</module>
         <module>birt-engine-autoconfig</module>
+        <module>birt-engine-workspace</module>
     </modules>
 
     <dependencies>

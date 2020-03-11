@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.innoventsolutions</groupId>
+
+
 	<artifactId>birt-engine-workspace</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>birt-engine-workspace</name>
 	<description>BIRT Report Engine Workspace</description>
 
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.4.RELEASE</version>
-		<relativePath></relativePath>
+		<groupId>com.innoventsolutions.birt-spring-boot-modules</groupId>
+		<artifactId>spring-boot-custom-starter</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
 	<properties>
 		<java.version>1.8</java.version>
-        <spring-boot.version>1.5.2.RELEASE</spring-boot.version>
-        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+		<spring-boot.version>1.5.2.RELEASE</spring-boot.version>
+		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
 	</properties>
 
 	<dependencies>
