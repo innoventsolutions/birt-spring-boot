@@ -11,7 +11,9 @@ package com.innoventsolutions.birt.exception;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
 @Setter
 public class BadRequestException extends Exception {
@@ -20,6 +22,7 @@ public class BadRequestException extends Exception {
 	private final String reason;
 
 	public BadRequestException(final int code, final String reason) {
+		log.error(code + ": " + reason);
 		this.code = code;
 		this.reason = reason;
 	}
