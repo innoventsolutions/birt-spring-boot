@@ -32,6 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.innoventsolutions.birt.entity.ExecuteRequest;
 import com.innoventsolutions.birt.entity.JobStatus;
+import com.innoventsolutions.birt.entity.SubmitResponse.StatusEnum;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -78,10 +79,10 @@ public class SubmitReportTest {
 		log.info("testSubmit request = " + requestString);
 
 		final MvcResult statusResult = this.mockMvc
-				.perform(get("/submitReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+				.perform(get("/submitJob").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andDo(document("submitReport",
+				.andDo(document("submitJob",
 						requestFields(fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
 								fieldWithPath("format").description(FORMAT_DESCRIPTION),
 								fieldWithPath("outputName").optional().type(JsonFieldType.STRING)
@@ -130,6 +131,34 @@ public class SubmitReportTest {
 		log.info("getJobInfo done = " + done);
 	}
 
+	@Test
+	public void testWaitForJob() throws Exception {
+		final String jobId = submit();
+		final JobStatus requestObject = new JobStatus();
+		requestObject.setJobid(jobId);
+		final ObjectMapper mapper = new ObjectMapper();
+		final String requestString = mapper.writeValueAsString(requestObject);
+		log.info("testWaitForJob request = " + requestString);
+
+		final MvcResult statusResult = this.mockMvc
+				.perform(get("/waitForJob").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("waitForJob", requestFields(fieldWithPath("jobid").description(JOB_ID_DESCRIPTION))))
+				.andReturn();
+		final MockHttpServletResponse httpServletResponse = statusResult.getResponse();
+		Assert.assertTrue(httpServletResponse.getContentType().startsWith("application/json"));
+		final String jsonString = httpServletResponse.getContentAsString();
+		log.info("getJobInfo response = " + jsonString);
+		final Map<String, String> submitResponse = mapper.readValue(jsonString, Map.class);
+		final String responseJobId = submitResponse.get("jobid");
+		Assert.assertNotNull(responseJobId);
+		Assert.assertEquals(jobId, responseJobId);
+		final String status = submitResponse.get("status");
+		Assert.assertNotNull(status);
+		Assert.assertEquals(StatusEnum.COMPLETE.toString(), status);
+	}
+
 	public String submit() throws Exception {
 		final ExecuteRequest requestObject = new ExecuteRequest();
 		requestObject.setDesignFile(PARAM_TEST_RPTDESIGN);
@@ -139,7 +168,7 @@ public class SubmitReportTest {
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		log.info("submit request = " + requestString);
-		final MvcResult result = this.mockMvc.perform(get("/submitReport").contentType(MediaType.APPLICATION_JSON)
+		final MvcResult result = this.mockMvc.perform(get("/submitJob").contentType(MediaType.APPLICATION_JSON)
 				.content(requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 		final MockHttpServletResponse response = result.getResponse();
 		Assert.assertTrue(response.getContentType().startsWith("application/json"));

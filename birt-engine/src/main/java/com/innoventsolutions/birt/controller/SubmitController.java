@@ -79,7 +79,7 @@ public class SubmitController {
 
 	private final Map<String, CompletableFuture<SubmitResponse>> submitList = new HashMap<String, CompletableFuture<SubmitResponse>>();
 
-	@GetMapping("/submitReport")
+	@GetMapping("/submitJob")
 	public ResponseEntity<SubmitResponse> executeSubmitJob(@RequestBody final ExecuteRequest request,
 			final HttpServletResponse httpResponse) {
 
