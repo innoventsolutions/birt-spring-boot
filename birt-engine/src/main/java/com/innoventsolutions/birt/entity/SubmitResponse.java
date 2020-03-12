@@ -2,6 +2,8 @@ package com.innoventsolutions.birt.entity;
 
 import java.util.Date;
 
+import org.springframework.http.HttpStatus;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,15 +22,18 @@ public class SubmitResponse {
 	private Date renderFinish;
 	private StatusEnum status;
 	private ExecuteRequest request;
+	private HttpStatus httpStatus;
+	private String httpStatusMessage;
 
-	public SubmitResponse(ExecuteRequest request) {
+	public SubmitResponse(final ExecuteRequest request) {
 		this.request = request;
 		this.submitTime = new Date();
-		long id = submitTime.getTime();
+		final long id = submitTime.getTime();
 		this.jobid = request.getOutputName() + "_" + String.valueOf(id);
 		this.rptDocName = jobid + ".rptdocument";
 		this.outFileName = jobid + "." + request.getFormat();
 		this.status = StatusEnum.INIT;
+		this.httpStatus = HttpStatus.OK;
 
 		log.info("Create response for: " + rptDocName);
 	}

@@ -86,11 +86,9 @@ public class SubmitController {
 			final HttpServletResponse httpResponse) {
 
 		final SubmitResponse submitResponse = new SubmitResponse(request);
-		final CompletableFuture<SubmitResponse> submission = submitter.executeRunThenRender(submitResponse,
-				httpResponse);
+		final CompletableFuture<SubmitResponse> submission = submitter.executeRunThenRender(submitResponse);
 		submitList.put(submitResponse.getJobid(), submission);
-
-		return new ResponseEntity<SubmitResponse>(submitResponse, HttpStatus.OK);
+		return new ResponseEntity<SubmitResponse>(submitResponse, submitResponse.getHttpStatus());
 	}
 
 	@GetMapping("/getJobInfo")
@@ -118,7 +116,7 @@ public class SubmitController {
 		log.info("/waitForJob: " + jobStatus.getJobid() + " stat: " + getJobStatus(job));
 		try {
 			final SubmitResponse response = job.get();
-			return new ResponseEntity<SubmitResponse>(response, HttpStatus.OK);
+			return new ResponseEntity<SubmitResponse>(response, response.getHttpStatus());
 		} catch (final Exception e) {
 			log.info("Failure to complete job: " + jobStatus.getJobid(), e);
 			return new ResponseEntity<SubmitResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -169,6 +167,7 @@ public class SubmitController {
 			final MediaType contentType = Util.getMediaType(submitResponse.getRequest().getFormat());
 			return ResponseEntity.ok().headers(headers).contentType(contentType).body(resource);
 		} catch (final Exception e) {
+			log.error("Failed to get report", e);
 			return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

@@ -12,8 +12,6 @@ package com.innoventsolutions.birt.service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,8 +19,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.IRenderTask;
@@ -33,6 +29,7 @@ import org.eclipse.birt.report.engine.api.IRunTask;
 import org.eclipse.birt.report.engine.api.RenderOption;
 import org.eclipse.birt.report.engine.api.UnsupportedFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -59,14 +56,13 @@ public class SubmitJobService extends BaseReportService {
 	}
 
 	@Async
-	public CompletableFuture<SubmitResponse> executeRunThenRender(final SubmitResponse submitResponse,
-			final HttpServletResponse httpResponse) {
+	public CompletableFuture<SubmitResponse> executeRunThenRender(final SubmitResponse submitResponse) {
 		log.info("RunThenRender: " + submitResponse.getRequest().getOutputName());
 
 		// to use Fork/join change the executor to submitPool (or opposite)
 		final CompletableFuture<SubmitResponse> runThenRender = CompletableFuture
-				.supplyAsync((() -> executeRun(submitResponse, httpResponse)), executorService)
-				.thenApply(l -> executeRender(submitResponse, httpResponse));
+				.supplyAsync((() -> executeRun(submitResponse)), executorService)
+				.thenApply(l -> executeRender(submitResponse));
 
 		return runThenRender;
 	}
@@ -79,7 +75,11 @@ public class SubmitJobService extends BaseReportService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public SubmitResponse executeRender(final SubmitResponse submitResponse, final HttpServletResponse response) {
+	public SubmitResponse executeRender(final SubmitResponse submitResponse) {
+		if (StatusEnum.EXCEPTION.equals(submitResponse.getStatus())) {
+			// don't try to render if the run failed
+			return submitResponse;
+		}
 		submitResponse.setStatus(StatusEnum.RENDER);
 		submitResponse.setRenderBegin(new Date());
 		log.info("submitJob (Render) = " + submitResponse.getRequest() + "[" + submitResponse.getJobid() + "]");
@@ -128,19 +128,16 @@ public class SubmitJobService extends BaseReportService {
 
 			rptdoc.close();
 		} catch (final BadRequestException e1) {
-			try {
-				response.sendError(e1.getCode(), e1.getReason());
-			} catch (final IOException e) {
-				log.error("Failed to send error code " + e1.getCode(), e1);
-			}
-		} catch (IllegalAccessException | InvocationTargetException | IOException | RunnerException e1) {
-			try {
-				response.sendError(500, e1.getMessage());
-			} catch (final IOException e) {
-				log.error("Failed to send error code 500", e1);
-			}
+			submitResponse.setHttpStatus(HttpStatus.valueOf(e1.getCode()));
+			submitResponse.setHttpStatusMessage(e1.getReason());
+			submitResponse.setStatus(StatusEnum.EXCEPTION);
+			return submitResponse;
 		} catch (final Exception e1) {
 			log.error("Failed to render report", e1);
+			submitResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+			submitResponse.setHttpStatusMessage(e1.getMessage());
+			submitResponse.setStatus(StatusEnum.EXCEPTION);
+			return submitResponse;
 		} finally {
 			// Failure to close the report doc will result in a locked file
 			if (rptdoc != null) {
@@ -148,6 +145,7 @@ public class SubmitJobService extends BaseReportService {
 			}
 		}
 
+		submitResponse.setHttpStatus(HttpStatus.OK);
 		submitResponse.setRenderFinish(new Date());
 		submitResponse.setStatus(StatusEnum.COMPLETE);
 		log.info("submitJob (Render) finished");
@@ -155,7 +153,7 @@ public class SubmitJobService extends BaseReportService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public SubmitResponse executeRun(final SubmitResponse submitResponse, final HttpServletResponse response) {
+	public SubmitResponse executeRun(final SubmitResponse submitResponse) {
 		submitResponse.setStatus(StatusEnum.RUN);
 		submitResponse.setRunBegin(new Date());
 		log.info("submitJob (Run) Thread: " + Thread.currentThread() + submitResponse.getRequest());
@@ -194,19 +192,19 @@ public class SubmitJobService extends BaseReportService {
 
 			}
 		} catch (final BadRequestException e1) {
-			try {
-				response.sendError(e1.getCode(), e1.getReason());
-			} catch (final IOException e) {
-				log.error("Failed to send error code " + e1.getCode(), e1);
-			}
-		} catch (IllegalAccessException | InvocationTargetException | IOException | RunnerException e1) {
-			try {
-				response.sendError(500, e1.getMessage());
-			} catch (final IOException e) {
-				log.error("Failed to send error code 500", e1);
-			}
+			submitResponse.setHttpStatus(HttpStatus.valueOf(e1.getCode()));
+			submitResponse.setHttpStatusMessage(e1.getReason());
+			submitResponse.setStatus(StatusEnum.EXCEPTION);
+			return submitResponse;
+		} catch (final Exception e1) {
+			log.error("Failed to run report", e1);
+			submitResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+			submitResponse.setHttpStatusMessage(e1.getMessage());
+			submitResponse.setStatus(StatusEnum.EXCEPTION);
+			return submitResponse;
 		}
 
+		submitResponse.setHttpStatus(HttpStatus.OK);
 		submitResponse.setRunFinish(new Date());
 		log.info("submitJob (Run) finished");
 		return submitResponse;
