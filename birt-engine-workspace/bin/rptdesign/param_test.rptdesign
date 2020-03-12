@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.8.0.v201806261756</property>
+    <property name="units">in</property>
+    <method name="initialize"><![CDATA[reportContext.setParameterValue("start", new java.util.Date());
+if (reportContext.getParameterValue("delay") > 0 ){
+	java.util.concurrent.TimeUnit.SECONDS.sleep(reportContext.getParameterValue("delay"));
+}
+]]></method>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">96</property>
+    <parameters>
+        <scalar-parameter name="paramString" id="4">
+            <text-property name="helpText">help text</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">Default String</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="paramDate" id="5">
+            <property name="valueType">static</property>
+            <property name="dataType">date</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">1900-01-01</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="paramInteger" id="6">
+            <property name="valueType">static</property>
+            <property name="dataType">integer</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">1234</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="paramDecimal" id="7">
+            <property name="valueType">static</property>
+            <property name="dataType">decimal</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">567.890</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="paramBoolean" id="8">
+            <property name="valueType">static</property>
+            <property name="dataType">boolean</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">False</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">check-box</property>
+            <structure name="format"/>
+        </scalar-parameter>
+        <scalar-parameter name="delay" id="78">
+            <text-property name="promptText">Delay in Seconds</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">integer</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">0</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="start" id="88">
+            <property name="hidden">true</property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">dateTime</property>
+            <property name="distinct">true</property>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+    </parameters>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <page-footer>
+                <text id="3">
+                    <property name="contentType">html</property>
+                    <text-property name="content"><![CDATA[<value-of>new Date()</value-of>]]></text-property>
+                </text>
+            </page-footer>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <grid id="33">
+            <property name="width">7.947916666666667in</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">Column Binding</property>
+                    <expression name="expression" type="javascript">params["paramDate"].value</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">pDec</property>
+                    <expression name="expression" type="javascript">params["paramDecimal"].value</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">pInt</property>
+                    <expression name="expression" type="javascript">params["paramInteger"].value</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">pBool</property>
+                    <expression name="expression" type="javascript">params["paramBoolean"].value</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">pStr</property>
+                    <expression name="expression" type="javascript">params["paramString"].value</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">start</property>
+                    <expression name="expression" type="javascript">Formatter.format(params["start"].value,"kk:ss.mmm")</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">finish</property>
+                    <expression name="expression" type="javascript">Formatter.format(new java.util.Date(),"kk:ss.mmm")</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">delay</property>
+                    <expression name="expression" type="javascript">params["delay"].value</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+            </list-property>
+            <column id="34">
+                <property name="width">2in</property>
+            </column>
+            <column id="36"/>
+            <row id="37">
+                <cell id="38">
+                    <label id="62">
+                        <text-property name="text">Parameter Name</text-property>
+                    </label>
+                </cell>
+                <cell id="40">
+                    <label id="64">
+                        <text-property name="text">Parameter Default</text-property>
+                    </label>
+                </cell>
+            </row>
+            <row id="41">
+                <cell id="42">
+                    <label id="65">
+                        <text-property name="text">String</text-property>
+                    </label>
+                </cell>
+                <cell id="44">
+                    <data id="77">
+                        <property name="resultSetColumn">pStr</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="45">
+                <cell id="46">
+                    <label id="66">
+                        <text-property name="text">Date</text-property>
+                    </label>
+                </cell>
+                <cell id="48">
+                    <data id="73">
+                        <property name="resultSetColumn">Column Binding</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="49">
+                <cell id="50">
+                    <label id="67">
+                        <text-property name="text">Integer</text-property>
+                    </label>
+                </cell>
+                <cell id="52">
+                    <data id="75">
+                        <property name="resultSetColumn">pInt</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="53">
+                <cell id="54">
+                    <label id="68">
+                        <text-property name="text">Decimal</text-property>
+                    </label>
+                </cell>
+                <cell id="56">
+                    <data id="74">
+                        <property name="resultSetColumn">pDec</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="57">
+                <cell id="58">
+                    <label id="69">
+                        <text-property name="text">Boolean</text-property>
+                    </label>
+                </cell>
+                <cell id="60">
+                    <data id="76">
+                        <property name="resultSetColumn">pBool</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="90">
+                <cell id="91">
+                    <label id="93">
+                        <text-property name="text">delay</text-property>
+                    </label>
+                </cell>
+                <cell id="92">
+                    <data id="94">
+                        <property name="resultSetColumn">delay</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="79">
+                <cell id="80">
+                    <label id="85">
+                        <text-property name="text">Start</text-property>
+                    </label>
+                </cell>
+                <cell id="81">
+                    <data id="87">
+                        <structure name="dateTimeFormat">
+                            <property name="category">Unformatted</property>
+                        </structure>
+                        <property name="resultSetColumn">start</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="82">
+                <cell id="83">
+                    <label id="86">
+                        <text-property name="text">Finish</text-property>
+                    </label>
+                </cell>
+                <cell id="84">
+                    <data id="89">
+                        <structure name="dateTimeFormat">
+                            <property name="category">Unformatted</property>
+                        </structure>
+                        <property name="resultSetColumn">finish</property>
+                    </data>
+                </cell>
+            </row>
+        </grid>
+    </body>
+</report>

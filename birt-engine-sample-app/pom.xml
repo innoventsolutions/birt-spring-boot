@@ -61,7 +61,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-        			<mainClass>com.innoventsolutions.birt.BirtWebApplication</mainClass>
+        			<mainClass>com.innoventsolutions.birt.BirtSample</mainClass>
         			<layout>JAR</layout>
     			</configuration>
 				<executions>
@@ -84,12 +84,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                    <archive>
-                        <manifest>
-                        	<!-- This is apparently ignored.  It always runs all applications. -->
-                            <mainClass>com.innoventsolutions.birt.BirtEngineTestApplication</mainClass>
-                        </manifest>
-                    </archive>
                 </configuration>
             </plugin>
 		</plugins>
