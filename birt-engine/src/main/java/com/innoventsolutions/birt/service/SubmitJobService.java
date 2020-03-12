@@ -149,6 +149,7 @@ public class SubmitJobService extends BaseReportService {
 		}
 
 		submitResponse.setRenderFinish(new Date());
+		submitResponse.setStatus(StatusEnum.COMPLETE);
 		log.info("submitJob (Render) finished");
 		return submitResponse;
 	}
@@ -207,7 +208,6 @@ public class SubmitJobService extends BaseReportService {
 		}
 
 		submitResponse.setRunFinish(new Date());
-		submitResponse.setStatus(StatusEnum.COMPLETE);
 		log.info("submitJob (Run) finished");
 		return submitResponse;
 	}

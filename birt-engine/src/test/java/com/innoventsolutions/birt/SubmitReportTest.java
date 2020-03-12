@@ -185,6 +185,28 @@ public class SubmitReportTest {
 		System.out.println(response);
 	}
 
+	@Test
+	public void testGetReport() throws Exception {
+		final String jobId = submit();
+		final JobStatus requestObject = new JobStatus();
+		requestObject.setJobid(jobId);
+		final ObjectMapper mapper = new ObjectMapper();
+		final String requestString = mapper.writeValueAsString(requestObject);
+		log.info("testGetReport request = " + requestString);
+
+		final MvcResult statusResult = this.mockMvc
+				.perform(get("/getReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("getReport", requestFields(fieldWithPath("jobid").description(JOB_ID_DESCRIPTION))))
+				.andReturn();
+		final MockHttpServletResponse httpServletResponse = statusResult.getResponse();
+		final String contentType = httpServletResponse.getContentType();
+		Assert.assertEquals("application/pdf", contentType);
+		// TODO check the response content somehow
+		log.info("getReport done");
+	}
+
 	/*
 	 * Used for testing endpoints that require a job
 	 */
