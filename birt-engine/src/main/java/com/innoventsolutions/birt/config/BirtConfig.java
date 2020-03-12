@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
-@Getter
-@Setter
+@Slf4j @Getter @Setter 
 @Component
 @ConfigurationProperties(prefix = "birt.runner")
 public class BirtConfig {
@@ -28,8 +28,8 @@ public class BirtConfig {
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
-		sb.append("Configuration ");
-		sb.append("birtRuntimeHome = " + birtRuntimeHome);
+		sb.append("BIRTConfig: Workspace Loc = ").append(workspace.getAbsolutePath());
+		sb.append(" BirtRuntimeHome = ").append(birtRuntimeHome);
 		return sb.toString();
 	}
 }

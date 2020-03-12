@@ -79,7 +79,7 @@ public class BirtEngineService {
 
 		log.info("getReportEngine");
 		final EngineConfig config = new EngineConfig();
-		log.info("birtRuntimeHome = " + birtConfig.getBirtRuntimeHome());
+		log.info(birtConfig.toString());
 		if (birtConfig.getBirtRuntimeHome() != null) {
 			final String birtHome = birtConfig.getBirtRuntimeHome().getAbsolutePath();
 			if (birtConfig.isActuate()) {

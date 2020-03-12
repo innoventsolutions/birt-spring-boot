@@ -1,11 +1,11 @@
-package com.innoventsolutions.birt;
+package sample.birt;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BirtWebApplication {
+public class BirtSample {
 	public static void main(final String[] args) {
-		SpringApplication.run(BirtWebApplication.class, args);
+		SpringApplication.run(BirtSample.class, args);
 	}
 }

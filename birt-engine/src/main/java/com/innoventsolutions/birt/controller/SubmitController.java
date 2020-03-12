@@ -59,7 +59,7 @@ public class SubmitController {
 			final int delay = ((int) (Math.random() * (max - min))) + min;
 			final String outputName = "Test_" + i + " d(" + delay + ")";
 			String format = "PDF";
-			if ((i % 2) / 2 == 0)
+			if ((i % 2) == 0)
 				format = "HTML";
 
 			final Map<String, Object> params = new HashMap<String, Object>();
