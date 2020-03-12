@@ -18,8 +18,8 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-        <spring-boot.version>1.5.2.RELEASE</spring-boot.version>
-        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+		<spring-boot.version>1.5.2.RELEASE</spring-boot.version>
+		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
 	</properties>
 
 	<dependencies>
@@ -27,6 +27,10 @@
 			<groupId>com.innoventsolutions.birt-spring-boot-modules</groupId>
 			<artifactId>birt-spring-boot-starter</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -49,9 +53,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.junit.jupiter</groupId>
-		    <artifactId>junit-jupiter-api</artifactId>
-		    <scope>test</scope>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -61,31 +65,31 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-        			<mainClass>com.innoventsolutions.birt.BirtSample</mainClass>
-        			<layout>JAR</layout>
-    			</configuration>
+					<mainClass>com.innoventsolutions.birt.BirtSample</mainClass>
+					<layout>JAR</layout>
+				</configuration>
 				<executions>
-			        <execution>
-        				<goals>
-				            <goal>repackage</goal>
-        				</goals>
-        			</execution>
-      			</executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                </configuration>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
