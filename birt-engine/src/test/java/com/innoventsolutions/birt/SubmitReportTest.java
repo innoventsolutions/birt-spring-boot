@@ -2,6 +2,7 @@ package com.innoventsolutions.birt;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -149,17 +150,45 @@ public class SubmitReportTest {
 		final MockHttpServletResponse httpServletResponse = statusResult.getResponse();
 		Assert.assertTrue(httpServletResponse.getContentType().startsWith("application/json"));
 		final String jsonString = httpServletResponse.getContentAsString();
-		log.info("getJobInfo response = " + jsonString);
+		log.info("testWaitForJob response = " + jsonString);
+		@SuppressWarnings("unchecked")
 		final Map<String, String> submitResponse = mapper.readValue(jsonString, Map.class);
 		final String responseJobId = submitResponse.get("jobid");
 		Assert.assertNotNull(responseJobId);
 		Assert.assertEquals(jobId, responseJobId);
 		final String status = submitResponse.get("status");
 		Assert.assertNotNull(status);
-		Assert.assertEquals(StatusEnum.COMPLETE.toString(), status);
+		System.out.println(status);
+		Assert.assertEquals(StatusEnum.RENDER.toString(), status);
 	}
 
-	public String submit() throws Exception {
+	@Test
+	public void testDeleteJob() throws Exception {
+		final String jobId = submit();
+		final JobStatus requestObject = new JobStatus();
+		requestObject.setJobid(jobId);
+		final ObjectMapper mapper = new ObjectMapper();
+		final String requestString = mapper.writeValueAsString(requestObject);
+		log.info("testDeleteJob request = " + requestString);
+
+		final MvcResult statusResult = this.mockMvc
+				.perform(delete("/deleteJob").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("deleteJob", requestFields(fieldWithPath("jobid").description(JOB_ID_DESCRIPTION))))
+				.andReturn();
+		final MockHttpServletResponse httpServletResponse = statusResult.getResponse();
+		Assert.assertTrue(httpServletResponse.getContentType().startsWith("application/json"));
+		final String jsonString = httpServletResponse.getContentAsString();
+		log.info("getJobInfo response = " + jsonString);
+		final Boolean response = mapper.readValue(jsonString, Boolean.class);
+		System.out.println(response);
+	}
+
+	/*
+	 * Used for testing endpoints that require a job
+	 */
+	private String submit() throws Exception {
 		final ExecuteRequest requestObject = new ExecuteRequest();
 		requestObject.setDesignFile(PARAM_TEST_RPTDESIGN);
 		requestObject.setFormat("pdf");
