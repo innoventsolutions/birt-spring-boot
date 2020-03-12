@@ -80,10 +80,10 @@ public class SubmitJobService extends BaseReportService {
 
 	@SuppressWarnings("unchecked")
 	public SubmitResponse executeRender(final SubmitResponse submitResponse, final HttpServletResponse response) {
-
-		submitResponse.setStatus(StatusEnum.RUN);
+		submitResponse.setStatus(StatusEnum.RENDER);
 		submitResponse.setRenderBegin(new Date());
 		log.info("submitJob (Render) = " + submitResponse.getRequest() + "[" + submitResponse.getJobid() + "]");
+		log.info("submitJob (Render) current status = " + submitResponse.getStatus());
 		final ExecuteRequest request = submitResponse.getRequest();
 
 		IReportDocument rptdoc = null;
@@ -131,22 +131,16 @@ public class SubmitJobService extends BaseReportService {
 			try {
 				response.sendError(e1.getCode(), e1.getReason());
 			} catch (final IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error("Failed to send error code " + e1.getCode(), e1);
 			}
 		} catch (IllegalAccessException | InvocationTargetException | IOException | RunnerException e1) {
 			try {
 				response.sendError(500, e1.getMessage());
 			} catch (final IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error("Failed to send error code 500", e1);
 			}
-		} catch (final EngineException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (final IllegalArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (final Exception e1) {
+			log.error("Failed to render report", e1);
 		} finally {
 			// Failure to close the report doc will result in a locked file
 			if (rptdoc != null) {
@@ -155,12 +149,13 @@ public class SubmitJobService extends BaseReportService {
 		}
 
 		submitResponse.setRenderFinish(new Date());
+		log.info("submitJob (Render) finished");
 		return submitResponse;
 	}
 
 	@SuppressWarnings("unchecked")
 	public SubmitResponse executeRun(final SubmitResponse submitResponse, final HttpServletResponse response) {
-		submitResponse.setStatus(StatusEnum.RENDER);
+		submitResponse.setStatus(StatusEnum.RUN);
 		submitResponse.setRunBegin(new Date());
 		log.info("submitJob (Run) Thread: " + Thread.currentThread() + submitResponse.getRequest());
 
@@ -201,21 +196,19 @@ public class SubmitJobService extends BaseReportService {
 			try {
 				response.sendError(e1.getCode(), e1.getReason());
 			} catch (final IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error("Failed to send error code " + e1.getCode(), e1);
 			}
 		} catch (IllegalAccessException | InvocationTargetException | IOException | RunnerException e1) {
 			try {
 				response.sendError(500, e1.getMessage());
 			} catch (final IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error("Failed to send error code 500", e1);
 			}
 		}
 
 		submitResponse.setRunFinish(new Date());
 		submitResponse.setStatus(StatusEnum.COMPLETE);
-
+		log.info("submitJob (Run) finished");
 		return submitResponse;
 	}
 

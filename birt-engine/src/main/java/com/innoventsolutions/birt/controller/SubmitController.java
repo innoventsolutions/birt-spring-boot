@@ -1,6 +1,7 @@
 package com.innoventsolutions.birt.controller;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -79,7 +81,7 @@ public class SubmitController {
 
 	private final Map<String, CompletableFuture<SubmitResponse>> submitList = new HashMap<String, CompletableFuture<SubmitResponse>>();
 
-	@GetMapping("/submitReport")
+	@GetMapping("/submitJob")
 	public ResponseEntity<SubmitResponse> executeSubmitJob(@RequestBody final ExecuteRequest request,
 			final HttpServletResponse httpResponse) {
 
@@ -121,6 +123,22 @@ public class SubmitController {
 			log.info("Failure to complete job: " + jobStatus.getJobid(), e);
 			return new ResponseEntity<SubmitResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	@DeleteMapping("/deleteJob")
+	public ResponseEntity<Boolean> deleteJob(@RequestBody final JobStatus jobStatus) throws IOException {
+		final String jobId = jobStatus.getJobid();
+		final CompletableFuture<SubmitResponse> job = submitList.get(jobId);
+		if (job == null) {
+			log.info("Failure to find job: " + jobId + " on job stack");
+			return new ResponseEntity<Boolean>(HttpStatus.NOT_FOUND);
+		}
+		log.info("/deleteJob: " + jobId + " stat: " + getJobStatus(job));
+		final boolean cancelled = job.cancel(true);
+		if (cancelled) {
+			submitList.remove(jobId);
+		}
+		return new ResponseEntity<Boolean>(Boolean.valueOf(cancelled), HttpStatus.OK);
 	}
 
 	@GetMapping("/getJob")
