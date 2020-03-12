@@ -1,15 +1,15 @@
-== POST /submit
+== GET /submitReport
 
 This request is used to start generating the report asynchronously.  A string is returned that identifies the job.
 Both the request and the response content types are application/json.
 
 === Request fields:
 
-include::{snippets}/submit/request-fields.adoc[]
+include::{snippets}/submitReport/request-fields.adoc[]
 
 === Response fields:
 
-include::{snippets}/submit/response-fields.adoc[]
+include::{snippets}/submitReport/response-fields.adoc[]
 
 === Response codes:
 
@@ -45,9 +45,9 @@ and explictly typed parameter was not specified correctly or an unsupported form
 
 ==== Curl:
 
-include::{snippets}/submit/curl-request.adoc[]
+include::{snippets}/submitReport/curl-request.adoc[]
 
 ==== HTTP request:
 
-include::{snippets}/submit/http-request.adoc[]
+include::{snippets}/submitReport/http-request.adoc[]
 
