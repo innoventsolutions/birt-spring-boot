@@ -152,20 +152,21 @@ public class SubmitController {
 		log.debug("getReport " + jobStatus);
 		final CompletableFuture<SubmitResponse> jobFuture = submitList.get(jobStatus.getJobid());
 		if (jobFuture == null) {
-			return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		if (StatusEnum.COMPLETE != getJobStatus(jobFuture)) {
-			return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
 		}
 		try {
-			final SubmitResponse submitReponse = jobFuture.get();
-			final FileInputStream fis = submitter.getReport(submitReponse);
+			final SubmitResponse submitResponse = jobFuture.get();
+			if (!StatusEnum.COMPLETE.equals(submitResponse.getStatus())) {
+				log.info("Job status is not complete");
+				return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			final FileInputStream fis = submitter.getReport(submitResponse);
 			final HttpHeaders headers = new HttpHeaders();
-			headers.set("Content-Disposition", "attachment; filename=\"" + submitReponse.getOutFileName() + "\"");
+			headers.set("Content-Disposition", "attachment; filename=\"" + submitResponse.getOutFileName() + "\"");
 
 			final InputStreamResource resource = new InputStreamResource(fis);
 
-			final MediaType contentType = Util.getMediaType(submitReponse.getRequest().getFormat());
+			final MediaType contentType = Util.getMediaType(submitResponse.getRequest().getFormat());
 			return ResponseEntity.ok().headers(headers).contentType(contentType).body(resource);
 		} catch (final Exception e) {
 			return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);

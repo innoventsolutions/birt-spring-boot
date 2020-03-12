@@ -201,7 +201,9 @@ public class SubmitReportTest {
 				.andDo(document("getReport", requestFields(fieldWithPath("jobid").description(JOB_ID_DESCRIPTION))))
 				.andReturn();
 		final MockHttpServletResponse httpServletResponse = statusResult.getResponse();
-		log.info(httpServletResponse.getContentType());
+		final String contentType = httpServletResponse.getContentType();
+		Assert.assertEquals("application/pdf", contentType);
+		// TODO check the response content somehow
 		log.info("getReport done");
 	}
 
