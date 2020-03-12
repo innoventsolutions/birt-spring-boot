@@ -1,4 +1,4 @@
-== POST /run
+== GET /runReport
 
 This request is used to immediately generate a report and return the output in the response. 
 The request content type is application/json.
@@ -6,7 +6,10 @@ The response content type will correspond to the requested format.
 
 === Request fields:
 
-include::{snippets}/run/request-fields.adoc[]
+include::{snippets}/runReport/request-fields.adoc[]
+
+=== Request body:
+include::{snippets}/runReport/request-body.adoc[]
 
 === Response codes:
 
@@ -42,8 +45,10 @@ and explictly typed parameter was not specified correctly or an unsupported form
 
 ==== Curl:
 
-include::{snippets}/run/curl-request.adoc[]
+include::{snippets}/runReport/curl-request.adoc[]
 
 ==== HTTP request:
 
-include::{snippets}/run/http-request.adoc[]
+include::{snippets}/runReport/http-request.adoc[]
+
+
