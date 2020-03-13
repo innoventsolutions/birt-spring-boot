@@ -11,7 +11,6 @@ package com.innoventsolutions.birt.service;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Import(BirtEngineService.class)
 public class ReportRunService extends BaseReportService {
-	
+
 	public ReportRunService() {
 		log.info("Start RunService");
 	}
@@ -71,7 +70,8 @@ public class ReportRunService extends BaseReportService {
 			} catch (final UnsupportedFormatException e) {
 				throw new BadRequestException(406, "Unsupported output format");
 			} catch (final Exception e) {
-				if ("org.eclipse.birt.report.engine.api.impl.ParameterValidationException".equals(e.getClass().getName())) {
+				if ("org.eclipse.birt.report.engine.api.impl.ParameterValidationException"
+						.equals(e.getClass().getName())) {
 					throw new BadRequestException(406, e.getMessage());
 				}
 				throw new RunnerException("Run-and-render task failed", e);
@@ -88,15 +88,14 @@ public class ReportRunService extends BaseReportService {
 			try {
 				response.sendError(e1.getCode(), e1.getReason());
 			} catch (final IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error("Unable to send error code " + e1.getCode(), e);
 			}
-		} catch (IllegalAccessException | InvocationTargetException | IOException | RunnerException e1) {
+		} catch (final Exception e1) {
 			try {
+				log.error("Unable to run report", e1);
 				response.sendError(500, e1.getMessage());
 			} catch (final IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error("Unable to send error code 500", e);
 			}
 		}
 
