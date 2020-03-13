@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Copyright (C) 2019 Innovent Solutions
-  
-  This program and the accompanying materials are made
-  available under the terms of the Eclipse Public License 2.0
-  which is available at https://www.eclipse.org/legal/epl-2.0/
-  
-  SPDX-License-Identifier: EPL-2.0
--->
 <report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
-    <property name="createdBy">Eclipse BIRT Designer Version 4.6.0.v201606072122</property>
+    <property name="createdBy">Eclipse BIRT Designer Version 4.8.0.v201806261756</property>
     <property name="units">in</property>
     <property name="iconFile">/templates/blank_report.gif</property>
     <property name="bidiLayoutOrientation">ltr</property>
@@ -155,6 +146,11 @@ row.value = value;
 return true;]]></method>
         </script-data-set>
     </data-sets>
+    <styles>
+        <style name="table-header-cell" id="50">
+            <property name="fontWeight">normal</property>
+        </style>
+    </styles>
     <page-setup>
         <simple-master-page name="Simple MasterPage" id="2">
             <page-footer>
@@ -181,18 +177,123 @@ return true;]]></method>
                     <expression name="expression" type="javascript">dataSetRow["value"]</expression>
                     <property name="dataType">string</property>
                 </structure>
+                <structure>
+                    <property name="name">reTaskType</property>
+                    <expression name="expression" type="javascript">var tt = reportContext.getTaskType();&#13;
+switch (tt) {&#13;
+ case 0: &#13;
+ 	"GetParameterDefinition Task";&#13;
+ 	break;&#13;
+ case 1: &#13;
+ 	"Run Task";&#13;
+ 	break;&#13;
+ case 2: &#13;
+ 	"Render Task";&#13;
+ 	break;&#13;
+ case 3: &#13;
+ 	"Run And Render Task";&#13;
+ 	break;&#13;
+ case 4: &#13;
+ 	"Data Extraction Task";&#13;
+ 	break;&#13;
+ default:&#13;
+ 	"Task Type " + tt;&#13;
+ 	break;&#13;
+}</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">locale</property>
+                    <expression name="expression" type="javascript">reportContext.getLocale();</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">outputFormat</property>
+                    <expression name="expression" type="javascript">reportContext.getOutputFormat();</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
             </list-property>
             <column id="20"/>
             <column id="21"/>
             <header>
+                <row id="26">
+                    <cell id="27">
+                        <property name="colSpan">2</property>
+                        <property name="rowSpan">1</property>
+                        <label id="32">
+                            <property name="fontWeight">bold</property>
+                            <text-property name="text">Simple BIRT Report</text-property>
+                        </label>
+                        <label id="51">
+                            <text-property name="text">Report displays Java System Properties and &#13;
+Some ReportEngine configuration information.</text-property>
+                        </label>
+                    </cell>
+                </row>
+                <row id="29">
+                    <cell id="30">
+                        <label id="34">
+                            <property name="paddingRight">5pt</property>
+                            <property name="textAlign">right</property>
+                            <text-property name="text">Task Type</text-property>
+                        </label>
+                    </cell>
+                    <cell id="31">
+                        <data id="33">
+                            <property name="textAlign">left</property>
+                            <property name="resultSetColumn">reTaskType</property>
+                        </data>
+                    </cell>
+                </row>
+                <row id="35">
+                    <cell id="36">
+                        <label id="44">
+                            <property name="paddingRight">5pt</property>
+                            <property name="textAlign">right</property>
+                            <text-property name="text">Locale</text-property>
+                        </label>
+                    </cell>
+                    <cell id="37">
+                        <data id="47">
+                            <property name="textAlign">left</property>
+                            <property name="resultSetColumn">locale</property>
+                        </data>
+                    </cell>
+                </row>
+                <row id="41">
+                    <cell id="42">
+                        <label id="45">
+                            <property name="paddingRight">5pt</property>
+                            <property name="textAlign">right</property>
+                            <text-property name="text">Output Format</text-property>
+                        </label>
+                    </cell>
+                    <cell id="43">
+                        <data id="48">
+                            <property name="textAlign">left</property>
+                            <property name="resultSetColumn">outputFormat</property>
+                        </data>
+                    </cell>
+                </row>
+                <row id="38">
+                    <property name="height">0.125in</property>
+                    <cell id="39"/>
+                    <cell id="40"/>
+                </row>
                 <row id="7">
                     <cell id="8">
                         <label id="9">
-                            <text-property name="text">key</text-property>
+                            <property name="paddingRight">5pt</property>
+                            <property name="textAlign">right</property>
+                            <text-property name="text">System Property Key</text-property>
                         </label>
                     </cell>
                     <cell id="10">
                         <label id="11">
+                            <property name="textAlign">left</property>
                             <text-property name="text">value</text-property>
                         </label>
                     </cell>
@@ -202,6 +303,8 @@ return true;]]></method>
                 <row id="12">
                     <cell id="13">
                         <data id="14">
+                            <property name="paddingRight">5pt</property>
+                            <property name="textAlign">right</property>
                             <property name="resultSetColumn">key</property>
                         </data>
                     </cell>
