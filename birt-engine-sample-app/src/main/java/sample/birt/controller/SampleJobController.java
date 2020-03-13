@@ -11,11 +11,9 @@ package sample.birt.controller;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -24,15 +22,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.innoventsolutions.birt.entity.ExecuteRequest;
 import com.innoventsolutions.birt.entity.SubmitResponse;
-import com.innoventsolutions.birt.service.SubmitJobService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
 public class SampleJobController {
-	@Autowired
-	private SubmitJobService submitter;
 	
 	@GetMapping("/test")
 	public ResponseEntity<SubmitResponse> getTestSubmit(@RequestBody(required = false) Integer numToRun,
@@ -64,23 +59,12 @@ public class SampleJobController {
 			params.put("delay", delay);
 			final ExecuteRequest request = new ExecuteRequest(rptDesign, outputName, format, params);
 
-			executeSubmitJob(request, httpResponse);
+			//executeSubmitJob(request, httpResponse);
 
 		}
 
 		return new ResponseEntity<SubmitResponse>(outerResponse, HttpStatus.OK);
 
-	}
-
-	@GetMapping("/submitJob")
-	public ResponseEntity<SubmitResponse> executeSubmitJob(@RequestBody final ExecuteRequest request,
-			final HttpServletResponse httpResponse) {
-
-		final SubmitResponse submitResponse = new SubmitResponse(request);
-		final CompletableFuture<SubmitResponse> submission = submitter.executeRunThenRender(submitResponse,
-				httpResponse);
-
-		return new ResponseEntity<SubmitResponse>(submitResponse, HttpStatus.OK);
 	}
 
 

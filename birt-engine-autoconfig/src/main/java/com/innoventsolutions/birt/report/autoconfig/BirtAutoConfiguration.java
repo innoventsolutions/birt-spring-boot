@@ -1,8 +1,11 @@
 package com.innoventsolutions.birt.report.autoconfig;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.innoventsolutions.birt.config.BirtConfig;
@@ -11,14 +14,32 @@ import com.innoventsolutions.birt.service.ReportRunService;
 import com.innoventsolutions.birt.service.SubmitJobService;
 
 @Configuration
-@ConditionalOnClass(BirtEngineService.class)
 @EnableConfigurationProperties(BirtConfig.class)
 public class BirtAutoConfiguration {
-	@Autowired
-	private ReportRunService runnerService;
 
-	@Autowired
-	private SubmitJobService submitService;
+	@Bean
+	@ConditionalOnMissingBean
+	public BirtEngineService engineService () {
+		return new BirtEngineService();
+	}
+	@Bean
+	@ConditionalOnMissingBean
+	public ReportRunService runService () {
+		return new ReportRunService();
+	}
+	@Bean
+	@ConditionalOnMissingBean
+	public SubmitJobService submitService () {
+		return new SubmitJobService();
+	}
+
+	@ConditionalOnMissingBean
+	@Bean(name = "submitJobExecutor")
+	public ExecutorService taskExecutor() {
+		ExecutorService executor = Executors.newFixedThreadPool(10);
+
+		return executor;
+	}
 }
 
 
