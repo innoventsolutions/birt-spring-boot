@@ -1,0 +1,202 @@
+.data {
+	padding-top: 0pt;
+	font-family: arial;
+}
+
+.label {
+	padding-top: 0pt;
+	font-family: sans-serif;
+}
+
+.image {
+	
+}
+
+.text {
+	padding-top: 0pt;
+	font-family: sans-serif;
+}
+
+.text-data {
+	padding-top: 0pt;
+	font-family: sans-serif;
+}
+
+.report {
+	font-family: sans-serif;
+	font-size: medium;
+	font-weight: normal;
+	font-style: normal;
+	text-align: left;
+}
+
+.page {
+	
+}
+
+.grid {
+	
+}
+
+.list {
+	
+}
+
+.list-header {
+	
+}
+
+.list-detail {
+	
+}
+
+.list-footer {
+	
+}
+
+.list-group-header-1 {
+	
+}
+
+.list-group-header-2 {
+	
+}
+
+.list-group-header-3 {
+	
+}
+
+.list-group-header-4 {
+	
+}
+
+.list-group-header-5 {
+	
+}
+
+.list-group-footer-1 {
+	
+}
+
+.list-group-footer-2 {
+	
+}
+
+.list-group-footer-3 {
+	
+}
+
+.list-group-footer-4 {
+	
+}
+
+.list-group-footer-5 {
+	
+}
+
+.table {
+	text-align: left;	
+}
+
+.table-header-cell {
+	
+}
+
+.table-header {
+	color: #FFF1C5;
+	background-color: #152358;
+}
+.c-table-header {
+	color: #FFF1C5;
+	background-color: #152358;
+}
+
+
+.table-detail-cell {
+	
+}
+
+.table-detail {
+	
+}
+
+.table-footer-cell {
+	
+}
+
+.table-footer {
+	
+}
+
+.table-group-header-cell {
+	
+}
+
+.table-group-header-1 {
+	background-color: #656565;
+	color: white;
+	margin-right: 1px;
+}
+.c-table-group-header-1 {
+	background-color: #656565;
+	color: white;
+	margin-right: 1px;
+}
+
+.table-group-header-2 {
+	background-color: #D6D6D6;
+	color: black;
+	margin-right: 1px;
+}
+.c-table-group-header-2 {
+	background-color: #D6D6D6;
+	color: black;
+	margin-right: 1px;
+}
+
+.table-group-header-3 {
+	margin-right: 1px;
+	font-size: small;
+	font-weight: bold;
+	border-bottom: 1px solid black
+}
+.c-table-group-header-3 {
+	margin-right: 1px;
+	font-size: small;
+	font-weight: bold;
+	border-bottom: 1px solid black
+}
+
+.table-group-header-4 {
+	
+}
+
+.table-group-header-5 {
+	
+}
+
+.table-group-footer-cell {
+	
+}
+
+.table-group-footer-1 {
+	
+}
+
+.table-group-footer-2 {
+	
+}
+
+.table-group-footer-3 {
+	
+}
+
+.table-group-footer-4 {
+	
+}
+
+.table-group-footer-5 {
+	
+}
+/*
+*/

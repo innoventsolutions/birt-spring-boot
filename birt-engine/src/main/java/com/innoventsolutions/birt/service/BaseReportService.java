@@ -132,7 +132,9 @@ public abstract class BaseReportService {
 			throws IllegalAccessException, InvocationTargetException, IOException, RunnerException, BadRequestException {
 
 		log.debug("configure parameters");
-
+		if (execRequest.getParameters() == null)
+			execRequest.setParameters(new HashMap<String, Object>());
+		
 		final IGetParameterDefinitionTask pdTask = engineService.getEngine().createGetParameterDefinitionTask(design);
 		for (final String key : execRequest.parameters.keySet()) {
 			final Object paramValue = execRequest.parameters.get(key);

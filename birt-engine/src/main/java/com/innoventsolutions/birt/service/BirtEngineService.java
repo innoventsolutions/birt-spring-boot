@@ -85,8 +85,8 @@ public class BirtEngineService {
 			}
 		}
 		if (birtConfig.getResourceDir() != null) {
-			final String resourceDir = birtConfig.getResourceDir().getAbsolutePath();
-			config.setResourcePath(resourceDir);
+			final File workspaceDir = new File(birtConfig.getWorkspace().getAbsolutePath());
+			config.setResourcePath(workspaceDir.getAbsolutePath());
 		}
 		final String scriptlibFileNames = getScriptLibFileNames();
 		if (scriptlibFileNames != null) {
@@ -190,6 +190,7 @@ public class BirtEngineService {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public void shutdown() {
 		// there is really no place this can be done
 		log.info("engine shutdown");
