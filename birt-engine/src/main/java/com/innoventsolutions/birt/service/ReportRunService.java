@@ -23,7 +23,7 @@ import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
 import org.eclipse.birt.report.engine.api.RenderOption;
 import org.eclipse.birt.report.engine.api.UnsupportedFormatException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
 import com.innoventsolutions.birt.entity.ExecuteRequest;
@@ -35,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@Import(BirtEngineService.class)
 public class ReportRunService extends BaseReportService {
 	
 	public ReportRunService() {

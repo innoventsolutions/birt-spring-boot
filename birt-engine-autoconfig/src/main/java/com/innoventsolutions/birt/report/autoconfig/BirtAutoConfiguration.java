@@ -21,17 +21,19 @@ public class BirtAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public BirtEngineService engineService () {
+	public BirtEngineService engineService() {
 		return new BirtEngineService();
 	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	public ReportRunService runService () {
+	public ReportRunService runService() {
 		return new ReportRunService();
 	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	public SubmitJobService submitService () {
+	public SubmitJobService submitService() {
 		return new SubmitJobService();
 	}
 
@@ -42,19 +44,17 @@ public class BirtAutoConfiguration {
 
 		return executor;
 	}
-	
+
 	@Bean
 	@ConditionalOnMissingBean
-	public RunController runController () {
+	public RunController runController() {
 		return new RunController();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SubmitController submitController () {
+	public SubmitController submitController() {
 		return new SubmitController();
 	}
 
 }
-
-

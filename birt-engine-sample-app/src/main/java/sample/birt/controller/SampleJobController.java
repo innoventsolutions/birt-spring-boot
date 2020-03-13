@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Controller
 public class SampleJobController {
+	
 	@Autowired
 	private SubmitJobService submitter;
 
@@ -72,7 +73,7 @@ public class SampleJobController {
 
 	}
 
-	@GetMapping("/submitJob")
+	@GetMapping("/submitJob2")
 	public ResponseEntity<SubmitResponse> executeSubmitJob(@RequestBody final ExecuteRequest request,
 			final HttpServletResponse httpResponse) {
 

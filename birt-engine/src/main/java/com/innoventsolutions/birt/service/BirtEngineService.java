@@ -10,15 +10,12 @@
 package com.innoventsolutions.birt.service;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 
 import javax.annotation.PostConstruct;
 
@@ -33,7 +30,6 @@ import org.springframework.stereotype.Service;
 
 import com.innoventsolutions.birt.config.BirtConfig;
 import com.innoventsolutions.birt.exception.RunnerException;
-import com.innoventsolutions.birt.util.BatchFormatter;
 
 import lombok.extern.slf4j.Slf4j;
 
