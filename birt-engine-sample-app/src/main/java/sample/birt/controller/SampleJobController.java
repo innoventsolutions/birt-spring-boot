@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SampleJobController {
 	@Autowired
 	private SubmitJobService submitter;
-	
+
 	@GetMapping("/test")
 	public ResponseEntity<SubmitResponse> getTestSubmit(@RequestBody(required = false) Integer numToRun,
 			final HttpServletResponse httpResponse) {
@@ -77,11 +77,10 @@ public class SampleJobController {
 			final HttpServletResponse httpResponse) {
 
 		final SubmitResponse submitResponse = new SubmitResponse(request);
-		final CompletableFuture<SubmitResponse> submission = submitter.executeRunThenRender(submitResponse,
-				httpResponse);
+		@SuppressWarnings("unused")
+		final CompletableFuture<SubmitResponse> submission = submitter.executeRunThenRender(submitResponse);
 
 		return new ResponseEntity<SubmitResponse>(submitResponse, HttpStatus.OK);
 	}
-
 
 }
