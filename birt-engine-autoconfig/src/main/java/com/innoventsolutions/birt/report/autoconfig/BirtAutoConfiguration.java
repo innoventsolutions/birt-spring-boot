@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.innoventsolutions.birt.config.BirtConfig;
+import com.innoventsolutions.birt.controller.RunController;
+import com.innoventsolutions.birt.controller.SubmitController;
 import com.innoventsolutions.birt.service.BirtEngineService;
 import com.innoventsolutions.birt.service.ReportRunService;
 import com.innoventsolutions.birt.service.SubmitJobService;
@@ -40,6 +42,19 @@ public class BirtAutoConfiguration {
 
 		return executor;
 	}
+	
+	@Bean
+	@ConditionalOnMissingBean
+	public RunController runController () {
+		return new RunController();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public SubmitController submitController () {
+		return new SubmitController();
+	}
+
 }
 
 
