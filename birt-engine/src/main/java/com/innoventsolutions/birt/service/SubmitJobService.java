@@ -98,7 +98,7 @@ public class SubmitJobService extends BaseReportService {
 
 			log.info("Rendering doc: " + request.getOutputName() + " to " + request.getFormat());
 
-			final String format = request.format;
+			final String format = request.getFormat();
 			final RenderOption options = configureRenderOptions(format);
 
 			outputFile.getParentFile().mkdirs();
