@@ -66,6 +66,7 @@ public class RunController {
 		
 		StreamingResponseBody responseBody =  out -> { 
 			try {
+				System.out.println("Run Report Lambda: " + Thread.currentThread());
 				runner.execute(request, response);
 			} catch (RunnerException e) {
 				///TODO
