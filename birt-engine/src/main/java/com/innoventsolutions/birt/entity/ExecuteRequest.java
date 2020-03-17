@@ -31,10 +31,10 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExecuteRequest {
-	public @NotNull String designFile;
-	public @NotNull String outputName;
-	public @NotNull String format;
-	public @NotNull Map<String, Object> parameters;
+	private @NotNull String designFile;
+	private @NotNull String outputName;
+	private @NotNull String format;
+	private @NotNull Map<String, Object> parameters;
 
 	// Don't use Lombok want to have a empty parameter string
 	public ExecuteRequest(final String designFile, final String nameForHumans, final String format) {

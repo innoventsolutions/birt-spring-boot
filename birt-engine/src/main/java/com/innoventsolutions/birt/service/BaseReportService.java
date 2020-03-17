@@ -111,7 +111,7 @@ public abstract class BaseReportService {
 		try {
 			File designFile;
 	
-			designFile = new File(execRequest.designFile);
+			designFile = new File(execRequest.getDesignFile());
 			
 			// not a full qualified file, look in design file dir
 			if (!designFile.exists()) {
@@ -136,8 +136,8 @@ public abstract class BaseReportService {
 			execRequest.setParameters(new HashMap<String, Object>());
 		
 		final IGetParameterDefinitionTask pdTask = engineService.getEngine().createGetParameterDefinitionTask(design);
-		for (final String key : execRequest.parameters.keySet()) {
-			final Object paramValue = execRequest.parameters.get(key);
+		for (final String key : execRequest.getParameters().keySet()) {
+			final Object paramValue = execRequest.getParameters().get(key);
 			final IParameterDefnBase defn = pdTask.getParameterDefn(key);
 			if (defn == null) {
 				throw new BadRequestException(400, "Parameter " + key + " not found in report");

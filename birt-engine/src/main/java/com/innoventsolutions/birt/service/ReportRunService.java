@@ -9,12 +9,15 @@
  ******************************************************************************/
 package com.innoventsolutions.birt.service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.birt.report.engine.api.EngineException;
@@ -28,7 +31,6 @@ import org.springframework.stereotype.Service;
 import com.innoventsolutions.birt.entity.ExecuteRequest;
 import com.innoventsolutions.birt.exception.BadRequestException;
 import com.innoventsolutions.birt.exception.RunnerException;
-import com.innoventsolutions.birt.util.Util;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,12 +44,12 @@ public class ReportRunService extends BaseReportService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void execute(final ExecuteRequest request, final HttpServletResponse response) {
+	public void execute(final ExecuteRequest request, HttpServletResponse response) throws RunnerException {
 		log.info("runReport reportRun = " + request);
 		try {
-			final OutputStream oStream = response.getOutputStream();
+			
+			HttpServletRequest r;
 			final IReportRunnable design = getRunnableReportDesign(request);
-			// Run Reports will only do a RunAndRender
 			final IRunAndRenderTask rrTask = engineService.getEngine().createRunAndRenderTask(design);
 			// TODO Does not make sense
 			final Map<String, Object> appContext = rrTask.getAppContext();
@@ -56,12 +58,9 @@ public class ReportRunService extends BaseReportService {
 			configureParameters(request, design, rrTask);
 
 			log.info("getRenderOptions");
-			final String format = request.format;
+			final String format = request.getFormat();
 			final RenderOption options = configureRenderOptions(format);
-			response.setContentType(Util.getMediaType(format).toString());
-			response.setHeader("Content-Disposition", "attachment;filename=" + request.getOutputName() + "." + format);
-
-			options.setOutputStream(oStream);
+			options.setOutputStream(response.getOutputStream());
 
 			rrTask.setRenderOption(options);
 			log.info("run-and-render report");
@@ -84,19 +83,12 @@ public class ReportRunService extends BaseReportService {
 				}
 
 			}
-		} catch (final BadRequestException e1) {
-			try {
-				response.sendError(e1.getCode(), e1.getReason());
-			} catch (final IOException e) {
-				log.error("Unable to send error code " + e1.getCode(), e);
-			}
-		} catch (final Exception e1) {
-			try {
+		} catch (final BadRequestException | IOException | RunnerException | IllegalAccessException | InvocationTargetException e1) {
 				log.error("Unable to run report", e1);
-				response.sendError(500, e1.getMessage());
-			} catch (final IOException e) {
-				log.error("Unable to send error code 500", e);
-			}
+				
+				throw new RunnerException("Failure in Run Report: " + e1.getMessage(), e1);
+				//TODO
+				//response.sendError(500, e1.getMessage());
 		}
 
 	}
