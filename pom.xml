@@ -22,6 +22,7 @@
         <module>birt-engine-autoconfig</module>
         <module>birt-engine-workspace</module>
         <module>birt-engine-sample-app-email</module>
+        <module>birt-engine-sample-app-sched</module>
     </modules>
 
     <dependencies>
