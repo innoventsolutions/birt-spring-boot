@@ -12,18 +12,18 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @Slf4j
 public class SubmitResponse {
-	private String jobid;
-	private String rptDocName;
-	private String outFileName;
-	private Date submitTime;
-	private Date runBegin;
-	private Date runFinish;
-	private Date renderBegin;
-	private Date renderFinish;
-	private StatusEnum status;
-	private ExecuteRequest request;
-	private HttpStatus httpStatus;
-	private String httpStatusMessage;
+	protected String jobid;
+	protected String rptDocName;
+	protected String outFileName;
+	protected Date submitTime;
+	protected Date runBegin;
+	protected Date runFinish;
+	protected Date renderBegin;
+	protected Date renderFinish;
+	protected StatusEnum status;
+	protected ExecuteRequest request;
+	protected HttpStatus httpStatus;
+	protected String httpStatusMessage;
 
 	public SubmitResponse(final ExecuteRequest request) {
 		this.request = request;
