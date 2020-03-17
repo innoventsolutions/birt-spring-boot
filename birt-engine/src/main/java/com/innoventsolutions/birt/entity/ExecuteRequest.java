@@ -21,21 +21,23 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * The immutable report run request.
+ * The report run request.
  *
  * @author Steve Schafer, Innovent Solutions Inc.
  */
-@Getter @Setter
+@Getter
+@Setter
 @ToString
-@AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class ExecuteRequest {
 	private @NotNull String designFile;
 	private @NotNull String outputName;
 	private @NotNull String format;
 	private @NotNull Map<String, Object> parameters;
 
-	// Don't use Lombok want to have a empty parameter string 
-	public ExecuteRequest(String designFile, String nameForHumans, String format) {
+	// Don't use Lombok want to have a empty parameter string
+	public ExecuteRequest(final String designFile, final String nameForHumans, final String format) {
 		this.designFile = designFile;
 		this.outputName = nameForHumans;
 		this.format = format;
