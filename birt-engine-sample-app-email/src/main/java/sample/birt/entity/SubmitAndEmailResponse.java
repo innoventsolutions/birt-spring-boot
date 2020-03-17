@@ -24,7 +24,7 @@ public class SubmitAndEmailResponse extends SubmitResponse {
 
 	public String replace(String string) {
 		final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		string = string.replace("${designFileName}", request.designFile);
+		string = string.replace("${designFileName}", request.getDesignFile());
 		string = string.replace("${startTime}", df.format(runBegin));
 		final Date finishTime = this.renderFinish;
 		string = string.replace("${finishTime}", finishTime != null ? df.format(finishTime) : "");

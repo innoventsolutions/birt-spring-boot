@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Component
-@ConfigurationProperties(prefix = "email.")
+@ConfigurationProperties(prefix = "birt.runner.email.")
 public class EmailConfig {
 	private File smtpPropertiesFile = new File("../smtp.properties");
 	private String mailUsername;

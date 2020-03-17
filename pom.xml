@@ -21,6 +21,7 @@
         <module>birt-spring-boot-starter</module>
         <module>birt-engine-autoconfig</module>
         <module>birt-engine-workspace</module>
+        <module>birt-engine-sample-app-email</module>
     </modules>
 
     <dependencies>
