@@ -61,12 +61,9 @@ public class EmailService {
 			log.info("Email not sent because email-to not specified");
 			return submitResponse;
 		}
-		if (emailRequest == null) {
-			log.info("Email not sent because email info is missing from the request");
-			return submitResponse;
-		}
 		final boolean success = StatusEnum.COMPLETE.equals(submitResponse.getStatus());
-		final boolean sendOnSuccess = emailRequest.getSuccess() != null ? emailRequest.getSuccess().booleanValue()
+		final boolean sendOnSuccess = emailRequest != null && emailRequest.getSuccess() != null
+				? emailRequest.getSuccess().booleanValue()
 				: config.isSuccess();
 		if (!sendOnSuccess) {
 			if (success) {
@@ -74,7 +71,8 @@ public class EmailService {
 				return submitResponse;
 			}
 		}
-		final boolean sendOnFailure = emailRequest.getFailure() != null ? emailRequest.getFailure().booleanValue()
+		final boolean sendOnFailure = emailRequest != null && emailRequest.getFailure() != null
+				? emailRequest.getFailure().booleanValue()
 				: config.isFailure();
 		if (!sendOnFailure) {
 			if (!success) {
@@ -110,7 +108,7 @@ public class EmailService {
 			session = Session.getDefaultInstance(emailProperties);
 		}
 		session.setDebug(true);
-		final String mailTo = join(config.getTo(), emailRequest.getTo());
+		final String mailTo = join(config.getTo(), emailRequest != null ? emailRequest.getTo() : "");
 		final String[] recipients = mailTo.split(", *");
 		final Map<String, Exception> exceptions = new HashMap<>();
 		for (final String recipient : recipients) {
@@ -118,7 +116,7 @@ public class EmailService {
 			try {
 				mimeMessage.setFrom(new InternetAddress(mailFrom));
 				mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
-				final String mailCc = join(config.getCc(), emailRequest.getCc());
+				final String mailCc = join(config.getCc(), emailRequest != null ? emailRequest.getCc() : "");
 				if (!mailCc.trim().isEmpty()) {
 					final String[] ccArray = mailCc.split(", *");
 					for (final String cc : ccArray) {
@@ -127,7 +125,7 @@ public class EmailService {
 						}
 					}
 				}
-				final String mailBcc = join(config.getBcc(), emailRequest.getBcc());
+				final String mailBcc = join(config.getBcc(), emailRequest != null ? emailRequest.getBcc() : "");
 				if (!mailBcc.trim().isEmpty()) {
 					final String[] ccArray = mailBcc.split(", *");
 					for (final String cc : ccArray) {
@@ -137,26 +135,29 @@ public class EmailService {
 					}
 				}
 				final String mailSuccessSubject = supercede(config.getSuccessSubject(),
-						emailRequest.getSuccessSubject());
+						emailRequest != null ? emailRequest.getSuccessSubject() : "");
 				final String mailFailureSubject = supercede(config.getFailureSubject(),
-						emailRequest.getFailureSubject());
+						emailRequest != null ? emailRequest.getFailureSubject() : "");
 				final String subject = success
 						? mailSuccessSubject.trim().isEmpty() ? "Success" : submitResponse.replace(mailSuccessSubject)
 						: mailFailureSubject.trim().isEmpty() ? "Failure" : submitResponse.replace(mailFailureSubject);
 				mimeMessage.setSubject(subject);
-				final String mailSuccessBody = supercede(config.getSuccessBody(), emailRequest.getSuccessBody());
-				final String mailFailureBody = supercede(config.getFailureBody(), emailRequest.getFailureBody());
+				final String mailSuccessBody = supercede(config.getSuccessBody(),
+						emailRequest != null ? emailRequest.getSuccessBody() : "");
+				final String mailFailureBody = supercede(config.getFailureBody(),
+						emailRequest != null ? emailRequest.getFailureBody() : "");
 				final String body = success ? submitResponse.replace(mailSuccessBody)
 						: mailFailureBody.trim().isEmpty() ? null : submitResponse.replace(mailFailureBody);
 				final Multipart mp = new MimeMultipart();
 				if (body != null) {
 					final MimeBodyPart mbp = new MimeBodyPart();
-					final boolean html = emailRequest.getHtml() != null ? emailRequest.getHtml().booleanValue()
+					final boolean html = emailRequest != null && emailRequest.getHtml() != null
+							? emailRequest.getHtml().booleanValue()
 							: config.isHtml();
 					mbp.setContent(body, html ? "text/html;charset=utf-8" : "text/plain");
 					mp.addBodyPart(mbp);
 				}
-				final boolean attach = emailRequest.getAttachReport() != null
+				final boolean attach = emailRequest != null && emailRequest.getAttachReport() != null
 						? emailRequest.getAttachReport().booleanValue()
 						: config.isAttachReport();
 				final File outputFile = new File(birtConfig.getOutputDir(), submitResponse.getRptDocName());
