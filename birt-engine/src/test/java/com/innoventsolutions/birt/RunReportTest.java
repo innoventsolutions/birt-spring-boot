@@ -79,7 +79,7 @@ public class RunReportTest {
 		// get full path to report design file (which is in a different package)
 	}
 
-	@Test
+//	@Test
 	public void testRun() throws Exception {
 		final ExecuteRequest requestObject = new ExecuteRequest();
 		requestObject.setDesignFile(PARAM_TEST_RPTDESIGN);
@@ -103,6 +103,37 @@ public class RunReportTest {
 										.description(PARAMETERS_DESCRIPTION))))
 
 				.andReturn();
+
+	}
+
+	@Test
+	public void testMissingParameter() throws Exception {
+		final ExecuteRequest requestObject = new ExecuteRequest();
+		requestObject.setDesignFile(PARAM_TEST_RPTDESIGN);
+		requestObject.setFormat("pdf");
+		Map<String, Object> bad_param = new HashMap<String, Object>() {
+			{
+				// required, not including should force an error
+				//put("paramString", "String Val"); 
+				put("paramDate", "2010-05-05");
+				put("paramInteger", 1111);
+				put("paramDecimal", 999.888);
+			}
+		};
+		requestObject.setParameters(bad_param);
+		requestObject.setOutputName("failure_out");
+		final ObjectMapper mapper = new ObjectMapper();
+		final String requestString = mapper.writeValueAsString(requestObject);
+		log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
+
+		final MvcResult statusResult = this.mockMvc
+				.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andDo(MvcResult::getAsyncResult)
+				.andExpect(status().isOk())
+				.andReturn();
+		
+		System.out.println(statusResult);
 
 	}
 
