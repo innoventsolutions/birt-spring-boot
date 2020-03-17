@@ -11,6 +11,7 @@ package sample.birt.controller;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.quartz.CronScheduleBuilder;
@@ -118,7 +119,7 @@ public class SampleJobController {
 	@Autowired
 	private CompletedJobList completedJobList;
 
-	@GetMapping("/completed-job")
+	@GetMapping("/job")
 	@ResponseBody
 	public ResponseEntity<GetJobResponse> getJob(@RequestBody final GetJobRequest request) {
 		log.info("job " + request);
@@ -126,10 +127,10 @@ public class SampleJobController {
 			final Scheduler scheduler = new StdSchedulerFactory().getScheduler();
 			final JobKey jobKey = new JobKey(request.getName(), request.getGroup());
 			final GetJobResponse jobResponse = new GetJobResponse();
-			// @SuppressWarnings("unchecked")
-			// final List<Trigger> triggers = (List<Trigger>)
-			// scheduler.getTriggersOfJob(jobKey);
-			// jobResponse.setTriggers(triggers);
+			@SuppressWarnings("unchecked")
+			final List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
+			jobResponse.setTriggers(triggers);
+			jobResponse.setJobDetail(scheduler.getJobDetail(jobKey));
 			jobResponse.setRuns(completedJobList.getJob(jobKey));
 
 			return new ResponseEntity<GetJobResponse>(jobResponse, HttpStatus.OK);
@@ -139,7 +140,7 @@ public class SampleJobController {
 		}
 	}
 
-	@GetMapping("/completed-jobs")
+	@GetMapping("/jobs")
 	@ResponseBody
 	public ResponseEntity<Map<JobKey, GetJobResponse>> getJobs() {
 		log.info("jobs");
@@ -148,10 +149,10 @@ public class SampleJobController {
 			final Scheduler scheduler = new StdSchedulerFactory().getScheduler();
 			for (final JobKey jobKey : scheduler.getJobKeys(GroupMatcher.anyJobGroup())) {
 				final GetJobResponse jobResponse = new GetJobResponse();
-				// @SuppressWarnings("unchecked")
-				// final List<Trigger> triggers = (List<Trigger>)
-				// scheduler.getTriggersOfJob(jobKey);
-				// jobResponse.setTriggers(triggers);
+				@SuppressWarnings("unchecked")
+				final List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
+				jobResponse.setTriggers(triggers);
+				jobResponse.setJobDetail(scheduler.getJobDetail(jobKey));
 				jobResponse.setRuns(completedJobList.getJob(jobKey));
 				response.put(jobKey, jobResponse);
 			}
