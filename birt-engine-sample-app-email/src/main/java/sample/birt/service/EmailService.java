@@ -61,6 +61,10 @@ public class EmailService {
 			log.info("Email not sent because email-to not specified");
 			return submitResponse;
 		}
+		if (emailRequest != null && emailRequest.getEnable().booleanValue() == false) {
+			log.info("Email not sent because it was disabled in the request");
+			return submitResponse;
+		}
 		final boolean success = StatusEnum.COMPLETE.equals(submitResponse.getStatus());
 		final boolean sendOnSuccess = emailRequest != null && emailRequest.getSuccess() != null
 				? emailRequest.getSuccess().booleanValue()

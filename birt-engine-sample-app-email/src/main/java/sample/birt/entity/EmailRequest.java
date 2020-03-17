@@ -30,4 +30,5 @@ public class EmailRequest {
 	private final String failureBody;
 	private final Boolean attachReport;
 	private final Boolean html;
+	private final Boolean enable = true;
 }
