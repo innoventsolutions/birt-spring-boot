@@ -11,21 +11,21 @@ import lombok.Setter;
 @Getter
 @Setter
 @Component
-@ConfigurationProperties(prefix = "birt.runner.email.")
+@ConfigurationProperties(prefix = "birt.runner.mail")
 public class EmailConfig {
-	private File smtpPropertiesFile = new File("../smtp.properties");
-	private String mailUsername;
-	private String mailPassword;
-	private String mailFrom;
-	private String mailTo;
-	private String mailCc;
-	private String mailBcc;
-	private boolean mailSuccess;
-	private boolean mailFailure;
-	private String mailSuccessSubject;
-	private String mailFailureSubject;
-	private String mailSuccessBody;
-	private String mailFailureBody;
-	private boolean mailHtml;
-	private boolean mailAttachReport;
+	private File smtpPropertiesFile;
+	private String username;
+	private String password;
+	private String from;
+	private String to;
+	private String cc;
+	private String bcc;
+	private boolean success;
+	private boolean failure;
+	private String successSubject;
+	private String failureSubject;
+	private String successBody;
+	private String failureBody;
+	private boolean html;
+	private boolean attachReport;
 }

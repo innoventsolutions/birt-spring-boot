@@ -7,7 +7,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ExecuteAndEmailRequest {
-	private ExecuteRequest executeRequest;
-	private EmailRequest emailRequest;
+public class ExecuteAndEmailRequest extends ExecuteRequest {
+	private EmailRequest email;
 }

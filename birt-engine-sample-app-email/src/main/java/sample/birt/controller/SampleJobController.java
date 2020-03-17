@@ -50,9 +50,9 @@ public class SampleJobController {
 	public ResponseEntity<SubmitAndEmailResponse> executeSubmitJob(@RequestBody final ExecuteAndEmailRequest request,
 			final HttpServletResponse httpResponse) {
 
-		final SubmitAndEmailResponse submitAndEmailResponse = new SubmitAndEmailResponse(request.getExecuteRequest());
+		final SubmitAndEmailResponse submitAndEmailResponse = new SubmitAndEmailResponse(request);
 		final CompletableFuture<SubmitResponse> future = submitJobService.executeRunThenRender(submitAndEmailResponse);
-		future.thenApply(l -> emailService.send(request.getEmailRequest(), submitAndEmailResponse));
+		future.thenApply(l -> emailService.send(request.getEmail(), submitAndEmailResponse));
 		submitList.put(submitAndEmailResponse.getJobid(), future);
 
 		return new ResponseEntity<SubmitAndEmailResponse>(submitAndEmailResponse, HttpStatus.OK);

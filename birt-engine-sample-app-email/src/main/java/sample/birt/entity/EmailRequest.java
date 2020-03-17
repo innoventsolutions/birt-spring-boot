@@ -19,15 +19,15 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class EmailRequest {
-	private final Boolean mailSuccess;
-	private final Boolean mailFailure;
-	private final String mailTo;
-	private final String mailCc;
-	private final String mailBcc;
-	private final String mailSuccessSubject;
-	private final String mailFailureSubject;
-	private final String mailSuccessBody;
-	private final String mailFailureBody;
-	private final Boolean mailAttachReport;
-	private final Boolean mailHtml;
+	private final Boolean success;
+	private final Boolean failure;
+	private final String to;
+	private final String cc;
+	private final String bcc;
+	private final String successSubject;
+	private final String failureSubject;
+	private final String successBody;
+	private final String failureBody;
+	private final Boolean attachReport;
+	private final Boolean html;
 }
