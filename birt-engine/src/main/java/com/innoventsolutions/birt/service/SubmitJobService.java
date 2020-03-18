@@ -87,12 +87,13 @@ public class SubmitJobService extends BaseReportService {
 		final ExecuteRequest request = submitResponse.getRequest();
 
 		IReportDocument rptdoc = null;
+		IRenderTask renderTask = null;
 		try {
 			final IReportEngine engine = engineService.getEngine();
 			final File rptDocFile = new File(engineService.getOutputDir(), submitResponse.getRptDocName());
 			final File outputFile = new File(engineService.getOutputDir(), submitResponse.getOutFileName());
 			rptdoc = engine.openReportDocument(rptDocFile.getAbsolutePath());
-			final IRenderTask renderTask = engine.createRenderTask(rptdoc);
+			renderTask = engine.createRenderTask(rptdoc);
 			// TODO Does not make sense
 			// final Map<String, Object> appContext = renderTask.getAppContext();
 
@@ -127,6 +128,7 @@ public class SubmitJobService extends BaseReportService {
 			}
 
 			rptdoc.close();
+			renderTask.close();
 		} catch (final BadRequestException e1) {
 			submitResponse.setHttpStatus(HttpStatus.valueOf(e1.getCode()));
 			submitResponse.setHttpStatusMessage(e1.getReason());
@@ -143,6 +145,8 @@ public class SubmitJobService extends BaseReportService {
 			if (rptdoc != null) {
 				rptdoc.close();
 			}
+			if (renderTask != null)
+				renderTask.close();
 		}
 
 		submitResponse.setHttpStatus(HttpStatus.OK);
@@ -158,10 +162,11 @@ public class SubmitJobService extends BaseReportService {
 		submitResponse.setRunBegin(new Date());
 		log.info("submitJob (Run) Thread: " + Thread.currentThread() + submitResponse.getRequest());
 
+		IRunTask rTask = null;
 		try {
 			final IReportRunnable design = getRunnableReportDesign(submitResponse.getRequest());
 			// Run Reports will only do a RunAndRender
-			final IRunTask rTask = engineService.getEngine().createRunTask(design);
+			rTask = engineService.getEngine().createRunTask(design);
 			// TODO Does not make sense
 			final Map<String, Object> appContext = rTask.getAppContext();
 			rTask.setAppContext(appContext);
@@ -191,6 +196,7 @@ public class SubmitJobService extends BaseReportService {
 				}
 
 			}
+			rTask.close();
 		} catch (final BadRequestException e1) {
 			submitResponse.setHttpStatus(HttpStatus.valueOf(e1.getCode()));
 			submitResponse.setHttpStatusMessage(e1.getReason());
@@ -202,6 +208,9 @@ public class SubmitJobService extends BaseReportService {
 			submitResponse.setHttpStatusMessage(e1.getMessage());
 			submitResponse.setStatus(StatusEnum.EXCEPTION);
 			return submitResponse;
+		} finally {
+			if (rTask != null)
+				rTask.close();
 		}
 
 		submitResponse.setHttpStatus(HttpStatus.OK);

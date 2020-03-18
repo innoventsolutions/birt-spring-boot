@@ -9,9 +9,7 @@
  ******************************************************************************/
 package com.innoventsolutions.birt.service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +42,14 @@ public class ReportRunService extends BaseReportService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void execute(final ExecuteRequest request, HttpServletResponse response) throws RunnerException {
+	public void execute(final ExecuteRequest request, HttpServletResponse response)  {
 		log.info("runReport reportRun = " + request);
+		IRunAndRenderTask rrTask = null;
 		try {
 			
 			HttpServletRequest r;
 			final IReportRunnable design = getRunnableReportDesign(request);
-			final IRunAndRenderTask rrTask = engineService.getEngine().createRunAndRenderTask(design);
+			rrTask = engineService.getEngine().createRunAndRenderTask(design);
 			// TODO Does not make sense
 			final Map<String, Object> appContext = rrTask.getAppContext();
 			rrTask.setAppContext(appContext);
@@ -83,13 +82,18 @@ public class ReportRunService extends BaseReportService {
 				}
 
 			}
+			rrTask.close();
 		} catch (final BadRequestException | IOException | RunnerException | IllegalAccessException | InvocationTargetException e1) {
 				log.error("Unable to run report", e1);
 				
-				throw new RunnerException("Failure in Run Report: " + e1.getMessage(), e1);
+//				throw new RunnerException("Failure in Run Report: " + e1.getMessage(), e1);
 				//TODO
 				//response.sendError(500, e1.getMessage());
+		} finally {
+			if (rrTask != null)
+				rrTask.close();
 		}
+		
 
 	}
 

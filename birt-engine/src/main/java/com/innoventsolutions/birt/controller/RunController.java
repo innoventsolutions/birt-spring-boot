@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +35,7 @@ public class RunController {
 	private ReportRunService runner;
 
 	@GetMapping("/testPDF")
-	public  ResponseEntity<StreamingResponseBody>  getTestPDF(final HttpServletResponse response) {
+	public ResponseEntity<StreamingResponseBody> getTestPDF(final HttpServletResponse response) {
 		log.info("testPDF ");
 
 		final String rptDesign = "TEST";
@@ -62,22 +63,17 @@ public class RunController {
 	}
 
 	@GetMapping("/runReport")
-	public ResponseEntity<StreamingResponseBody> executeRunReport(@RequestBody final ExecuteRequest request, final HttpServletResponse response) {
-		
-		StreamingResponseBody responseBody =  out -> { 
-			try {
-				System.out.println("Run Report Lambda: " + Thread.currentThread());
-				runner.execute(request, response);
-			} catch (RunnerException e) {
-				///TODO
-				e.printStackTrace();
-			}
+	public ResponseEntity<StreamingResponseBody> executeRunReport(@RequestBody final ExecuteRequest request,
+			final HttpServletResponse response) {
+
+		StreamingResponseBody responseBody = out -> {
+			System.out.println("Run Report Lambda: " + Thread.currentThread());
+			runner.execute(request, response);
 		};
-		
+
 		return ResponseEntity.ok()
-	            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + request.getOutputName())
-	            .contentType(Util.getMediaType(request.getFormat()))
-	            .body(responseBody);
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + request.getOutputFileName())
+				.contentType(Util.getMediaType(request.getFormat())).body(responseBody);
 	}
 
 }

@@ -37,11 +37,15 @@ public class ExecuteRequest {
 	private @NotNull Map<String, Object> parameters;
 
 	// Don't use Lombok want to have a empty parameter string
-	public ExecuteRequest(final String designFile, final String nameForHumans, final String format) {
+	public ExecuteRequest(final String designFile, final String outputName, final String format) {
 		this.designFile = designFile;
-		this.outputName = nameForHumans;
+		this.outputName = outputName;
 		this.format = format;
 		this.parameters = new HashMap<String, Object>();
+	}
+	
+	public String getOutputFileName() {
+		return getOutputName() + "." + getFormat();
 	}
 
 }
