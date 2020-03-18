@@ -7,7 +7,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -40,8 +39,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import sample.birt.BirtSample;
+import sample.birt.entity.ExtendedExecuteRequest;
 import sample.birt.entity.GetJobRequest;
-import sample.birt.entity.ScheduleCronRequest;
+import sample.birt.entity.ScheduleRequest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = BirtSample.class)
@@ -78,42 +78,61 @@ public class JobControllerTest {
 	}
 
 	@Test
-	public void testScheduleCron() throws Exception {
+	public void test() {
+
+	}
+
+	@Test
+	public void testSchedule() throws Exception {
 		final ObjectMapper mapper = new ObjectMapper();
-		final ScheduleCronRequest scheduleRequestObject = new ScheduleCronRequest();
-		scheduleRequestObject.setDesignFile(PARAM_TEST_RPTDESIGN);
-		scheduleRequestObject.setFormat("pdf");
-		scheduleRequestObject.setParameters(PARAM_MAP_1);
-		scheduleRequestObject.setOutputName("test_submit_out_1");
+		final ExtendedExecuteRequest extendedRequestObject = new ExtendedExecuteRequest();
+		extendedRequestObject.setDesignFile(PARAM_TEST_RPTDESIGN);
+		extendedRequestObject.setFormat("pdf");
+		extendedRequestObject.setParameters(PARAM_MAP_1);
+		extendedRequestObject.setOutputName("test_submit_out_1");
 		final long time = System.currentTimeMillis() + 31L * 24L * 60L * 60L * 1000L;
 		log.info("cron time = " + new Date(time));
+		final ScheduleRequest scheduleRequestObject = new ScheduleRequest();
 		scheduleRequestObject.setCronString(getCronString(time));
 		scheduleRequestObject.setGroup("test-group-1");
 		scheduleRequestObject.setName("test-1");
-		final String scheduleRequestString = mapper.writeValueAsString(scheduleRequestObject);
+		extendedRequestObject.setSchedule(scheduleRequestObject);
+		final String scheduleRequestString = mapper.writeValueAsString(extendedRequestObject);
 		log.info("testScheduleCron schedule request = " + scheduleRequestString);
 		final MvcResult scheduleResult = this.mockMvc
-				.perform(post("/schedule-cron").contentType(MediaType.APPLICATION_JSON).content(scheduleRequestString)
+				.perform(get("/schedule").contentType(MediaType.APPLICATION_JSON).content(scheduleRequestString)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andDo(document("schedule-cron", requestFields(
-						fieldWithPath("group").description(JOB_GROUP_DESCRIPTION),
-						fieldWithPath("name").description(JOB_NAME_DESCRIPTION),
-						fieldWithPath("startDate").description(JOB_START_DATE_DESCRIPTION),
-						fieldWithPath("cronString").description("The cron string as described in cron documentation"),
-						fieldWithPath("misfireInstruction").optional()
+				.andDo(document("schedule", requestFields(
+						fieldWithPath("schedule.group").description(JOB_GROUP_DESCRIPTION),
+						fieldWithPath("schedule.name").description(JOB_NAME_DESCRIPTION),
+						fieldWithPath("schedule.startDate").description(JOB_START_DATE_DESCRIPTION),
+						fieldWithPath("schedule.cronString")
+								.description("The cron string as described in cron documentation"),
+						fieldWithPath("schedule.misfireInstruction").optional()
 								.description("One of 'ignore', 'fire-and-proceed', or 'do-nothing'"),
 						fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
 						fieldWithPath("format").optional().description(FORMAT_DESCRIPTION),
 						fieldWithPath("outputName").optional().type(JsonFieldType.STRING)
 								.description(OUTPUT_NAME_DESCRIPTION),
 						subsectionWithPath("parameters").optional().type(JsonFieldType.OBJECT)
-								.description(PARAMETERS_DESCRIPTION)),
+								.description(PARAMETERS_DESCRIPTION),
+						subsectionWithPath("email").optional().type(JsonFieldType.OBJECT).description("x")),
 						responseFields(
-								fieldWithPath("message")
-										.description("Returns the exception message string in case of failure"),
 								fieldWithPath("jobKey.group").description("The job group name passed in the request"),
-								fieldWithPath("jobKey.name").description("The job name passed in the request"))))
+								fieldWithPath("jobKey.name").description("The job name passed in the request"),
+								fieldWithPath("jobid").description("x"), fieldWithPath("rptDocName").description("x"),
+								fieldWithPath("outFileName").description("x"),
+								fieldWithPath("submitTime").description("x"),
+								fieldWithPath("runBegin").description("x"), fieldWithPath("runFinish").description("x"),
+								fieldWithPath("renderBegin").description("x"),
+								fieldWithPath("renderFinish").description("x"),
+								fieldWithPath("status").description("x"),
+								subsectionWithPath("request").description("x"),
+								fieldWithPath("httpStatus").description("x"),
+								fieldWithPath("httpStatusMessage").description("x"),
+								fieldWithPath("emailBegin").description("x"),
+								fieldWithPath("emailFinish").description("x"))))
 				.andReturn();
 		final MockHttpServletResponse scheduleResponse = scheduleResult.getResponse();
 		Assert.assertTrue(scheduleResponse.getContentType().startsWith("application/json"));
@@ -129,11 +148,16 @@ public class JobControllerTest {
 		Assert.assertFalse("Message is not null and not blank: " + message,
 				message != null && message.trim().length() > 0);
 		Assert.assertNotNull("Job key is null", jobKey);
+	}
+
+	@Test
+	public void testGetJob() throws Exception {
+		final ObjectMapper mapper = new ObjectMapper();
 		final GetJobRequest jobRequestObject = new GetJobRequest();
-		jobRequestObject.setGroup(jobKey.get("group"));
-		jobRequestObject.setName(jobKey.get("name"));
+		jobRequestObject.setGroup("test-group-1");
+		jobRequestObject.setName("test-1");
 		final String jobRequestString = mapper.writeValueAsString(jobRequestObject);
-		log.info("testScheduleCron job request = " + jobRequestString);
+		log.info("testGetJob job request = " + jobRequestString);
 		final MvcResult jobResult = this.mockMvc
 				.perform(get("/job").contentType(MediaType.APPLICATION_JSON).content(jobRequestString)
 						.accept(MediaType.APPLICATION_JSON))
@@ -144,18 +168,21 @@ public class JobControllerTest {
 										.description(JOB_NAME_DESCRIPTION + " that was used to create the schedule"),
 								fieldWithPath("group")
 										.description(JOB_GROUP_DESCRIPTION + " that was used to create the schedule")),
-						responseFields(subsectionWithPath("triggers").description("The job triggers"),
+						responseFields(
+								fieldWithPath("description").description("x").type(JsonFieldType.STRING).optional(),
+								fieldWithPath("jobClass").description("x").type(JsonFieldType.STRING).optional(),
+								subsectionWithPath("triggers").description("The job triggers"),
 								subsectionWithPath("runs")
 										.description("Status info of actual runs that have occurred.  "
 												+ "This is an object where each key is a report run UUID and the value is the "
 												+ "same as what is returned from /status."),
-								subsectionWithPath("jobKey"), subsectionWithPath("jobDataMap"),
-								fieldWithPath("description").ignored(), fieldWithPath("jobClass"))))
+								subsectionWithPath("jobKey").description("x"),
+								subsectionWithPath("jobDataMap").description("x"))))
 				.andReturn();
 		final MockHttpServletResponse jobResponse = jobResult.getResponse();
 		Assert.assertTrue(jobResponse.getContentType().startsWith("application/json"));
 		final String jobResponseString = jobResponse.getContentAsString();
-		log.info("testScheduleCron job response = " + jobResponseString);
+		log.info("testGetJob job response = " + jobResponseString);
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> jobResponseMap = mapper.readValue(jobResponseString, Map.class);
 		log.info("responseMap = " + jobResponseMap);

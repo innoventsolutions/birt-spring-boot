@@ -1,0 +1,53 @@
+== GET /submitReport
+
+This request is used to start generating the report asynchronously.  A string is returned that identifies the job.
+Both the request and the response content types are application/json.
+
+=== Request fields:
+
+include::{snippets}/submitReport/request-fields.adoc[]
+
+=== Response fields:
+
+include::{snippets}/submitReport/response-fields.adoc[]
+
+=== Response codes:
+
+|===
+|Code|Name|Description
+
+|`+200+`
+|`+Success+`
+|The operation completed successfully.
+
+|`+401+`
+|`+Unauthorized+`
+|The report requires a security token, but the security token was missing from the request or was 
+not found in the database or the report design file specified in the database didn't match the
+request or the request was made beyond the timeout period.
+
+|`+404+`
+|`+Not Found+`
+|The design file specified in the request was not found.
+
+|`+406+`
+|`+Not Acceptable+`
+|A parameter value was not of the expected data type and could not be converted or
+and explictly typed parameter was not specified correctly or an unsupported format was specified.
+
+|`+500+`
+|`+Internal Server Error+`
+|Some internal error prevented the operation from completing.  See the log file for a full description and traceback.
+
+|===
+
+=== Examples:
+
+==== Curl:
+
+include::{snippets}/submitReport/curl-request.adoc[]
+
+==== HTTP request:
+
+include::{snippets}/submitReport/http-request.adoc[]
+
