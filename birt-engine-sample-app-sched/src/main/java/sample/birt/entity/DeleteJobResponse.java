@@ -1,4 +1,4 @@
-package sample.birt.controller;
+package sample.birt.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

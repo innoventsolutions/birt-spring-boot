@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.extern.slf4j.Slf4j;
+import sample.birt.entity.DeleteJobResponse;
 import sample.birt.entity.GetJobRequest;
 import sample.birt.entity.GetJobResponse;
 import sample.birt.entity.ScheduleCronRequest;
