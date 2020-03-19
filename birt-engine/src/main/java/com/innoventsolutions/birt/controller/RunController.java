@@ -7,8 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import com.innoventsolutions.birt.entity.ExecuteRequest;
-import com.innoventsolutions.birt.exception.RunnerException;
 import com.innoventsolutions.birt.service.ReportRunService;
 import com.innoventsolutions.birt.util.Util;
 
@@ -66,13 +63,14 @@ public class RunController {
 	public ResponseEntity<StreamingResponseBody> executeRunReport(@RequestBody final ExecuteRequest request,
 			final HttpServletResponse response) {
 
-		StreamingResponseBody responseBody = out -> {
+		final StreamingResponseBody responseBody = out -> {
 			System.out.println("Run Report Lambda: " + Thread.currentThread());
 			runner.execute(request, response);
 		};
 
 		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + request.getOutputFileName())
+				.header(HttpHeaders.CONTENT_DISPOSITION,
+						"attachment; filename=" + request.getOutputName() + "." + request.getFormat())
 				.contentType(Util.getMediaType(request.getFormat())).body(responseBody);
 	}
 

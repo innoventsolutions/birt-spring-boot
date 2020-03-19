@@ -9,12 +9,8 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.subsecti
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -39,6 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import sample.birt.BirtSample;
+import sample.birt.controller.SampleJobController;
 import sample.birt.entity.ExtendedExecuteRequest;
 import sample.birt.entity.GetJobRequest;
 import sample.birt.entity.ScheduleRequest;
@@ -93,7 +90,7 @@ public class JobControllerTest {
 		final long time = System.currentTimeMillis() + 31L * 24L * 60L * 60L * 1000L;
 		log.info("cron time = " + new Date(time));
 		final ScheduleRequest scheduleRequestObject = new ScheduleRequest();
-		scheduleRequestObject.setCronString(getCronString(time));
+		scheduleRequestObject.setCronString(SampleJobController.getCronString(time));
 		scheduleRequestObject.setGroup("test-group-1");
 		scheduleRequestObject.setName("test-1");
 		extendedRequestObject.setSchedule(scheduleRequestObject);
@@ -186,26 +183,5 @@ public class JobControllerTest {
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> jobResponseMap = mapper.readValue(jobResponseString, Map.class);
 		log.info("responseMap = " + jobResponseMap);
-	}
-
-	private static String getCronString(final long time) {
-		final GregorianCalendar cal = new GregorianCalendar();
-		cal.setTimeInMillis(time);
-		final List<String> args = new ArrayList<>();
-		args.add(String.valueOf(cal.get(Calendar.SECOND)));
-		args.add(String.valueOf(cal.get(Calendar.MINUTE)));
-		args.add(String.valueOf(cal.get(Calendar.HOUR)));
-		args.add(String.valueOf(cal.get(Calendar.DAY_OF_MONTH)));
-		args.add(String.valueOf(cal.get(Calendar.MONTH) + 1)); // note: javadocs are wrong for this
-		args.add("?"); // day of week
-		args.add(String.valueOf(cal.get(Calendar.YEAR)));
-		final StringBuilder sb = new StringBuilder();
-		String sep = "";
-		for (final String arg : args) {
-			sb.append(sep);
-			sep = " ";
-			sb.append(arg);
-		}
-		return sb.toString();
 	}
 }
