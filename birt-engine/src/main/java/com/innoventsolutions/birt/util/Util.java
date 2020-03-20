@@ -44,5 +44,10 @@ public class Util {
 		}
 		return MediaType.APPLICATION_OCTET_STREAM;
 	}
+	
+	public static String getRestExceptionResponse(Exception ex) {
+		
+		return ex.getMessage();
+	}
 
 }

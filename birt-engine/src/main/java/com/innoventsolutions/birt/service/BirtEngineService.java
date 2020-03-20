@@ -10,9 +10,7 @@
 package com.innoventsolutions.birt.service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
@@ -29,7 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.innoventsolutions.birt.config.BirtConfig;
-import com.innoventsolutions.birt.exception.RunnerException;
+import com.innoventsolutions.birt.exception.BirtStarterException;
+import com.innoventsolutions.birt.exception.BirtStarterException.BirtErrorCode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,7 +45,7 @@ public class BirtEngineService {
 	}
 
 	@PostConstruct
-	public IReportEngine getEngine() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, RunnerException {
+	public IReportEngine getEngine() throws BirtStarterException {
 		if (engine == null) {
 			log.info("Instantiate Report Engine");
 			this.engine = getReportEngine();
@@ -54,7 +53,8 @@ public class BirtEngineService {
 		return engine;
 	}
 
-	// Pass up required configuration parameters, does it make sense to just have the calling classes use the configuration directly?
+	// Pass up required configuration parameters, does it make sense to just have
+	// the calling classes use the configuration directly?
 	public String getBaseImageURL() {
 		return birtConfig.getBaseImageURL();
 	}
@@ -71,7 +71,7 @@ public class BirtEngineService {
 		return birtConfig.getDesignDir();
 	}
 
-	private IReportEngine getReportEngine() throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, RunnerException {
+	private IReportEngine getReportEngine() throws BirtStarterException {
 
 		log.info("getReportEngine");
 		final EngineConfig config = new EngineConfig();
@@ -96,7 +96,7 @@ public class BirtEngineService {
 		return birtConfig.isActuate() ? getActuateReportEngine(config) : getReportEngine(config);
 	}
 
-	private void configureLogging(final EngineConfig config) throws IOException, FileNotFoundException {
+	private void configureLogging(final EngineConfig config) throws BirtStarterException {
 		// control debug of BIRT components.
 		final File loggingDirFile = birtConfig.getLoggingDir() == null ? new File("./log") : birtConfig.getLoggingDir();
 		if (!loggingDirFile.exists()) {
@@ -105,37 +105,38 @@ public class BirtEngineService {
 		config.setLogConfig(loggingDirFile.getAbsolutePath(), Level.WARNING);
 	}
 
-	private static IReportEngine getReportEngine(final EngineConfig config) throws RunnerException {
-		System.out.println("before Platform startup");
+	private static IReportEngine getReportEngine(final EngineConfig config) throws BirtStarterException {
+		log.error("before Platform startup");
 		try {
 			Platform.startup(config);
 		} catch (final BirtException e) {
-			throw new RunnerException("Failed to start platform", e);
+			throw new BirtStarterException(BirtErrorCode.PLATFORM_START, "Failed to start platform", e);
 		}
-		System.out.println("after Platform startup");
-		final IReportEngineFactory factory = (IReportEngineFactory) Platform.createFactoryObject(IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY);
+		log.error("after Platform startup");
+		final IReportEngineFactory factory = (IReportEngineFactory) Platform
+				.createFactoryObject(IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY);
 		if (factory == null) {
-			System.out.println("Could not create report engine factory");
-			throw new NullPointerException("Could not create report engine factory");
+			log.error("Could not create report engine factory");
+			throw new BirtStarterException(BirtErrorCode.PLATFORM_START, "Failed to create Factory");
 		}
 		final IReportEngine engine = factory.createReportEngine(config);
 		if (engine == null) {
-			System.out.println("Could not create report engine");
-			throw new NullPointerException("Could not create report engine");
+			log.error("Could not create report engine");
+			throw new BirtStarterException(BirtErrorCode.PLATFORM_START, "Failed to create Engine");
 		}
 		return engine;
 	}
 
-	private static IReportEngine getActuateReportEngine(final EngineConfig config)
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, RunnerException {
+	private static IReportEngine getActuateReportEngine(final EngineConfig config) throws BirtStarterException {
 		try {
 			Platform.startup(config);
 		} catch (final BirtException e) {
-			throw new RunnerException("Failed to start platform", e);
+			throw new BirtStarterException(BirtErrorCode.PLATFORM_START, "Failed to start platform", e);
 		}
-		final Object factoryObjectForReflection = Platform.createFactoryObject("com.actuate.birt.report.engine.ActuateReportEngineFactory"
-		/* IActuateReportEngineFactory. EXTENSION_ACTUATE_REPORT_ENGINE_FACTORY */
-		);
+		final Object factoryObjectForReflection = Platform
+				.createFactoryObject("com.actuate.birt.report.engine.ActuateReportEngineFactory"
+				/* IActuateReportEngineFactory. EXTENSION_ACTUATE_REPORT_ENGINE_FACTORY */
+				);
 		// when using the Actuate Report Engine Factory, the return type is
 		// not exposed publicly, so you cannot instantiate the factory
 		// under normal conditions.
@@ -150,7 +151,11 @@ public class BirtEngineService {
 			final String name = m.getName();
 			m.setAccessible(true);
 			if (name.equals("createReportEngine")) {
-				reportEngine = (IReportEngine) m.invoke(factoryObjectForReflection, config);
+				try {
+					reportEngine = (IReportEngine) m.invoke(factoryObjectForReflection, config);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					throw new BirtStarterException(BirtErrorCode.PLATFORM_START, "Failed to create report engine", e);
+				}
 			}
 		}
 		return reportEngine;
@@ -194,7 +199,7 @@ public class BirtEngineService {
 	public void shutdown() {
 		// there is really no place this can be done
 		log.info("engine shutdown");
-		//TODO Figure out how to shutdown engine
+		// TODO Figure out how to shutdown engine
 		engine.shutdown();
 	}
 

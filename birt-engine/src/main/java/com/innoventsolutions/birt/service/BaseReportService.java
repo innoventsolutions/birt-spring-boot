@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,8 +27,8 @@ import org.eclipse.birt.report.model.api.ParameterHandle;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.innoventsolutions.birt.entity.ExecuteRequest;
-import com.innoventsolutions.birt.exception.BadRequestException;
-import com.innoventsolutions.birt.exception.RunnerException;
+import com.innoventsolutions.birt.exception.BirtStarterException;
+import com.innoventsolutions.birt.exception.BirtStarterException.BirtErrorCode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -100,8 +98,7 @@ public abstract class BaseReportService {
 	/*
 	 * 
 	 */
-	protected IReportRunnable getRunnableReportDesign(final ExecuteRequest execRequest)
-			throws IllegalAccessException, InvocationTargetException, IOException, RunnerException, BadRequestException {
+	protected IReportRunnable getRunnableReportDesign(final ExecuteRequest execRequest) throws BirtStarterException {
 		IReportRunnable design;
 		String fileName = execRequest.getDesignFile();
 		if (fileName.equalsIgnoreCase("TEST")) {
@@ -110,9 +107,9 @@ public abstract class BaseReportService {
 
 		try {
 			File designFile;
-	
+
 			designFile = new File(execRequest.getDesignFile());
-			
+
 			// not a full qualified file, look in design file dir
 			if (!designFile.exists()) {
 				designFile = new File(engineService.getDesignDir(), fileName);
@@ -121,26 +118,28 @@ public abstract class BaseReportService {
 			final FileInputStream fis = new FileInputStream(designFile);
 			design = engineService.getEngine().openReportDesign(fis);
 		} catch (final FileNotFoundException e) {
-			throw new BadRequestException(404, "Design file not found: " + fileName);
+			throw new BirtStarterException(BirtErrorCode.DESIGN_FILE_LOCATION, "Design file not found " + fileName, e);
 		} catch (final EngineException e) {
-			throw new RunnerException("Failed to open report design", e);
+			throw new BirtStarterException(BirtErrorCode.DESIGN_FILE_LOCATION, "Failed to open design file " + fileName,
+					e);
 		}
 		return design;
 	}
 
-	protected void configureParameters(final ExecuteRequest execRequest, final IReportRunnable design, final IEngineTask task)
-			throws IllegalAccessException, InvocationTargetException, IOException, RunnerException, BadRequestException {
+	protected void configureParameters(final ExecuteRequest execRequest, final IReportRunnable design,
+			final IEngineTask task) throws BirtStarterException {
 
 		log.debug("configure parameters");
 		if (execRequest.getParameters() == null)
 			execRequest.setParameters(new HashMap<String, Object>());
-		
+
 		final IGetParameterDefinitionTask pdTask = engineService.getEngine().createGetParameterDefinitionTask(design);
 		for (final String key : execRequest.getParameters().keySet()) {
 			final Object paramValue = execRequest.getParameters().get(key);
 			final IParameterDefnBase defn = pdTask.getParameterDefn(key);
 			if (defn == null) {
-				throw new BadRequestException(400, "Parameter " + key + " not found in report");
+				throw new BirtStarterException(BirtErrorCode.UNKNOWN_PARAMETER,
+						"Parameter " + key + " not found in report");
 			}
 			final ParameterHandle handle = (ParameterHandle) defn.getHandle();
 			final Object dataType = handle.getProperty("dataType");
@@ -159,19 +158,25 @@ public abstract class BaseReportService {
 			}
 		}
 		log.debug("validating parameters");
-		task.validateParameters();
+
+		try {
+			task.validateParameters();
+		} catch (Exception e) {
+			throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION, "Failure to validate parameters", e);
+		}
 
 	}
 
-	protected Object convertParameterValue(final String name, final Object paramValue, final Object dataType) throws BadRequestException {
+	protected Object convertParameterValue(final String name, final Object paramValue, final Object dataType)
+			throws BirtStarterException {
 		if (paramValue instanceof String) {
 			final String stringValue = (String) paramValue;
 			if ("integer".equals(dataType)) {
 				try {
 					return Integer.valueOf(stringValue);
 				} catch (final NumberFormatException e) {
-					log.error("Parameter " + name + " isn't a valid integer");
-					throw new BadRequestException(406, "Parameter " + name + " isn't a valid integer");
+					throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION,
+							"Parameter " + name + " isn't a valid integer", e);
 				}
 			}
 			if ("boolean".equals(dataType)) {
@@ -181,16 +186,16 @@ public abstract class BaseReportService {
 				try {
 					return Double.valueOf(stringValue);
 				} catch (final NumberFormatException e) {
-					log.error("Parameter " + name + " isn't a valid decimal");
-					throw new BadRequestException(406, "Parameter " + name + " isn't a valid decimal");
+					throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION,
+							"Parameter " + name + " isn't a valid decimal", e);
 				}
 			}
 			if ("float".equals(dataType)) {
 				try {
 					return Double.valueOf(stringValue);
 				} catch (final NumberFormatException e) {
-					log.error("Parameter " + name + " isn't a valid float");
-					throw new BadRequestException(406, "Parameter " + name + " isn't a valid float");
+					throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION,
+							"Parameter " + name + " isn't a valid float", e);
 				}
 			}
 			if ("date".equals(dataType)) {
@@ -198,8 +203,8 @@ public abstract class BaseReportService {
 				try {
 					return new java.sql.Date(df.parse(stringValue).getTime());
 				} catch (final ParseException e) {
-					log.error("Parameter " + name + " isn't a valid date");
-					throw new BadRequestException(406, "Parameter " + name + " isn't a valid date");
+					throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION,
+							"Parameter " + name + " isn't a valid date", e);
 				}
 			}
 			if ("dateTime".equals(dataType)) {
@@ -207,8 +212,8 @@ public abstract class BaseReportService {
 				try {
 					return new java.sql.Date(df.parse(stringValue).getTime());
 				} catch (final ParseException e) {
-					log.error("Parameter " + name + " isn't a valid dateTime");
-					throw new BadRequestException(406, "Parameter " + name + " isn't a valid dateTime");
+					throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION,
+							"Parameter " + name + " isn't a valid dateTime", e);
 				}
 			}
 			if ("time".equals(dataType)) {
@@ -216,8 +221,8 @@ public abstract class BaseReportService {
 				try {
 					return new java.sql.Time(df.parse(stringValue).getTime());
 				} catch (final ParseException e) {
-					log.error("Parameter " + name + " isn't a valid time");
-					throw new BadRequestException(406, "Parameter " + name + " isn't a valid time");
+					throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION,
+							"Parameter " + name + " isn't a valid time", e);
 				}
 			}
 		}
@@ -246,7 +251,7 @@ public abstract class BaseReportService {
 		}
 	}
 
-	public Map<String, Object> fixParameterTypes(final Map<String, Object> parameters) throws BadRequestException {
+	public Map<String, Object> fixParameterTypes(final Map<String, Object> parameters) throws BirtStarterException {
 		if (parameters == null) {
 			return null;
 		}
@@ -265,20 +270,21 @@ public abstract class BaseReportService {
 		return fixedParameters;
 	}
 
-	private Object fixParameterType(final Object name, final Object value) throws BadRequestException {
+	private Object fixParameterType(final Object name, final Object value) throws BirtStarterException {
 		if (!(value instanceof Map)) {
 			return value;
 		}
 		final Map<?, ?> map = (Map<?, ?>) value;
 		final Object type = map.get("type");
 		if (type == null) {
-			log.error("parameter value type is missing");
-			throw new BadRequestException(406, "Parameter " + name + " is an object but the type field is missing");
+			throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION,
+					"Parameter " + name + " is an object but the type field is missing");
 		}
 		final Object subValue = map.get("value");
 		if (!(subValue instanceof String)) {
 			log.error("parameter sub-value is not a string");
-			throw new BadRequestException(406, "Parameter " + name + " is an object but the value field is missing or isn't a string");
+			throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION,
+					"Parameter " + name + " is an object but the value field is missing or isn't a string");
 		}
 		if ("date".equals(type)) {
 			final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -287,7 +293,8 @@ public abstract class BaseReportService {
 				return new java.sql.Date(date.getTime());
 			} catch (final ParseException e) {
 				log.error("parameter date sub-value is malformed");
-				throw new BadRequestException(406, "Parameter " + name + " is an object and the type is date but the value isn't a valid date");
+				throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION,
+						"Parameter " + name + " is an object and the type is date but the value isn't a valid date");
 			}
 		}
 		if ("datetime".equals(type)) {
@@ -297,7 +304,8 @@ public abstract class BaseReportService {
 				return new java.sql.Date(date.getTime());
 			} catch (final ParseException e) {
 				log.error("parameter date sub-value is malformed");
-				throw new BadRequestException(406, "Parameter " + name + " is an object and the type is datetime but the value isn't a valid datetime");
+				throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION, "Parameter " + name
+						+ " is an object and the type is datetime but the value isn't a valid datetime");
 			}
 		}
 		if ("time".equals(type)) {
@@ -307,11 +315,13 @@ public abstract class BaseReportService {
 				return new java.sql.Time(date.getTime());
 			} catch (final ParseException e) {
 				log.error("parameter date sub-value is malformed");
-				throw new BadRequestException(406, "Parameter " + name + " is an object and the type is time but the value isn't a valid time");
+				throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION,
+						"Parameter " + name + " is an object and the type is time but the value isn't a valid time");
 			}
 		}
 		log.error("unrecognized parameter value type: " + type);
-		throw new BadRequestException(406, "Parameter " + name + " is an object and the type field is present but is not recognized");
+		throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION,
+				"Parameter " + name + " is an object and the type field is present but is not recognized");
 	}
 
 }

@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
 
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
-import org.springframework.boot.autoconfigure.task.TaskExecutionProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
@@ -23,10 +22,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BirtAsyncConfiguration implements AsyncConfigurer {
 
-	private final TaskExecutionProperties taskExecutionProperties;
+//	private final TaskExecutionProperties taskExecutionProperties;
 
-	public BirtAsyncConfiguration(TaskExecutionProperties taskExecutionProperties) {
-		this.taskExecutionProperties = taskExecutionProperties;
+	public BirtAsyncConfiguration() {
+//		this.taskExecutionProperties = taskExecutionProperties;
+		log.info("BirtAsyncConfiguration init");
 	}
 
 	// ---------------> Tune parameters here
@@ -35,10 +35,17 @@ public class BirtAsyncConfiguration implements AsyncConfigurer {
 	public Executor getAsyncExecutor() {
 		log.debug("Creating Async Task Executor");
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		/*
 		executor.setCorePoolSize(taskExecutionProperties.getPool().getCoreSize());
 		executor.setMaxPoolSize(taskExecutionProperties.getPool().getMaxSize());
 		executor.setQueueCapacity(taskExecutionProperties.getPool().getQueueCapacity());
 		executor.setThreadNamePrefix(taskExecutionProperties.getThreadNamePrefix());
+		*/
+		executor.setCorePoolSize(2);
+		executor.setMaxPoolSize(10);
+		executor.setQueueCapacity(3);
+		executor.setThreadNamePrefix("run_report_pool");
+
 		return executor;
 	}
 
@@ -66,8 +73,8 @@ public class BirtAsyncConfiguration implements AsyncConfigurer {
 	public class BirtAsyncUncaughtExceptionHandler implements AsyncUncaughtExceptionHandler {
 		@Override
 		public void handleUncaughtException(Throwable ex, Method method, Object... params) {
-			System.out.println("Method Name::" + method.getName());
-			System.out.println("Exception occurred::" + ex);
+			log.info("Method Name::" + method.getName());
+			log.info("Exception occurred::" + ex);
 
 		}
 	}
