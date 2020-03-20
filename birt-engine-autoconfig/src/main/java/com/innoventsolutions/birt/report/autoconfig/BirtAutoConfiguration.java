@@ -69,4 +69,5 @@ public class BirtAutoConfiguration {
 	public CustomConfiguration customConfiguration() {
 		return new CustomConfiguration();
 
+	}
 }
