@@ -70,8 +70,8 @@ public class SampleJobController {
 	@Autowired
 	private BirtConfig birtConfig;
 
-	// does not work @Autowired
-	// private Scheduler scheduler;
+	@Autowired
+	private Scheduler scheduler;
 
 	private final Map<String, CompletableFuture<SubmitResponse>> submitList = new HashMap<String, CompletableFuture<SubmitResponse>>();
 
@@ -82,9 +82,14 @@ public class SampleJobController {
 		final ScheduleRequest scheduleRequest = request.getSchedule();
 		final ExtendedSubmitResponse response = new ExtendedSubmitResponse(request);
 		if (scheduleRequest != null) {
+			log.info("schedule");
 			try {
-				final Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+				if (scheduler == null) {
+					log.info("scheduler not autowired");
+					scheduler = StdSchedulerFactory.getDefaultScheduler();
+				}
 				if (!scheduler.isStarted()) {
+					log.info("starting scheduler");
 					scheduler.start();
 				}
 				if (scheduler.isShutdown()) {
@@ -94,6 +99,7 @@ public class SampleJobController {
 						.withIdentity(scheduleRequest.getName(), scheduleRequest.getGroup()).build();
 				final JobDataMap jobDataMap = jobDetail.getJobDataMap();
 				jobDataMap.put("submitRequest", request);
+				// put this stuff in jobDataMap because it can't be autowired
 				jobDataMap.put("submitJobService", submitJobService);
 				jobDataMap.put("emailService", emailService);
 				jobDataMap.put("startedJobList", startedJobList);
@@ -201,6 +207,7 @@ public class SampleJobController {
 			@SuppressWarnings("unchecked")
 			final List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
 			jobResponse.setTriggers(triggers);
+			jobResponse.setJobKey(jobKey);
 			jobResponse.setJobDetail(scheduler.getJobDetail(jobKey));
 			jobResponse.setRuns(startedJobList.getJob(jobKey));
 

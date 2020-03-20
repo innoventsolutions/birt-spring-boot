@@ -85,7 +85,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"designFile\": \"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/sample/test.rptdesign\",\n\t\"format\": \"html\",\n\t\"parameters\": {\"dummyDate\": \"2019-06-21\"},\n\t\"email\": {\n\t\t\"to\": \"evets@stephenschafer.com\"\n\t},\n\t\"schedule\": {\n\t\t\"cronString\": \"* * * 19 MAR ? 2020\",\n\t\t\"group\": \"test-group-1\",\n\t\t\"name\": \"test-1\"\n\t}\n}"
+					"raw": "{\n\t\"designFile\": \"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/sample/test.rptdesign\",\n\t\"format\": \"html\",\n\t\"parameters\": {\"dummyDate\": \"2019-06-21\"},\n\t\"email\": {\n\t\t\"to\": \"evets@stephenschafer.com\"\n\t},\n\t\"schedule\": {\n\t\t\"cronString\": \"+5\",\n\t\t\"group\": \"test-group-1\",\n\t\t\"name\": \"test-1\"\n\t}\n}"
 				},
 				"url": {
 					"raw": "http://localhost:8080/schedule",
