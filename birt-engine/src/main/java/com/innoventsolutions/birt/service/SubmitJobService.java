@@ -36,8 +36,8 @@ import org.springframework.stereotype.Service;
 import com.innoventsolutions.birt.entity.ExecuteRequest;
 import com.innoventsolutions.birt.entity.SubmitResponse;
 import com.innoventsolutions.birt.entity.SubmitResponse.StatusEnum;
-import com.innoventsolutions.birt.exception.BadRequestException;
-import com.innoventsolutions.birt.exception.RunnerException;
+import com.innoventsolutions.birt.exception.BirtStarterException;
+import com.innoventsolutions.birt.exception.BirtStarterException.BirtErrorCode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -111,30 +111,23 @@ public class SubmitJobService extends BaseReportService {
 			try {
 				renderTask.render();
 			} catch (final UnsupportedFormatException e) {
-				throw new BadRequestException(406, "Unsupported output format");
+				throw new BirtStarterException(BirtErrorCode.BAD_FORMAT, "Unsupported output format");
 			} catch (final Exception e) {
-				if ("org.eclipse.birt.report.engine.api.impl.ParameterValidationException"
-						.equals(e.getClass().getName())) {
-					throw new BadRequestException(406, e.getMessage());
-				}
-				throw new RunnerException("Run Task failed", e);
+				throw new BirtStarterException(BirtErrorCode.RENDER_TASK, "Run Task failed", e);
 			}
-			final List<Exception> exceptions = new ArrayList<>();
 			final List<EngineException> errors = renderTask.getErrors();
 			if (errors != null && errors.size() > 0) {
-				for (final EngineException exception : errors) {
-					exceptions.add(exception);
-				}
+				throw new BirtStarterException(BirtErrorCode.RENDER_TASK, errors);
 			}
 
 			rptdoc.close();
 			renderTask.close();
-		} catch (final BadRequestException e1) {
-			submitResponse.setHttpStatus(HttpStatus.valueOf(e1.getCode()));
-			submitResponse.setHttpStatusMessage(e1.getReason());
+		} catch (final BirtStarterException e1) {
+			submitResponse.setHttpStatus(e1.getHttpCode());
+			submitResponse.setHttpStatusMessage(e1.getMessage());
 			submitResponse.setStatus(StatusEnum.EXCEPTION);
 			return submitResponse;
-		} catch (final Exception e1) {
+		} catch (final EngineException e1) {
 			log.error("Failed to render report", e1);
 			submitResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 			submitResponse.setHttpStatusMessage(e1.getMessage());
@@ -148,7 +141,6 @@ public class SubmitJobService extends BaseReportService {
 			if (renderTask != null)
 				renderTask.close();
 		}
-
 		submitResponse.setHttpStatus(HttpStatus.OK);
 		submitResponse.setRenderFinish(new Date());
 		submitResponse.setStatus(StatusEnum.COMPLETE);
@@ -167,9 +159,10 @@ public class SubmitJobService extends BaseReportService {
 			final IReportRunnable design = getRunnableReportDesign(submitResponse.getRequest());
 			// Run Reports will only do a RunAndRender
 			rTask = engineService.getEngine().createRunTask(design);
-			// TODO Does not make sense
-			final Map<String, Object> appContext = rTask.getAppContext();
-			rTask.setAppContext(appContext);
+			
+			// TODO Set app context from the web app
+			// rTask.setAppContext(appContext);
+			
 			configureParameters(submitResponse.getRequest(), design, rTask);
 
 			final File rptDocFile = new File(engineService.getOutputDir(), submitResponse.getRptDocName());
@@ -180,39 +173,24 @@ public class SubmitJobService extends BaseReportService {
 			try {
 				rTask.run();
 			} catch (final UnsupportedFormatException e) {
-				throw new BadRequestException(406, "Unsupported output format");
+				throw new BirtStarterException(BirtErrorCode.RUN_TASK, "Unsupported output format");
 			} catch (final Exception e) {
-				if ("org.eclipse.birt.report.engine.api.impl.ParameterValidationException"
-						.equals(e.getClass().getName())) {
-					throw new BadRequestException(406, e.getMessage());
-				}
-				throw new RunnerException("Run Task failed", e);
+				throw new BirtStarterException(BirtErrorCode.RUN_TASK, "Run Task failed", e);
 			}
-			final List<Exception> exceptions = new ArrayList<>();
 			final List<EngineException> errors = rTask.getErrors();
 			if (errors != null && errors.size() > 0) {
-				for (final EngineException exception : errors) {
-					exceptions.add(exception);
-				}
-
+				throw new BirtStarterException(BirtErrorCode.RUN_TASK, errors);
 			}
 			rTask.close();
-		} catch (final BadRequestException e1) {
-			submitResponse.setHttpStatus(HttpStatus.valueOf(e1.getCode()));
-			submitResponse.setHttpStatusMessage(e1.getReason());
-			submitResponse.setStatus(StatusEnum.EXCEPTION);
-			return submitResponse;
-		} catch (final Exception e1) {
-			log.error("Failed to run report", e1);
-			submitResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (final BirtStarterException e1) {
+			submitResponse.setHttpStatus(e1.getHttpCode());
 			submitResponse.setHttpStatusMessage(e1.getMessage());
 			submitResponse.setStatus(StatusEnum.EXCEPTION);
 			return submitResponse;
-		} finally {
+		}  finally {
 			if (rTask != null)
 				rTask.close();
 		}
-
 		submitResponse.setHttpStatus(HttpStatus.OK);
 		submitResponse.setRunFinish(new Date());
 		log.info("submitJob (Run) finished");

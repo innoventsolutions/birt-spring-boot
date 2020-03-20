@@ -10,25 +10,21 @@
 package com.innoventsolutions.birt.service;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
 import org.eclipse.birt.report.engine.api.RenderOption;
-import org.eclipse.birt.report.engine.api.UnsupportedFormatException;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
 import com.innoventsolutions.birt.entity.ExecuteRequest;
-import com.innoventsolutions.birt.exception.BadRequestException;
-import com.innoventsolutions.birt.exception.RunnerException;
+import com.innoventsolutions.birt.exception.BirtStarterException;
+import com.innoventsolutions.birt.exception.BirtStarterException.BirtErrorCode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,12 +38,11 @@ public class ReportRunService extends BaseReportService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void execute(final ExecuteRequest request, HttpServletResponse response)  {
+	public void execute(final ExecuteRequest request, HttpServletResponse response) throws BirtStarterException {
 		log.info("runReport reportRun = " + request);
 		IRunAndRenderTask rrTask = null;
 		try {
-			
-			HttpServletRequest r;
+
 			final IReportRunnable design = getRunnableReportDesign(request);
 			rrTask = engineService.getEngine().createRunAndRenderTask(design);
 			// TODO Does not make sense
@@ -60,40 +55,21 @@ public class ReportRunService extends BaseReportService {
 			final String format = request.getFormat();
 			final RenderOption options = configureRenderOptions(format);
 			options.setOutputStream(response.getOutputStream());
-
 			rrTask.setRenderOption(options);
 			log.info("run-and-render report");
-			try {
-				rrTask.run();
-			} catch (final UnsupportedFormatException e) {
-				throw new BadRequestException(406, "Unsupported output format");
-			} catch (final Exception e) {
-				if ("org.eclipse.birt.report.engine.api.impl.ParameterValidationException"
-						.equals(e.getClass().getName())) {
-					throw new BadRequestException(406, e.getMessage());
-				}
-				throw new RunnerException("Run-and-render task failed", e);
-			}
-			final List<Exception> exceptions = new ArrayList<>();
+			rrTask.run();
 			final List<EngineException> errors = rrTask.getErrors();
 			if (errors != null && errors.size() > 0) {
-				for (final EngineException exception : errors) {
-					exceptions.add(exception);
-				}
-
+				throw new BirtStarterException(BirtErrorCode.RUNANDRENDER_TASK, errors);
 			}
 			rrTask.close();
-		} catch (final BadRequestException | IOException | RunnerException | IllegalAccessException | InvocationTargetException e1) {
-				log.error("Unable to run report", e1);
-				
-//				throw new RunnerException("Failure in Run Report: " + e1.getMessage(), e1);
-				//TODO
-				//response.sendError(500, e1.getMessage());
+		} catch (final IOException | EngineException e1) {
+
+			throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION, "Failure to run report", e1);
 		} finally {
 			if (rrTask != null)
 				rrTask.close();
 		}
-		
 
 	}
 
