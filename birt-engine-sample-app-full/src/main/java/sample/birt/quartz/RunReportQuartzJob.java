@@ -24,12 +24,14 @@ import com.innoventsolutions.birt.config.BirtConfig;
 import com.innoventsolutions.birt.entity.SubmitResponse;
 import com.innoventsolutions.birt.service.SubmitJobService;
 
+import lombok.extern.slf4j.Slf4j;
 import sample.birt.entity.EmailRequest;
 import sample.birt.entity.ExtendedExecuteRequest;
 import sample.birt.entity.ExtendedSubmitResponse;
 import sample.birt.service.EmailService;
 import sample.birt.service.StartedJobList;
 
+@Slf4j
 @Component
 public class RunReportQuartzJob implements Job {
 	@Autowired
@@ -54,18 +56,21 @@ public class RunReportQuartzJob implements Job {
 			throw new RuntimeException("submitRequest not found in jobDataMap");
 		}
 		if (submitJobService == null) {
+			log.info("submitJobService not autowired");
 			submitJobService = (SubmitJobService) jobDataMap.get("submitJobService");
 		}
 		if (submitJobService == null) {
 			throw new RuntimeException("submitJobService not found");
 		}
 		if (startedJobList == null) {
+			log.info("startedJobList not autwired");
 			startedJobList = (StartedJobList) jobDataMap.get("startedJobList");
 		}
 		if (startedJobList == null) {
 			throw new RuntimeException("startedJobList not found");
 		}
 		if (birtConfig == null) {
+			log.info("birtConfig not autowired");
 			birtConfig = (BirtConfig) jobDataMap.get("birtConfig");
 		}
 		if (birtConfig == null) {
@@ -74,6 +79,7 @@ public class RunReportQuartzJob implements Job {
 		final EmailRequest emailRequest = request.getEmail();
 		if (emailRequest != null) {
 			if (emailService == null) {
+				log.info("emailService not autowired");
 				emailService = (EmailService) jobDataMap.get("emailService");
 			}
 			if (emailService == null) {

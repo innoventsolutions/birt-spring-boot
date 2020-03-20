@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 
 import com.innoventsolutions.birt.config.BirtAsyncConfiguration;
 import com.innoventsolutions.birt.config.BirtConfig;
-import com.innoventsolutions.birt.config.CustomConfiguration;
 import com.innoventsolutions.birt.controller.RunController;
 import com.innoventsolutions.birt.controller.SubmitController;
 import com.innoventsolutions.birt.service.BirtEngineService;
@@ -42,7 +41,7 @@ public class BirtAutoConfiguration {
 	@ConditionalOnMissingBean
 	@Bean(name = "submitJobExecutor")
 	public ExecutorService taskExecutor() {
-		ExecutorService executor = Executors.newFixedThreadPool(10);
+		final ExecutorService executor = Executors.newFixedThreadPool(10);
 
 		return executor;
 	}
@@ -64,10 +63,10 @@ public class BirtAutoConfiguration {
 	public BirtAsyncConfiguration asyncConfiguration() {
 		return new BirtAsyncConfiguration();
 	}
-
-	@Bean
-	public CustomConfiguration customConfiguration() {
-		return new CustomConfiguration();
-
-	}
+	/*
+	 * @Bean public CustomConfiguration customConfiguration() { return new
+	 * CustomConfiguration();
+	 * 
+	 * }
+	 */
 }

@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import com.innoventsolutions.birt.config.BirtAsyncConfiguration;
 import com.innoventsolutions.birt.entity.ExecuteRequest;
+import com.innoventsolutions.birt.exception.BirtStarterException;
 import com.innoventsolutions.birt.service.ReportRunService;
 import com.innoventsolutions.birt.util.Util;
 
@@ -69,15 +70,13 @@ public class RunController {
 			final HttpServletResponse response) {
 
 		log.info("Run Report: " + Thread.currentThread());
-		StreamingResponseBody responseBody = out -> {
+		final StreamingResponseBody responseBody = out -> {
 
 			log.info("Run Report Lambda: " + Thread.currentThread());
 			try {
 				runner.execute(request, response);
-			} catch (Exception e) {
-				
-				out.write(Util.getRestExceptionResponse(e).getBytes());
-			
+			} catch (final BirtStarterException e) {
+				e.sendError(response);
 			}
 		};
 

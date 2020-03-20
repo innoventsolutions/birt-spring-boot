@@ -84,7 +84,6 @@ public class SubmitController {
 	@GetMapping("/submitJob")
 	public ResponseEntity<SubmitResponse> executeSubmitJob(@RequestBody final ExecuteRequest request,
 			final HttpServletResponse httpResponse) {
-
 		final SubmitResponse submitResponse = new SubmitResponse(request);
 		final CompletableFuture<SubmitResponse> submission = submitter.executeRunThenRender(submitResponse);
 		submitList.put(submitResponse.getJobid(), submission);
