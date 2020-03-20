@@ -82,8 +82,9 @@ public class SubmitJobService extends BaseReportService {
 		}
 		submitResponse.setStatus(StatusEnum.RENDER);
 		submitResponse.setRenderBegin(new Date());
-		log.info("submitJob (Render) = " + submitResponse.getRequest() + "[" + submitResponse.getJobid() + "]");
-		log.info("submitJob (Render) current status = " + submitResponse.getStatus());
+		log.info("SubmitJobService.executeRender = " + submitResponse.getRequest() + "[" + submitResponse.getJobid()
+				+ "]");
+		log.info("SubmitJobService.executeRender current status = " + submitResponse.getStatus());
 		final ExecuteRequest request = submitResponse.getRequest();
 
 		IReportDocument rptdoc = null;
@@ -144,7 +145,7 @@ public class SubmitJobService extends BaseReportService {
 		submitResponse.setHttpStatus(HttpStatus.OK);
 		submitResponse.setRenderFinish(new Date());
 		submitResponse.setStatus(StatusEnum.COMPLETE);
-		log.info("submitJob (Render) finished");
+		log.info("SubmitJobService.executeRender finished");
 		return submitResponse;
 	}
 
@@ -152,7 +153,8 @@ public class SubmitJobService extends BaseReportService {
 	public SubmitResponse executeRun(final SubmitResponse submitResponse) {
 		submitResponse.setStatus(StatusEnum.RUN);
 		submitResponse.setRunBegin(new Date());
-		log.info("submitJob (Run) Thread: " + Thread.currentThread() + submitResponse.getRequest());
+		log.info("SubmitJobService.executeRun started, thread = " + Thread.currentThread() + ", request = "
+				+ submitResponse.getRequest());
 
 		IRunTask rTask = null;
 		try {
@@ -193,7 +195,7 @@ public class SubmitJobService extends BaseReportService {
 		}
 		submitResponse.setHttpStatus(HttpStatus.OK);
 		submitResponse.setRunFinish(new Date());
-		log.info("submitJob (Run) finished");
+		log.info("SubmitJobService.executeRun finished");
 		return submitResponse;
 	}
 

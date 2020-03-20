@@ -43,9 +43,4 @@ public class ExecuteRequest {
 		this.format = format;
 		this.parameters = new HashMap<String, Object>();
 	}
-	
-	public String getOutputFileName() {
-		return getOutputName() + "." + getFormat();
-	}
-
 }

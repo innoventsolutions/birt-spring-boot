@@ -44,10 +44,12 @@ public class GetJobResponse {
 	}
 
 	public void setJobDetail(final JobDetail jobDetail) {
-		jobKey = jobDetail.getKey();
-		description = jobDetail.getDescription();
-		jobClass = jobDetail.getJobClass();
-		jobDataMap = jobDetail.getJobDataMap();
+		if (jobDetail != null) {
+			jobKey = jobDetail.getKey();
+			description = jobDetail.getDescription();
+			jobClass = jobDetail.getJobClass();
+			jobDataMap = jobDetail.getJobDataMap();
+		}
 	}
 
 	public void setTriggers(final List<Trigger> triggers) {

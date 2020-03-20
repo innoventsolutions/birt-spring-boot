@@ -20,6 +20,8 @@
 		<java.version>1.8</java.version>
 		<spring-boot.version>1.5.2.RELEASE</spring-boot.version>
 		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+        <quartz.version>2.3.0</quartz.version>
+        <c3p0.version>0.9.5.2</c3p0.version>
 	</properties>
 
 	<dependencies>
@@ -74,6 +76,26 @@
 			<scope>test</scope>
 		</dependency>
 		-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+        <!-- quartz -->
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>${c3p0.version}</version>
+        </dependency>
+        <!-- h2 in-memory database -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
 	</dependencies>
 
 	<build>
@@ -158,6 +180,12 @@
 				</executions>
 			</plugin>
 		</plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
 	</build>
 
 </project>

@@ -1,0 +1,137 @@
+{
+	"info": {
+		"_postman_id": "60368280-6b78-4cf6-be25-f1084da1c0f0",
+		"name": "report-runner-sample-full",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "run with no email",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"designFile\": \"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/sample/test.rptdesign\",\n\t\"format\": \"html\",\n\t\"parameters\": {\"dummyDate\": \"2019-06-21\"},\n\t\"email\": {\n\t\t\"enable\": false\n\t}\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/schedule",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"schedule"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "run with email",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"designFile\": \"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/sample/test.rptdesign\",\n\t\"format\": \"html\",\n\t\"parameters\": {\"dummyDate\": \"2019-06-21\"},\n\t\"email\": {\n\t\t\"to\": \"evets@stephenschafer.com\"\n\t}\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/schedule",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"schedule"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "schedule with email",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"designFile\": \"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/sample/test.rptdesign\",\n\t\"format\": \"html\",\n\t\"parameters\": {\"dummyDate\": \"2019-06-21\"},\n\t\"email\": {\n\t\t\"to\": \"evets@stephenschafer.com\"\n\t},\n\t\"schedule\": {\n\t\t\"cronString\": \"+5\",\n\t\t\"group\": \"test-group-1\",\n\t\t\"name\": \"test-1\"\n\t}\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/schedule",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"schedule"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get job",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"group\": \"test-group-1\",\n\t\"name\": \"test-1\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/job",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"job"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

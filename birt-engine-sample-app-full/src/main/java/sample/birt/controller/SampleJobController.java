@@ -9,13 +9,14 @@
  ******************************************************************************/
 package sample.birt.controller;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.innoventsolutions.birt.config.BirtConfig;
 import com.innoventsolutions.birt.entity.SubmitResponse;
 import com.innoventsolutions.birt.service.SubmitJobService;
 
@@ -62,19 +64,32 @@ public class SampleJobController {
 	@Autowired
 	private EmailService emailService;
 
+	@Autowired
+	private StartedJobList startedJobList;
+
+	@Autowired
+	private BirtConfig birtConfig;
+
+	@Autowired
+	private Scheduler scheduler;
+
 	private final Map<String, CompletableFuture<SubmitResponse>> submitList = new HashMap<String, CompletableFuture<SubmitResponse>>();
 
 	@GetMapping("/schedule")
-	public ResponseEntity<ExtendedSubmitResponse> executeSubmitJob(@RequestBody final ExtendedExecuteRequest request,
-			final HttpServletResponse httpResponse) {
+	public ResponseEntity<ExtendedSubmitResponse> executeSubmitJob(@RequestBody final ExtendedExecuteRequest request) {
 		log.info("/schedule " + request);
 
 		final ScheduleRequest scheduleRequest = request.getSchedule();
 		final ExtendedSubmitResponse response = new ExtendedSubmitResponse(request);
 		if (scheduleRequest != null) {
+			log.info("schedule");
 			try {
-				final Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+				if (scheduler == null) {
+					log.info("scheduler not autowired");
+					scheduler = StdSchedulerFactory.getDefaultScheduler();
+				}
 				if (!scheduler.isStarted()) {
+					log.info("starting scheduler");
 					scheduler.start();
 				}
 				if (scheduler.isShutdown()) {
@@ -84,6 +99,11 @@ public class SampleJobController {
 						.withIdentity(scheduleRequest.getName(), scheduleRequest.getGroup()).build();
 				final JobDataMap jobDataMap = jobDetail.getJobDataMap();
 				jobDataMap.put("submitRequest", request);
+				// put this stuff in jobDataMap because it can't be autowired
+				jobDataMap.put("submitJobService", submitJobService);
+				jobDataMap.put("emailService", emailService);
+				jobDataMap.put("startedJobList", startedJobList);
+				jobDataMap.put("birtConfig", birtConfig);
 				final TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger()
 						.withIdentity(scheduleRequest.getName() + "-trigger", scheduleRequest.getGroup());
 				final Date startDate = scheduleRequest.getStartDate();
@@ -93,7 +113,12 @@ public class SampleJobController {
 				} else {
 					triggerBuilder.startAt(startDate);
 				}
-				final String cronString = scheduleRequest.getCronString();
+				String cronString = scheduleRequest.getCronString();
+				if (cronString == null) {
+					cronString = getCronString(System.currentTimeMillis() + 5000);
+				} else if (cronString.indexOf(" ") < 0 && cronString.startsWith("+")) {
+					cronString = getCronString(System.currentTimeMillis() + Long.parseLong(cronString.substring(1)));
+				}
 				log.info("cronString = " + cronString);
 				final CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cronString);
 				final String misfireInstruction = scheduleRequest.getMisfireInstruction();
@@ -125,6 +150,7 @@ public class SampleJobController {
 			}
 		}
 
+		log.info("run immediately");
 		final CompletableFuture<SubmitResponse> future = submitJobService.executeRunThenRender(response);
 		final EmailRequest emailRequest = request.getEmail();
 		if (emailRequest != null) {
@@ -132,6 +158,27 @@ public class SampleJobController {
 		}
 		submitList.put(response.getJobid(), future);
 		return new ResponseEntity<ExtendedSubmitResponse>(response, HttpStatus.OK);
+	}
+
+	public static String getCronString(final long time) {
+		final GregorianCalendar cal = new GregorianCalendar();
+		cal.setTimeInMillis(time);
+		final List<String> args = new ArrayList<>();
+		args.add(String.valueOf(cal.get(Calendar.SECOND)));
+		args.add(String.valueOf(cal.get(Calendar.MINUTE)));
+		args.add(String.valueOf(cal.get(Calendar.HOUR_OF_DAY)));
+		args.add(String.valueOf(cal.get(Calendar.DAY_OF_MONTH)));
+		args.add(String.valueOf(cal.get(Calendar.MONTH) + 1)); // note: javadocs are wrong for this
+		args.add("?"); // day of week
+		args.add(String.valueOf(cal.get(Calendar.YEAR)));
+		final StringBuilder sb = new StringBuilder();
+		String sep = "";
+		for (final String arg : args) {
+			sb.append(sep);
+			sep = " ";
+			sb.append(arg);
+		}
+		return sb.toString();
 	}
 
 	@DeleteMapping("/job")
@@ -149,9 +196,6 @@ public class SampleJobController {
 		}
 	}
 
-	@Autowired
-	private StartedJobList startedJobList;
-
 	@GetMapping("/job")
 	@ResponseBody
 	public ResponseEntity<GetJobResponse> getJob(@RequestBody final GetJobRequest request) {
@@ -163,6 +207,7 @@ public class SampleJobController {
 			@SuppressWarnings("unchecked")
 			final List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
 			jobResponse.setTriggers(triggers);
+			jobResponse.setJobKey(jobKey);
 			jobResponse.setJobDetail(scheduler.getJobDetail(jobKey));
 			jobResponse.setRuns(startedJobList.getJob(jobKey));
 

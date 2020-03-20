@@ -18,6 +18,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.innoventsolutions.birt.config.BirtConfig;
 import com.innoventsolutions.birt.entity.SubmitResponse;
@@ -29,6 +30,7 @@ import sample.birt.entity.ExtendedSubmitResponse;
 import sample.birt.service.EmailService;
 import sample.birt.service.StartedJobList;
 
+@Component
 public class RunReportQuartzJob implements Job {
 	@Autowired
 	private SubmitJobService submitJobService;
@@ -52,17 +54,31 @@ public class RunReportQuartzJob implements Job {
 			throw new RuntimeException("submitRequest not found in jobDataMap");
 		}
 		if (submitJobService == null) {
-			throw new RuntimeException("submitJobService not autowired");
+			submitJobService = (SubmitJobService) jobDataMap.get("submitJobService");
+		}
+		if (submitJobService == null) {
+			throw new RuntimeException("submitJobService not found");
 		}
 		if (startedJobList == null) {
-			throw new RuntimeException("schedulerService not autowired");
+			startedJobList = (StartedJobList) jobDataMap.get("startedJobList");
+		}
+		if (startedJobList == null) {
+			throw new RuntimeException("startedJobList not found");
 		}
 		if (birtConfig == null) {
-			throw new RuntimeException("birtConfig not autowired");
+			birtConfig = (BirtConfig) jobDataMap.get("birtConfig");
+		}
+		if (birtConfig == null) {
+			throw new RuntimeException("birtConfig not found");
 		}
 		final EmailRequest emailRequest = request.getEmail();
-		if (emailRequest != null && emailService == null) {
-			throw new RuntimeException("emailService not autowired");
+		if (emailRequest != null) {
+			if (emailService == null) {
+				emailService = (EmailService) jobDataMap.get("emailService");
+			}
+			if (emailService == null) {
+				throw new RuntimeException("emailService not found");
+			}
 		}
 		try {
 			final ExtendedSubmitResponse response = new ExtendedSubmitResponse(request);

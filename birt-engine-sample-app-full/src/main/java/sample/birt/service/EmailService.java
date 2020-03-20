@@ -5,19 +5,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.innoventsolutions.birt.config.BirtConfig;
@@ -73,18 +68,24 @@ public class EmailService {
 		log.info("Mailer is sending email");
 		final String mailTo = join(config.getTo(), emailRequest != null ? emailRequest.getTo() : "");
 		final String[] recipients = mailTo.split(", *");
-		final Map<String, Exception> exceptions = new HashMap<>();
+		final Map<String, Throwable> exceptions = new HashMap<>();
 		for (final String recipient : recipients) {
 			final MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 			try {
-				mimeMessage.setFrom(new InternetAddress(mailFrom));
-				mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
+				final boolean attach = emailRequest != null && emailRequest.getAttachReport() != null
+						? emailRequest.getAttachReport().booleanValue()
+						: config.isAttachReport();
+				final File outputFile = new File(birtConfig.getOutputDir(), submitResponse.getOutFileName());
+				final boolean multipart = attach && success && outputFile.exists();
+				final MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, multipart);
+				helper.setFrom(mailFrom);
+				helper.setTo(recipient);
 				final String mailCc = join(config.getCc(), emailRequest != null ? emailRequest.getCc() : "");
 				if (!mailCc.trim().isEmpty()) {
 					final String[] ccArray = mailCc.split(", *");
 					for (final String cc : ccArray) {
 						if (cc.trim().length() > 0) {
-							mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(cc));
+							helper.addCc(cc);
 						}
 					}
 				}
@@ -93,7 +94,7 @@ public class EmailService {
 					final String[] ccArray = mailBcc.split(", *");
 					for (final String cc : ccArray) {
 						if (cc.trim().length() > 0) {
-							mimeMessage.addRecipient(Message.RecipientType.BCC, new InternetAddress(cc));
+							helper.addBcc(cc);
 						}
 					}
 				}
@@ -104,38 +105,29 @@ public class EmailService {
 				final String subject = success
 						? mailSuccessSubject.trim().isEmpty() ? "Success" : submitResponse.replace(mailSuccessSubject)
 						: mailFailureSubject.trim().isEmpty() ? "Failure" : submitResponse.replace(mailFailureSubject);
-				mimeMessage.setSubject(subject);
+				helper.setSubject(subject);
 				final String mailSuccessBody = supercede(config.getSuccessBody(),
 						emailRequest != null ? emailRequest.getSuccessBody() : "");
 				final String mailFailureBody = supercede(config.getFailureBody(),
 						emailRequest != null ? emailRequest.getFailureBody() : "");
 				final String body = success ? submitResponse.replace(mailSuccessBody)
 						: mailFailureBody.trim().isEmpty() ? null : submitResponse.replace(mailFailureBody);
-				final Multipart mp = new MimeMultipart();
 				if (body != null) {
-					final MimeBodyPart mbp = new MimeBodyPart();
 					final boolean html = emailRequest != null && emailRequest.getHtml() != null
 							? emailRequest.getHtml().booleanValue()
 							: config.isHtml();
-					mbp.setContent(body, html ? "text/html;charset=utf-8" : "text/plain");
-					mp.addBodyPart(mbp);
+					helper.setText(body, html);
 				}
-				final boolean attach = emailRequest != null && emailRequest.getAttachReport() != null
-						? emailRequest.getAttachReport().booleanValue()
-						: config.isAttachReport();
-				final File outputFile = new File(birtConfig.getOutputDir(), submitResponse.getRptDocName());
-				if (attach && success && outputFile.exists()) {
-					final MimeBodyPart mbp = new MimeBodyPart();
+				if (multipart) {
 					final DataSource dataSource = new FileDataSource(outputFile);
-					mbp.setDataHandler(new DataHandler(dataSource));
-					mbp.setFileName(submitResponse.getRptDocName());
-					mp.addBodyPart(mbp);
+					helper.addAttachment(submitResponse.getRptDocName(), dataSource);
 				}
-				mimeMessage.setContent(mp);
-				mimeMessage.setSentDate(new Date());
 				javaMailSender.send(mimeMessage);
 			} catch (final MessagingException e) {
 				log.error("Failed to send email to " + recipient, e);
+				exceptions.put(recipient, e);
+			} catch (final Throwable e) {
+				log.error("Failed to send email", e);
 				exceptions.put(recipient, e);
 			}
 		}

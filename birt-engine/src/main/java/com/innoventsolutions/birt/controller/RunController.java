@@ -82,7 +82,8 @@ public class RunController {
 		};
 
 		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + request.getOutputFileName())
+				.header(HttpHeaders.CONTENT_DISPOSITION,
+						"attachment; filename=" + request.getOutputName() + "." + request.getFormat())
 				.contentType(Util.getMediaType(request.getFormat())).body(responseBody);
 	}
 
