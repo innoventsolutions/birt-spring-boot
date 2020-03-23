@@ -63,7 +63,7 @@ public class SampleJobController {
 			params.put("paramDecimal", (i * 1.9) * i);
 			params.put("paramInteger", i);
 			params.put("delay", delay);
-			final ExecuteRequest request = new ExecuteRequest(rptDesign, outputName, format, params);
+			final ExecuteRequest request = new ExecuteRequest(rptDesign, outputName, format, params, true);
 
 			executeSubmitJob(request, httpResponse);
 

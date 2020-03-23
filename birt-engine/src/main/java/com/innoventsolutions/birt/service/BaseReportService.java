@@ -160,6 +160,7 @@ public abstract class BaseReportService {
 		log.debug("validating parameters");
 
 		try {
+			// TODO: This does not test whether a required parameter is missing (with no default value)
 			task.validateParameters();
 		} catch (Exception e) {
 			throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION, "Failure to validate parameters", e);

@@ -69,7 +69,7 @@ public class SubmitController {
 			params.put("paramDecimal", (i * 1.9) * i);
 			params.put("paramInteger", i);
 			params.put("delay", delay);
-			final ExecuteRequest request = new ExecuteRequest(rptDesign, outputName, format, params);
+			final ExecuteRequest request = new ExecuteRequest(rptDesign, outputName, format, params, null);
 
 			executeSubmitJob(request, httpResponse);
 
@@ -152,23 +152,32 @@ public class SubmitController {
 			return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
 		}
 		try {
+			log.info("JOBFUTURE CLASS: " + jobFuture.getClass().toString());
 			final SubmitResponse submitResponse = jobFuture.get();
-			if (!StatusEnum.COMPLETE.equals(submitResponse.getStatus())) {
-				log.info("Job status is not complete");
-				return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
+			if (StatusEnum.COMPLETE.equals(submitResponse.getStatus())) {
+				final FileInputStream fis = submitter.getReport(submitResponse);
+				final HttpHeaders headers = new HttpHeaders();
+				headers.set("Content-Disposition", "attachment; filename=\"" + submitResponse.getOutFileName() + "\"");
+
+				final InputStreamResource resource = new InputStreamResource(fis);
+
+				final MediaType contentType = Util.getMediaType(submitResponse.getRequest().getFormat());
+				return ResponseEntity.ok().headers(headers).contentType(contentType).body(resource);
 			}
-			final FileInputStream fis = submitter.getReport(submitResponse);
-			final HttpHeaders headers = new HttpHeaders();
-			headers.set("Content-Disposition", "attachment; filename=\"" + submitResponse.getOutFileName() + "\"");
 
-			final InputStreamResource resource = new InputStreamResource(fis);
+			if (StatusEnum.EXCEPTION.equals(submitResponse.getStatus())) {
+				log.error("Broken again");
+				
+			}
 
-			final MediaType contentType = Util.getMediaType(submitResponse.getRequest().getFormat());
-			return ResponseEntity.ok().headers(headers).contentType(contentType).body(resource);
 		} catch (final Exception e) {
 			log.error("Failed to get report", e);
 			return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+
+		// TODO: Can we get here and not be processing?
+		return new ResponseEntity<Resource>(HttpStatus.PROCESSING);
+		
 	}
 
 	// TODO Is this the right place for this lookup? perhaps a Util method?

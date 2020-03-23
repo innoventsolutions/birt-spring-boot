@@ -8,7 +8,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.innoventsolutions.birt.config.BirtAsyncConfiguration;
 import com.innoventsolutions.birt.config.BirtConfig;
 import com.innoventsolutions.birt.controller.RunController;
 import com.innoventsolutions.birt.controller.SubmitController;
@@ -57,16 +56,11 @@ public class BirtAutoConfiguration {
 	public SubmitController submitController() {
 		return new SubmitController();
 	}
-
+/*
 	@Bean
 	@ConditionalOnMissingBean(name = "runExecutor")
 	public BirtAsyncConfiguration asyncConfiguration() {
 		return new BirtAsyncConfiguration();
 	}
-	/*
-	 * @Bean public CustomConfiguration customConfiguration() { return new
-	 * CustomConfiguration();
-	 *
-	 * }
-	 */
+*/
 }

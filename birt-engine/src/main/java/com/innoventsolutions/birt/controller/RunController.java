@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import com.innoventsolutions.birt.config.BirtAsyncConfiguration;
 import com.innoventsolutions.birt.entity.ExecuteRequest;
+import com.innoventsolutions.birt.exception.BirtStarterException;
 import com.innoventsolutions.birt.service.ReportRunService;
 import com.innoventsolutions.birt.util.Util;
 
@@ -24,9 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 public class RunController {
-
-	@Autowired
-	private BirtAsyncConfiguration asynConfig;
 
 	@Autowired
 	public RunController() {
@@ -43,7 +41,7 @@ public class RunController {
 		final String rptDesign = "TEST";
 		final String humanName = "Test_Report.pdf";
 		final String format = "PDF";
-		final ExecuteRequest request = new ExecuteRequest(rptDesign, humanName, format);
+		final ExecuteRequest request = new ExecuteRequest(rptDesign, humanName, format, null);
 		return executeRunReport(request, response);
 	}
 
@@ -60,10 +58,19 @@ public class RunController {
 		params.put("paramBoolean", true);
 		params.put("paramDecimal", 1111.3333);
 		params.put("paramInteger", 98765);
-		final ExecuteRequest request = new ExecuteRequest(rptDesign, outputName, format, params);
+		final ExecuteRequest request = new ExecuteRequest(rptDesign, outputName, format, params, true);
 		return executeRunReport(request, response);
 	}
-
+	
+	
+	/*
+	 * Using the StreamingResponseBody causes a thread to spawn off
+	 * we are using the default TaskExecutor to spawn those threads.
+	 * may want to figure out how to use a defined task-executor
+	 * NOTE: adding @Async will cause this to use our BirtAsyncConfigurer, 
+	 * but that does not seem to be complatible with StreamingResponseBody
+	 * 
+	 */
 	@GetMapping(value = "/runReport", produces = MediaType.APPLICATION_XML_VALUE)
 	public ResponseEntity<StreamingResponseBody> executeRunReport(@RequestBody final ExecuteRequest request,
 			final HttpServletResponse response) {
@@ -72,7 +79,18 @@ public class RunController {
 		final StreamingResponseBody responseBody = out -> {
 
 			log.info("Run Report Lambda: " + Thread.currentThread());
-			runner.execute(request, response);
+			try {
+				runner.execute(request, response);
+			} catch (BirtStarterException e) {
+				
+				//TODO Steve to move all code into the BirtStarterException.sendError method
+				if (request.getWrapError()) {
+					response.setStatus(HttpStatus.BAD_GATEWAY.value());
+					response.getOutputStream().write(Util.getRestExceptionResponse(e).getBytes());
+				} else {
+					e.sendError(response);
+				}
+			}
 		};
 
 		return ResponseEntity.ok()

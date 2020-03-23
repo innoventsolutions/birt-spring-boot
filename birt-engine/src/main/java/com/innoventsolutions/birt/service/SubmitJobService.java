@@ -60,7 +60,13 @@ public class SubmitJobService extends BaseReportService {
 		// to use Fork/join change the executor to submitPool (or opposite)
 		final CompletableFuture<SubmitResponse> runThenRender = CompletableFuture
 				.supplyAsync((() -> executeRun(submitResponse)), executorService)
-				.thenApply(l -> executeRender(submitResponse));
+				.thenApply(l -> executeRender(submitResponse))
+				.exceptionally (err -> {
+					if (err != null)
+						log.info("LOOK AT ME: " + err.getMessage() + " " + err.getClass().toString() );
+					submitResponse.setHttpStatusMessage("WE GOT THE ERROR and modified things");
+					return submitResponse;
+				});
 
 		return runThenRender;
 	}
@@ -82,7 +88,8 @@ public class SubmitJobService extends BaseReportService {
 		submitResponse.setRenderBegin(new Date());
 		log.info("SubmitJobService.executeRender = " + submitResponse.getRequest() + "[" + submitResponse.getJobid()
 				+ "]");
-		log.info("SubmitJobService.executeRender current status = " + submitResponse.getStatus());
+		log.info("SubmitJobService.executeRender current status = " + submitResponse.getStatus() + " thread: "
+				+ Thread.currentThread().getName());
 		final ExecuteRequest request = submitResponse.getRequest();
 
 		IReportDocument rptdoc = null;
@@ -159,10 +166,10 @@ public class SubmitJobService extends BaseReportService {
 			final IReportRunnable design = getRunnableReportDesign(submitResponse.getRequest());
 			// Run Reports will only do a RunAndRender
 			rTask = engineService.getEngine().createRunTask(design);
-			
+
 			// TODO Set app context from the web app
 			// rTask.setAppContext(appContext);
-			
+
 			configureParameters(submitResponse.getRequest(), design, rTask);
 
 			final File rptDocFile = new File(engineService.getOutputDir(), submitResponse.getRptDocName());
@@ -187,7 +194,7 @@ public class SubmitJobService extends BaseReportService {
 			submitResponse.setHttpStatusMessage(e1.getMessage());
 			submitResponse.setStatus(StatusEnum.EXCEPTION);
 			return submitResponse;
-		}  finally {
+		} finally {
 			if (rTask != null)
 				rTask.close();
 		}

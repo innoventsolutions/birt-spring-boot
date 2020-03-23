@@ -12,7 +12,7 @@ package com.innoventsolutions.birt.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jetbrains.annotations.NotNull;
+import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,12 +35,16 @@ public class ExecuteRequest {
 	private @NotNull String outputName;
 	private @NotNull String format;
 	private @NotNull Map<String, Object> parameters;
+	private Boolean wrapError;
 
 	// Don't use Lombok want to have a empty parameter string
-	public ExecuteRequest(final String designFile, final String outputName, final String format) {
+	public ExecuteRequest(final String designFile, final String outputName, final String format, Boolean wrapError) {
 		this.designFile = designFile;
 		this.outputName = outputName;
 		this.format = format;
 		this.parameters = new HashMap<String, Object>();
+		if (wrapError == null)
+			wrapError = false;
+		this.wrapError = wrapError;
 	}
 }

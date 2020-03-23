@@ -23,7 +23,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.innoventsolutions.birt.error.ApiError;
 import com.innoventsolutions.birt.exception.BirtStarterException;
-import com.innoventsolutions.birt.util.EntityNotFoundException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -113,13 +112,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	 *
 	 * @param ex the EntityNotFoundException
 	 * @return the ApiError object
-	 */
 	@ExceptionHandler(EntityNotFoundException.class)
 	protected ResponseEntity<Object> handleEntityNotFound(final EntityNotFoundException ex) {
 		final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
 		apiError.setMessage(ex.getMessage());
 		return buildResponseEntity(apiError);
 	}
+	 */
 
 	/**
 	 * Handles BirtStarterException
@@ -190,11 +189,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
 	/**
 	 * Handle javax.persistence.EntityNotFoundException
-	 */
 	@ExceptionHandler(javax.persistence.EntityNotFoundException.class)
 	protected ResponseEntity<Object> handleEntityNotFound(final javax.persistence.EntityNotFoundException ex) {
 		return buildResponseEntity(new ApiError(HttpStatus.NOT_FOUND, ex));
 	}
+	 */
 
 	/**
 	 * Handle DataIntegrityViolationException, inspects the cause for different DB
