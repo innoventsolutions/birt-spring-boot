@@ -106,13 +106,13 @@ public class BirtEngineService {
 	}
 
 	private static IReportEngine getReportEngine(final EngineConfig config) throws BirtStarterException {
-		log.error("before Platform startup");
+		log.info("before Platform startup");
 		try {
 			Platform.startup(config);
 		} catch (final BirtException e) {
 			throw new BirtStarterException(BirtErrorCode.PLATFORM_START, "Failed to start platform", e);
 		}
-		log.error("after Platform startup");
+		log.info("after Platform startup");
 		final IReportEngineFactory factory = (IReportEngineFactory) Platform
 				.createFactoryObject(IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY);
 		if (factory == null) {

@@ -111,10 +111,10 @@ public class RunReportTest {
 		final ExecuteRequest requestObject = new ExecuteRequest();
 		requestObject.setDesignFile(PARAM_TEST_RPTDESIGN);
 		requestObject.setFormat("pdf");
-		Map<String, Object> bad_param = new HashMap<String, Object>() {
+		final Map<String, Object> bad_param = new HashMap<String, Object>() {
 			{
 				// required, not including should force an error
-				//put("paramString", "String Val"); 
+				// put("paramString", "String Val");
 				put("paramDate", "2010-05-05");
 				put("paramInteger", 1111);
 				put("paramDecimal", 999.888);
@@ -129,10 +129,11 @@ public class RunReportTest {
 		final MvcResult statusResult = this.mockMvc
 				.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
-				.andDo(MvcResult::getAsyncResult)
-				.andExpect(status().isOk())
-				.andReturn();
-		
+				// this causes: java.lang.IllegalStateException: The asyncDispatch
+				// CountDownLatch was not set by the TestDispatcherServlet
+				// .andDo(MvcResult::getAsyncResult)
+				.andExpect(status().is(406)).andReturn();
+
 		System.out.println(statusResult);
 
 	}

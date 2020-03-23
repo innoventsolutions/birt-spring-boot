@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.innoventsolutions.birt.exception.BirtStarterException;
 
+// could not get this to work
 @Controller
 public class BirtStarterErrorController implements ErrorController {
 

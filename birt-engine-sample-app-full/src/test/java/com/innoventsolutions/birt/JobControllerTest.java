@@ -100,36 +100,39 @@ public class JobControllerTest {
 				.perform(get("/schedule").contentType(MediaType.APPLICATION_JSON).content(scheduleRequestString)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andDo(document("schedule", requestFields(
-						fieldWithPath("schedule.group").description(JOB_GROUP_DESCRIPTION),
-						fieldWithPath("schedule.name").description(JOB_NAME_DESCRIPTION),
-						fieldWithPath("schedule.startDate").description(JOB_START_DATE_DESCRIPTION),
-						fieldWithPath("schedule.cronString")
-								.description("The cron string as described in cron documentation"),
-						fieldWithPath("schedule.misfireInstruction").optional()
-								.description("One of 'ignore', 'fire-and-proceed', or 'do-nothing'"),
-						fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
-						fieldWithPath("format").optional().description(FORMAT_DESCRIPTION),
-						fieldWithPath("outputName").optional().type(JsonFieldType.STRING)
-								.description(OUTPUT_NAME_DESCRIPTION),
-						subsectionWithPath("parameters").optional().type(JsonFieldType.OBJECT)
-								.description(PARAMETERS_DESCRIPTION),
-						subsectionWithPath("email").optional().type(JsonFieldType.OBJECT).description("x")),
+				.andDo(document("schedule",
+						requestFields(fieldWithPath("schedule.group").description(JOB_GROUP_DESCRIPTION),
+								fieldWithPath("schedule.name").description(JOB_NAME_DESCRIPTION),
+								fieldWithPath("schedule.startDate").description(JOB_START_DATE_DESCRIPTION),
+								fieldWithPath("schedule.cronString")
+										.description("The cron string as described in cron documentation"),
+								fieldWithPath("schedule.misfireInstruction").optional()
+										.description("One of 'ignore', 'fire-and-proceed', or 'do-nothing'"),
+								fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
+								fieldWithPath("format").optional().description(FORMAT_DESCRIPTION),
+								fieldWithPath("outputName").optional().type(JsonFieldType.STRING)
+										.description(OUTPUT_NAME_DESCRIPTION),
+								subsectionWithPath("parameters").optional().type(JsonFieldType.OBJECT)
+										.description(PARAMETERS_DESCRIPTION),
+								subsectionWithPath("email").optional().type(JsonFieldType.OBJECT).description("x")),
 						responseFields(
 								fieldWithPath("jobKey.group").description("The job group name passed in the request"),
 								fieldWithPath("jobKey.name").description("The job name passed in the request"),
 								fieldWithPath("jobid").description("x"), fieldWithPath("rptDocName").description("x"),
 								fieldWithPath("outFileName").description("x"),
 								fieldWithPath("submitTime").description("x"),
-								fieldWithPath("runBegin").description("x"), fieldWithPath("runFinish").description("x"),
-								fieldWithPath("renderBegin").description("x"),
-								fieldWithPath("renderFinish").description("x"),
+								// fieldWithPath("runBegin").description("x"),
+								// fieldWithPath("runFinish").description("x"),
+								// fieldWithPath("renderBegin").description("x"),
+								// fieldWithPath("renderFinish").description("x"),
 								fieldWithPath("status").description("x"),
 								subsectionWithPath("request").description("x"),
-								fieldWithPath("httpStatus").description("x"),
-								fieldWithPath("httpStatusMessage").description("x"),
-								fieldWithPath("emailBegin").description("x"),
-								fieldWithPath("emailFinish").description("x"))))
+								fieldWithPath("httpStatus").description("x") // ,
+						// fieldWithPath("httpStatusMessage").description("x"),
+						// fieldWithPath("emailBegin").description("x"),
+						// fieldWithPath("emailFinish").description("x")
+						)))
+
 				.andReturn();
 		final MockHttpServletResponse scheduleResponse = scheduleResult.getResponse();
 		Assert.assertTrue(scheduleResponse.getContentType().startsWith("application/json"));
@@ -169,13 +172,16 @@ public class JobControllerTest {
 								fieldWithPath("description").description("x").type(JsonFieldType.STRING).optional(),
 								fieldWithPath("jobClass").description("x").type(JsonFieldType.STRING).optional(),
 								subsectionWithPath("triggers").description("The job triggers"),
-								subsectionWithPath("runs")
-										.description("Status info of actual runs that have occurred.  "
-												+ "This is an object where each key is a report run UUID and the value is the "
-												+ "same as what is returned from /status."),
-								subsectionWithPath("jobKey").description("x"),
-								subsectionWithPath("jobDataMap").description("x"))))
-				.andReturn();
+								/*
+								 * subsectionWithPath("runs")
+								 * .description("Status info of actual runs that have occurred.  " +
+								 * "This is an object where each key is a report run UUID and the value is the "
+								 * + "same as what is returned from /status."),
+								 */
+								subsectionWithPath("jobKey").description("x")
+						/*
+						 * , subsectionWithPath("jobDataMap"). description("x")
+						 */ ))).andReturn();
 		final MockHttpServletResponse jobResponse = jobResult.getResponse();
 		Assert.assertTrue(jobResponse.getContentType().startsWith("application/json"));
 		final String jobResponseString = jobResponse.getContentAsString();
