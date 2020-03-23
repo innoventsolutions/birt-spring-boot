@@ -34,17 +34,19 @@ public class BirtAsyncConfiguration implements AsyncConfigurer {
 	@Bean(name = "taskExecutor")
 	public Executor getAsyncExecutor() {
 		log.debug("Creating Async Task Executor");
-		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 		/*
-		executor.setCorePoolSize(taskExecutionProperties.getPool().getCoreSize());
-		executor.setMaxPoolSize(taskExecutionProperties.getPool().getMaxSize());
-		executor.setQueueCapacity(taskExecutionProperties.getPool().getQueueCapacity());
-		executor.setThreadNamePrefix(taskExecutionProperties.getThreadNamePrefix());
-		*/
+		 * executor.setCorePoolSize(taskExecutionProperties.getPool().getCoreSize());
+		 * executor.setMaxPoolSize(taskExecutionProperties.getPool().getMaxSize());
+		 * executor.setQueueCapacity(taskExecutionProperties.getPool().getQueueCapacity(
+		 * ));
+		 * executor.setThreadNamePrefix(taskExecutionProperties.getThreadNamePrefix());
+		 */
 		executor.setCorePoolSize(2);
 		executor.setMaxPoolSize(10);
 		executor.setQueueCapacity(3);
 		executor.setThreadNamePrefix("run_report_pool");
+		executor.initialize();
 
 		return executor;
 	}
@@ -54,7 +56,7 @@ public class BirtAsyncConfiguration implements AsyncConfigurer {
 	protected WebMvcConfigurer webMvcConfigurer() {
 		return new WebMvcConfigurer() {
 			@Override
-			public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+			public void configureAsyncSupport(final AsyncSupportConfigurer configurer) {
 				configurer.setTaskExecutor(getTaskExecutor());
 			}
 		};
@@ -72,7 +74,7 @@ public class BirtAsyncConfiguration implements AsyncConfigurer {
 
 	public class BirtAsyncUncaughtExceptionHandler implements AsyncUncaughtExceptionHandler {
 		@Override
-		public void handleUncaughtException(Throwable ex, Method method, Object... params) {
+		public void handleUncaughtException(final Throwable ex, final Method method, final Object... params) {
 			log.info("Method Name::" + method.getName());
 			log.info("Exception occurred::" + ex);
 
