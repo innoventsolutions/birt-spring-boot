@@ -190,6 +190,8 @@ public class SubmitJobService extends BaseReportService {
 			}
 			rTask.close();
 		} catch (final BirtStarterException e1) {
+			//TODO Rather than bury the error, throw it and move this logic to the Exceptionaly clause 
+			
 			submitResponse.setHttpStatus(e1.getHttpCode());
 			submitResponse.setHttpStatusMessage(e1.getMessage());
 			submitResponse.setStatus(StatusEnum.EXCEPTION);
