@@ -1,4 +1,4 @@
-package com.innoventsolutions.birt.controller;
+package sample.birt.controller;
 
 import javax.validation.ConstraintViolationException;
 

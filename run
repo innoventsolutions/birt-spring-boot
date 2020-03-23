@@ -1,4 +1,5 @@
 #!/bin/sh
+./stop
 SUSPEND="n"
 while (( "$#" )); do
 	case $1 in

@@ -17,9 +17,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,12 +46,14 @@ import lombok.extern.slf4j.Slf4j;
 @WebAppConfiguration
 @Slf4j
 public class RunReportTest {
-	private static final String TEST_RPTDESIGN = "test.rptdesign";
+	// private static final String TEST_RPTDESIGN = "test.rptdesign";
 	private static final String PARAM_TEST_RPTDESIGN = "param_test.rptdesign";
 	private static final Object DESIGN_FILE_DESCRIPTION = "The full path to the BIRT design file on the server file system";
 	private static final Object FORMAT_DESCRIPTION = "The report output format: HTML, PDF, XLS, or any other format supported by the BIRT engine";
 	private static final Object PARAMETERS_DESCRIPTION = "The parameters in the form {\"name\": value, ...}, where value may be a string, number or boolean for single value parameters or an array of string, number, or boolean for multi-valued parameters.";
 	private static final Map<String, Object> PARAM_MAP_1 = new HashMap<String, Object>() {
+		private static final long serialVersionUID = 1L;
+
 		{
 			put("paramString", "String Val");
 			put("paramDate", "2010-05-05");
@@ -67,15 +66,15 @@ public class RunReportTest {
 	@Autowired
 	private WebApplicationContext context;
 	private MockMvc mockMvc;
-	private final String design_no_param = "TEST";
-	private final String design_w_param = "param_test.rptdesign";
+	// private final String design_no_param = "TEST";
+	// private final String design_w_param = "param_test.rptdesign";
 
 	@Before
 	public void setUp() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
 				.apply(documentationConfiguration(this.restDocumentation)).build();
-		final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		final String dateString = df.format(new Date());
+		// final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		// final String dateString = df.format(new Date());
 		// get full path to report design file (which is in a different package)
 	}
 
@@ -103,7 +102,7 @@ public class RunReportTest {
 										.description(PARAMETERS_DESCRIPTION))))
 
 				.andReturn();
-
+		System.out.println(statusResult);
 	}
 
 	@Test
@@ -112,6 +111,8 @@ public class RunReportTest {
 		requestObject.setDesignFile(PARAM_TEST_RPTDESIGN);
 		requestObject.setFormat("pdf");
 		final Map<String, Object> bad_param = new HashMap<String, Object>() {
+			private static final long serialVersionUID = 1L;
+
 			{
 				// required, not including should force an error
 				// put("paramString", "String Val");

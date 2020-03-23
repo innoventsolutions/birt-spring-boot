@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableAsync
-@ComponentScan
+@ComponentScan // (basePackages = "com.innoventsolutions.birt")
 @EnableScheduling
 public class BirtSample {
 	public static void main(final String[] args) {

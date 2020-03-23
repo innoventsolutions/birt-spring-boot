@@ -66,7 +66,7 @@ public class BirtAutoConfiguration {
 	/*
 	 * @Bean public CustomConfiguration customConfiguration() { return new
 	 * CustomConfiguration();
-	 * 
+	 *
 	 * }
 	 */
 }

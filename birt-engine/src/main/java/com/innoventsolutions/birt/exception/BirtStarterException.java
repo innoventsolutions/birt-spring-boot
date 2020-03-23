@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class BirtStarterException extends Exception {
+public class BirtStarterException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 	private BirtErrorCode errorCode;
 	private final List<Exception> exceptions = new ArrayList<>();
