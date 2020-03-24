@@ -10,7 +10,6 @@
 package com.innoventsolutions.birt.exception;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.springframework.http.HttpStatus;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.innoventsolutions.birt.error.ApiError;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -88,11 +90,18 @@ public class BirtStarterException extends RuntimeException {
 		}
 	}
 
-	public void sendError(final HttpServletResponse response) {
+	public void sendError(final HttpServletResponse response, final boolean wrapError) {
 		try {
-			final PrintStream ps = new PrintStream(response.getOutputStream());
-			ps.println(this.getMessage());
-			response.sendError(this.getHttpCode().value(), this.getMessage());
+			if (wrapError) {
+				// send JSON with error code
+				response.setStatus(this.getHttpCode().value());
+				final ApiError apiError = new ApiError(this.getHttpCode(), this.getMessage());
+				final ObjectMapper mapper = new ObjectMapper();
+				mapper.writeValue(response.getWriter(), apiError);
+				response.setContentType("application/json");
+			} else {
+				response.sendError(this.getHttpCode().value(), this.getMessage());
+			}
 		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -86,13 +86,15 @@ public class SubmitReportTest {
 				.perform(get("/submitJob").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andDo(document("submitJob",
-						requestFields(fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
-								fieldWithPath("format").description(FORMAT_DESCRIPTION),
-								fieldWithPath("outputName").optional().type(JsonFieldType.STRING)
-										.description(PARAMETERS_DESCRIPTION),
-								subsectionWithPath("parameters").optional().type(JsonFieldType.OBJECT)
-										.description(PARAMETERS_DESCRIPTION))))
+				.andDo(document("submitJob", requestFields(
+						fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
+						fieldWithPath("format").description(FORMAT_DESCRIPTION),
+						fieldWithPath("outputName").optional().type(JsonFieldType.STRING)
+								.description(PARAMETERS_DESCRIPTION),
+						fieldWithPath("wrapError").optional().type(JsonFieldType.BOOLEAN).description(
+								"If true, generate a JSON error response.  If false, generate a simple error response that will generate a whitelabel error page."),
+						subsectionWithPath("parameters").optional().type(JsonFieldType.OBJECT)
+								.description(PARAMETERS_DESCRIPTION))))
 
 				.andReturn();
 		System.out.println(result);

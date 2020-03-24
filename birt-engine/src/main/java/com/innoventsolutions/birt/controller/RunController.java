@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,15 +60,14 @@ public class RunController {
 		final ExecuteRequest request = new ExecuteRequest(rptDesign, outputName, format, params, true);
 		return executeRunReport(request, response);
 	}
-	
-	
+
 	/*
-	 * Using the StreamingResponseBody causes a thread to spawn off
-	 * we are using the default TaskExecutor to spawn those threads.
-	 * may want to figure out how to use a defined task-executor
-	 * NOTE: adding @Async will cause this to use our BirtAsyncConfigurer, 
-	 * but that does not seem to be complatible with StreamingResponseBody
-	 * 
+	 * Using the StreamingResponseBody causes a thread to spawn off we are using the
+	 * default TaskExecutor to spawn those threads. may want to figure out how to
+	 * use a defined task-executor NOTE: adding @Async will cause this to use our
+	 * BirtAsyncConfigurer, but that does not seem to be complatible with
+	 * StreamingResponseBody
+	 *
 	 */
 	@GetMapping(value = "/runReport", produces = MediaType.APPLICATION_XML_VALUE)
 	public ResponseEntity<StreamingResponseBody> executeRunReport(@RequestBody final ExecuteRequest request,
@@ -81,15 +79,8 @@ public class RunController {
 			log.info("Run Report Lambda: " + Thread.currentThread());
 			try {
 				runner.execute(request, response);
-			} catch (BirtStarterException e) {
-				
-				//TODO Steve to move all code into the BirtStarterException.sendError method
-				if (request.getWrapError()) {
-					response.setStatus(HttpStatus.BAD_GATEWAY.value());
-					response.getOutputStream().write(Util.getRestExceptionResponse(e).getBytes());
-				} else {
-					e.sendError(response);
-				}
+			} catch (final BirtStarterException e) {
+				e.sendError(response, request.getWrapError());
 			}
 		};
 

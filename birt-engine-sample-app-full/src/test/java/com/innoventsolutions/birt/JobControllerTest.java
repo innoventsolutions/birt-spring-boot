@@ -100,21 +100,23 @@ public class JobControllerTest {
 				.perform(get("/schedule").contentType(MediaType.APPLICATION_JSON).content(scheduleRequestString)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andDo(document("schedule",
-						requestFields(fieldWithPath("schedule.group").description(JOB_GROUP_DESCRIPTION),
-								fieldWithPath("schedule.name").description(JOB_NAME_DESCRIPTION),
-								fieldWithPath("schedule.startDate").description(JOB_START_DATE_DESCRIPTION),
-								fieldWithPath("schedule.cronString")
-										.description("The cron string as described in cron documentation"),
-								fieldWithPath("schedule.misfireInstruction").optional()
-										.description("One of 'ignore', 'fire-and-proceed', or 'do-nothing'"),
-								fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
-								fieldWithPath("format").optional().description(FORMAT_DESCRIPTION),
-								fieldWithPath("outputName").optional().type(JsonFieldType.STRING)
-										.description(OUTPUT_NAME_DESCRIPTION),
-								subsectionWithPath("parameters").optional().type(JsonFieldType.OBJECT)
-										.description(PARAMETERS_DESCRIPTION),
-								subsectionWithPath("email").optional().type(JsonFieldType.OBJECT).description("x")),
+				.andDo(document("schedule", requestFields(
+						fieldWithPath("schedule.group").description(JOB_GROUP_DESCRIPTION),
+						fieldWithPath("schedule.name").description(JOB_NAME_DESCRIPTION),
+						fieldWithPath("schedule.startDate").description(JOB_START_DATE_DESCRIPTION),
+						fieldWithPath("schedule.cronString")
+								.description("The cron string as described in cron documentation"),
+						fieldWithPath("schedule.misfireInstruction").optional()
+								.description("One of 'ignore', 'fire-and-proceed', or 'do-nothing'"),
+						fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
+						fieldWithPath("format").optional().description(FORMAT_DESCRIPTION),
+						fieldWithPath("outputName").optional().type(JsonFieldType.STRING)
+								.description(OUTPUT_NAME_DESCRIPTION),
+						fieldWithPath("wrapError").optional().type(JsonFieldType.BOOLEAN).description(
+								"If true, generate a JSON error response.  If false, generate a simple error response that will generate a whitelabel error page."),
+						subsectionWithPath("parameters").optional().type(JsonFieldType.OBJECT)
+								.description(PARAMETERS_DESCRIPTION),
+						subsectionWithPath("email").optional().type(JsonFieldType.OBJECT).description("x")),
 						responseFields(
 								fieldWithPath("jobKey.group").description("The job group name passed in the request"),
 								fieldWithPath("jobKey.name").description("The job name passed in the request"),
