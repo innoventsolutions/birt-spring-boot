@@ -69,7 +69,13 @@ public class SubmitController {
 			params.put("paramDecimal", (i * 1.9) * i);
 			params.put("paramInteger", i);
 			params.put("delay", delay);
-			final ExecuteRequest request = new ExecuteRequest(rptDesign, outputName, format, params, null);
+			
+			final ExecuteRequest request = ExecuteRequest.builder()
+					.designFile(rptDesign)
+					.outputName(outputName)
+					.format(format)
+					.parameters(params)
+					.build();
 
 			executeSubmitJob(request, httpResponse);
 

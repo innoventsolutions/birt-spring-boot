@@ -57,6 +57,7 @@ public class SubmitReportTest {
 			put("paramDate", "2010-05-05");
 			put("paramInteger", 1111);
 			put("paramDecimal", 999.888);
+			put("delay", 0);
 		}
 	};
 	@Rule
@@ -73,11 +74,12 @@ public class SubmitReportTest {
 
 	@Test
 	public void testSubmit() throws Exception {
-		final ExecuteRequest requestObject = new ExecuteRequest();
-		requestObject.setDesignFile(PARAM_TEST_RPTDESIGN);
-		requestObject.setFormat("pdf");
-		requestObject.setParameters(PARAM_MAP_1);
-		requestObject.setOutputName("test_submit_out_1");
+		final ExecuteRequest requestObject = ExecuteRequest.builder()
+				.designFile(PARAM_TEST_RPTDESIGN)
+				.format("pdf")
+				.parameters(PARAM_MAP_1)
+				.outputName("test_submit1_out_1")
+				.build();
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		log.info("testSubmit request = " + requestString);
@@ -102,11 +104,12 @@ public class SubmitReportTest {
 
 	@Test
 	public void testSubmitBadDesignFile() throws Exception {
-		final ExecuteRequest submitRequestObject = new ExecuteRequest();
-		submitRequestObject.setDesignFile("foobar");
-		submitRequestObject.setFormat("pdf");
-		submitRequestObject.setParameters(PARAM_MAP_1);
-		submitRequestObject.setOutputName("test_submit_out_2");
+		final ExecuteRequest submitRequestObject = ExecuteRequest.builder()
+				.designFile("foobar")
+				.format("pdf")
+				.parameters(PARAM_MAP_1)
+				.outputName("test_submit1_out_1")
+				.build();
 		final ObjectMapper mapper = new ObjectMapper();
 		final String submitRequestString = mapper.writeValueAsString(submitRequestObject);
 		log.info("testSubmitBadDesignFile request = " + submitRequestString);
@@ -306,11 +309,13 @@ public class SubmitReportTest {
 	 * Used for testing endpoints that require a job
 	 */
 	private String submit(final String format) throws Exception {
-		final ExecuteRequest requestObject = new ExecuteRequest();
-		requestObject.setDesignFile(PARAM_TEST_RPTDESIGN);
-		requestObject.setFormat(format);
-		requestObject.setParameters(PARAM_MAP_1);
-		requestObject.setOutputName("test_submit_out_1");
+		final ExecuteRequest requestObject = ExecuteRequest.builder()
+				.designFile(PARAM_TEST_RPTDESIGN)
+				.format(format)
+				.parameters(PARAM_MAP_1)
+				.outputName("test_submit_out_1")
+				.build();
+		
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		log.info("submit request = " + requestString);

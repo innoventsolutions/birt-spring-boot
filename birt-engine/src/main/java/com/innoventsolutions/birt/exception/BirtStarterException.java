@@ -95,10 +95,12 @@ public class BirtStarterException extends RuntimeException {
 			if (wrapError) {
 				// send JSON with error code
 				response.setStatus(this.getHttpCode().value());
+				response.setContentType("application/json");
 				final ApiError apiError = new ApiError(this.getHttpCode(), this.getMessage());
 				final ObjectMapper mapper = new ObjectMapper();
-				mapper.writeValue(response.getWriter(), apiError);
-				response.setContentType("application/json");
+				mapper.writeValue(response.getOutputStream(), apiError);
+				
+				
 			} else {
 				response.sendError(this.getHttpCode().value(), this.getMessage());
 			}

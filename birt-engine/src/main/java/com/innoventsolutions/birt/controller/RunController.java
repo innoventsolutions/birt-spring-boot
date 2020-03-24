@@ -37,10 +37,11 @@ public class RunController {
 	public ResponseEntity<StreamingResponseBody> getTestPDF(final HttpServletResponse response) {
 		log.info("testPDF ");
 
-		final String rptDesign = "TEST";
-		final String humanName = "Test_Report.pdf";
-		final String format = "PDF";
-		final ExecuteRequest request = new ExecuteRequest(rptDesign, humanName, format, null);
+		final ExecuteRequest request = ExecuteRequest.builder()
+				.designFile("TEST")
+				.outputName("Test_Report.pdf")
+				.format("PDF")
+				.build();
 		return executeRunReport(request, response);
 	}
 
@@ -48,16 +49,19 @@ public class RunController {
 	public ResponseEntity<StreamingResponseBody> getTestHTML(final HttpServletResponse response) {
 		log.info("testHTML ");
 
-		final String rptDesign = "param_test.rptdesign";
-		final String outputName = "Test_Parameter_Report.pdf";
-		final String format = "HTML";
 		final Map<String, Object> params = new HashMap<String, Object>();
 		params.put("paramString", "Ginger");
 		params.put("paramDate", "2010-09-09");
 		params.put("paramBoolean", true);
 		params.put("paramDecimal", 1111.3333);
 		params.put("paramInteger", 98765);
-		final ExecuteRequest request = new ExecuteRequest(rptDesign, outputName, format, params, true);
+		final ExecuteRequest request = ExecuteRequest.builder()
+				.designFile("param_test.rptdesign")
+				.outputName("Test_Parameter_Report.pdf")
+				.format("HTML")
+				.parameters(params)
+				.build();
+
 		return executeRunReport(request, response);
 	}
 

@@ -78,13 +78,14 @@ public class RunReportTest {
 		// get full path to report design file (which is in a different package)
 	}
 
-//	@Test
+	@Test
 	public void testRun() throws Exception {
-		final ExecuteRequest requestObject = new ExecuteRequest();
-		requestObject.setDesignFile(PARAM_TEST_RPTDESIGN);
-		requestObject.setFormat("pdf");
-		requestObject.setParameters(PARAM_MAP_1);
-		requestObject.setOutputName("test_out_1");
+		final ExecuteRequest requestObject = ExecuteRequest.builder()
+				.designFile(PARAM_TEST_RPTDESIGN)
+				.format("pdf")
+				.parameters(PARAM_MAP_1)
+				.outputName("test_out_1")
+				.build();
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		log.info("testRunReport request = " + requestString);
@@ -93,23 +94,24 @@ public class RunReportTest {
 				.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andDo(document("runReport",
+/*				.andDo(document("runReport",
 						requestFields(fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
 								fieldWithPath("format").description(FORMAT_DESCRIPTION),
 								fieldWithPath("outputName").optional().type(JsonFieldType.STRING)
 										.description(PARAMETERS_DESCRIPTION),
 								subsectionWithPath("parameters").optional().type(JsonFieldType.OBJECT)
 										.description(PARAMETERS_DESCRIPTION))))
-
+*/
 				.andReturn();
 		System.out.println(statusResult);
 	}
 
 	@Test
 	public void testMissingParameter() throws Exception {
-		final ExecuteRequest requestObject = new ExecuteRequest();
-		requestObject.setDesignFile(PARAM_TEST_RPTDESIGN);
-		requestObject.setFormat("pdf");
+		final ExecuteRequest requestObject = ExecuteRequest.builder()
+			.designFile(PARAM_TEST_RPTDESIGN)
+			.format("pdf")
+			.build();
 		final Map<String, Object> bad_param = new HashMap<String, Object>() {
 			private static final long serialVersionUID = 1L;
 
