@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 public class BaseTest {
 
@@ -21,6 +23,12 @@ public class BaseTest {
 				put("paramDecimal", 999.888);
 			}
 		};
+	protected static final String HTML_INTRO = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">";
+	protected static final ResultMatcher APIERROR_SUBERRORS_EMPTY = MockMvcResultMatchers.jsonPath("$.apierror.subErrors").isEmpty();
+	protected static final ResultMatcher APIERROR_MSG_RUNFAIL_PARAM = MockMvcResultMatchers.jsonPath("$.apierror.message").value("Failure to run report (parameter)");
+	protected static final ResultMatcher APIERROR_MSG_RUNFAIL_DESIGN = MockMvcResultMatchers.jsonPath("$.apierror.message").value("Design file not found fud_fud_fud.rptdesign");
+	protected static final ResultMatcher APIERROR_STATUS_BAD_REQUEST = MockMvcResultMatchers.jsonPath("$.apierror.status").value("BAD_REQUEST");
+	protected static final ResultMatcher APIERROR_EXISTS = MockMvcResultMatchers.jsonPath("$.apierror").exists();
 	protected MockMvc mockMvc;
 
 	public BaseTest() {

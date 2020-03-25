@@ -19,6 +19,7 @@ import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
 import org.eclipse.birt.report.engine.api.RenderOption;
+import org.eclipse.birt.report.engine.api.impl.ParameterValidationException;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
@@ -63,9 +64,14 @@ public class ReportRunService extends BaseReportService {
 				throw new BirtStarterException(BirtErrorCode.RUNANDRENDER_TASK, errors);
 			}
 			rrTask.close();
-		} catch (final IOException | EngineException e1) {
-
-			throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION, "Failure to run report", e1);
+		} catch (final IOException e) {
+			throw new BirtStarterException(BirtErrorCode.DESIGN_FILE_LOCATION, "Failure to run report (design file)", e);
+		} catch (EngineException e) {
+			if (e instanceof ParameterValidationException) {
+				throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION, "Failure to run report (parameter)" , e);
+			} else {
+				throw new BirtStarterException(BirtErrorCode.RUNANDRENDER_TASK, "Failure to run report", e);
+			}
 		} finally {
 			if (rrTask != null)
 				rrTask.close();

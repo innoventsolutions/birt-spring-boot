@@ -45,7 +45,7 @@ public class ApiError {
 		this();
 		this.status = status;
 		this.message = "Unexpected error";
-		this.debugMessage = ex.getMessage();
+		this.debugMessage = ExceptionUtils.getStackTrace(ex);
 	}
 
 	public ApiError(final HttpStatus status, final String message, final Throwable ex) {
