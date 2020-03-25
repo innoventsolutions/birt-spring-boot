@@ -10,7 +10,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.subsecti
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -44,22 +43,8 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest(classes = BirtEngineApplication.class)
 @WebAppConfiguration
 @Slf4j
-public class SubmitReportTest {
-	private static final String PARAM_TEST_RPTDESIGN = "param_test.rptdesign";
-	private static final Object DESIGN_FILE_DESCRIPTION = "The full path to the BIRT design file on the server file system";
-	private static final Object FORMAT_DESCRIPTION = "The report output format: HTML, PDF, XLS, or any other format supported by the BIRT engine";
+public class SubmitReportTest  extends BaseTest {
 	private static final Object JOB_ID_DESCRIPTION = "The job id returned from /submitJob";
-	private static final Object PARAMETERS_DESCRIPTION = "The parameters in the form {\"name\": value, ...}, where value may be a string, number or boolean for single value parameters or an array of string, number, or boolean for multi-valued parameters.";
-	private static final Map<String, Object> PARAM_MAP_1 = new HashMap<String, Object>() {
-		private static final long serialVersionUID = 1L;
-		{
-			put("paramString", "String Val");
-			put("paramDate", "2010-05-05");
-			put("paramInteger", 1111);
-			put("paramDecimal", 999.888);
-			put("delay", 0);
-		}
-	};
 	@Rule
 	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
 	@Autowired
@@ -114,8 +99,12 @@ public class SubmitReportTest {
 		final String submitRequestString = mapper.writeValueAsString(submitRequestObject);
 		log.info("testSubmitBadDesignFile request = " + submitRequestString);
 
-		final MvcResult submitResult = this.mockMvc.perform(get("/submitJob").contentType(MediaType.APPLICATION_JSON)
-				.content(submitRequestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		final MvcResult submitResult = this.mockMvc
+				.perform(get("/submitJob")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(submitRequestString)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
 				.andReturn();
 		System.out.println(submitResult);
 		final JobStatus waitForJobRequestObject = new JobStatus();
@@ -124,9 +113,12 @@ public class SubmitReportTest {
 		log.info("testGetJobInfo request = " + waitForJobRequestString);
 
 		final MvcResult waitForJobResult = this.mockMvc
-				.perform(get("/waitForJob").contentType(MediaType.APPLICATION_JSON).content(waitForJobRequestString)
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().is(404)).andReturn();
+				.perform(get("/waitForJob")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(waitForJobRequestString)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(404))
+				.andReturn();
 		System.out.println(waitForJobResult);
 	}
 
@@ -140,7 +132,7 @@ public class SubmitReportTest {
 		log.info("testGetJobInfo request = " + requestString);
 
 		final MvcResult result = this.mockMvc.perform(get("/waitForJob").contentType(MediaType.APPLICATION_JSON)
-				.content(requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().is(406)).andReturn();
+				.content(requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().is(415)).andReturn();
 		System.out.println(result);
 	}
 

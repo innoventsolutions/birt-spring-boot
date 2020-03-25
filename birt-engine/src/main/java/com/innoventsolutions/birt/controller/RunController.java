@@ -73,7 +73,7 @@ public class RunController {
 	 * StreamingResponseBody
 	 *
 	 */
-	@GetMapping(value = "/runReport", produces = MediaType.APPLICATION_XML_VALUE)
+	@GetMapping(value = "/runReport")
 	public ResponseEntity<StreamingResponseBody> executeRunReport(@RequestBody final ExecuteRequest request,
 			final HttpServletResponse response) {
 

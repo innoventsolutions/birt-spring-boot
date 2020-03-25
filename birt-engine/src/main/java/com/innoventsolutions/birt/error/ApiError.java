@@ -1,12 +1,13 @@
 package com.innoventsolutions.birt.error;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -25,14 +26,14 @@ import lombok.Data;
 public class ApiError {
 
 	private HttpStatus status;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-	private LocalDateTime timestamp;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd@HH:mm:ss.SSSZ")
+	private Date timestamp;
 	private String message;
 	private String debugMessage;
 	private List<ApiSubError> subErrors;
 
 	private ApiError() {
-		timestamp = LocalDateTime.now();
+		timestamp = new Date();
 	}
 
 	public ApiError(final HttpStatus status) {
@@ -44,20 +45,21 @@ public class ApiError {
 		this();
 		this.status = status;
 		this.message = "Unexpected error";
-		this.debugMessage = ex.getLocalizedMessage();
+		this.debugMessage = ex.getMessage();
 	}
 
 	public ApiError(final HttpStatus status, final String message, final Throwable ex) {
 		this();
 		this.status = status;
 		this.message = message;
-		this.debugMessage = ex.getLocalizedMessage();
+		this.debugMessage = ExceptionUtils.getStackTrace(ex);
 	}
 
 	public ApiError(final HttpStatus status, final String message) {
 		this();
 		this.status = status;
 		this.message = message;
+		this.debugMessage = message;
 	}
 
 	private void addSubError(final ApiSubError subError) {
