@@ -35,6 +35,23 @@ public class SampleJobController {
 	@Autowired
 	private SubmitJobService submitter;
 
+	@GetMapping("/")
+	public ResponseEntity<String> getRoot() {
+
+		return getWelcome();
+
+	}
+
+	@GetMapping("/welcome")
+	public ResponseEntity<String> getWelcome() {
+		log.info("Welcome ");
+		
+		String welcome_msg = "<h1>Welcome to the BIRT Starter sample app.</h1><p>Try /testPDF, /testHTML, or /testSubmit to exercise any of the built in BIRT REST endpoints.</p><p><a href=\"/index.html\">/index.html</a> provides documentation of the rest endpoints</p>";
+		
+		return new ResponseEntity<String>(welcome_msg, HttpStatus.OK);
+
+	}
+	
 	@GetMapping("/test")
 	public ResponseEntity<SubmitResponse> getTestSubmit(@RequestBody(required = false) Integer numToRun,
 			final HttpServletResponse httpResponse) {

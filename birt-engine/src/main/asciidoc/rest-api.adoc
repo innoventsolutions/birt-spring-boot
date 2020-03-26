@@ -1,23 +1,54 @@
 = Report runner service
-Steve Schafer;
-:doctype: article
+Innovent Solutions, Inc. (Steve Schafer/Scott Rosenbaum);
+:doctype: book
 :icons: font
 :source-highlighter: highlightjs
 :toc: left
-:toclevels: 4
+:toclevels: 5
 :sectlinks:
 
-= Overview
+== Overview
 
-Report runner service is a microservice for generating BIRT reports.
+BIRT Engine is a Spring Boot Project that supports the birt-spring-boot-starter. The goal of this project is allow Spring Boot projects to quickly use the Eclipse Business Intelligence and Reporting Tools (BIRT) to generate content.   
 
-We attempt to adhere to REST standards although running a report is really an action and not a resource.  However we use POST for report run actions because it can be thought of as adding a new request, where a request is a resource.  We use GET for retrieving reports and report status.
+The BIRT Engine provides three main services.  +
+*BirtEngineService* +
+The BIRT Engine interface, in general, most users will not need to access the BIRT Engine directly. +
+*ReportRunService* +
+Wraps off the RunAndRender task where a user asks for a report to be run and waits for the resulting output file. +
+*SubmitJobServices* +
+Wraps off the RunThenRender task where a user first asks for a report to run, and then asynchronously gets the report output. +
 
-When the payload is the generated report, it is returned with the appropriate MIME type and a response code of 200.  If there was an error generating the report, a response code of 500 (internal server error) is returned.  If the report design file was not found, 404 (not found) is returned.  If the output format is not recognized, 406 (not acceptable) is returned.
+For ease of use, the birt-spring-boot-starter project exposes these services through REST end points that are documented below. 
 
-The server can be configured to use the open-source BIRT libraries or the OpenText commercial BIRT libraries.
+== BIRT Workspace / File System Access
+BIRT needs access to the file system for report designs and resource files. 
+The starter assumes that users will adopt a standard file system layout, 
+an example of this layout is provided in the birt-engine-workspace project. 
+To make things work without any configuration, 
+you need to have a folder named birt-engine-workspace that is a file system peer 
+to the folder that holds your spring-boot project that is using the birt starter.
 
-= Requests
+If you do not want to  use the conventional directory locations or names, you may adjust the values through application.properties.
+The following table shows the layout of the default folder structure and provides the property names used to control these locations. 
+[options="header",cols="1,1,1,1,1"]
+|===
+|Root   |Project   |Folder   | property name | default value   
+//-------------------------------
+|/Root Folder   |   |     |  |
+|   |/my-project |      | |
+|   |   | my-project.jar      | |
+|   |/birt-engine-workspace   |  | birt.runner.workspace | ../birt-engine-workspace
+|   |   | /rptdesign | birt.runner.designDir    | ${birt.runner.workspace}/rptdesign
+|   |   | /lib       | birt.runner.scriptLibDir | ${birt.runner.workspace}/lib
+|   |   | /output    | birt.runner.outputDir    | ${birt.runner.workspace}/output
+|   |   | /log       | birt.runner.loggingDir   | ${birt.runner.workspace}/log
+|   |   | /resources | birt.runner.resourceDir  | ${birt.runner.workspace}/resources
+|   |   | /images	 | birt.runner.images       | ${birt.runner.workspace}/images
+     
+|===
+
+== REST End Points
 
 include::run-api.adoc[]
 
@@ -26,11 +57,11 @@ include::submit-api.adoc[]
 
 TODO
 
-= Configuring for OpenText libraries
+== Configuring for OpenText libraries
+The server can be configured to use the open-source BIRT libraries or the OpenText commercial BIRT libraries.
 
-If you have purchased the OpenText commercial iHub, iServer or Java Components products you can build 
-this REST server
-to use the commercial libraries.  There are two directories you will need to locate: lib and platform.  In the iServer installation they will be in iServer/Jar/BIRT.  In the case of OJC, they are in WEB-INF in the OJC webapp.  The jars in lib are used during the maven build and the jars in platform/plugins are used at runtime.
+If you have purchased the OpenText commercial iHub, iServer or Java Components products you can configure your REST services to use the commercial libraries.  There are two directories you will need to locate: lib and platform.  In the iServer installation they will be in iServer/Jar/BIRT.  In the case of OJC, they are in WEB-INF in the OJC webapp.  
+The jars in lib are used during the maven build and the jars in platform/plugins are used at runtime.
 
 . Use the bash script mvn-install-birt-jars to install the commercial jars into your local maven repository.  For example, assuming a standard Actuate 11 iServer installation:
 +
@@ -64,10 +95,3 @@ C:\\Program Files (x86)\\Actuate11sp6\\iServer\\Jar\\BIRT\\platform.
 Single forward slashes can also be used.  On Windows they will be automatically converted to backslashes.
 ======
 
-= Startup
-
-To start change directory to the target folder under the root folder (the folder containing pom.xml) and type:
-
-------
-java -jar BIRT-Report-Runner-REST-Service-0.0.1-SNAPSHOT.jar
-------

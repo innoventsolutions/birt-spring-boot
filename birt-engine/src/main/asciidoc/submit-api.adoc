@@ -1,53 +1,67 @@
-== GET /submitReport
-
+=== GET /submitJob +  
 This request is used to start generating the report asynchronously.  A string is returned that identifies the job.
-Both the request and the response content types are application/json.
+Both the request and the response content types are application/json.  
 
-=== Request fields:
+==== Request fields: + 
+include::{snippets}/submitJob/request-fields.adoc[]
 
-include::{snippets}/submitReport/request-fields.adoc[]
 
-=== Response fields:
+==== Response fields: + 
+include::{snippets}/submitJob/response-fields.adoc[]
 
-include::{snippets}/submitReport/response-fields.adoc[]
+==== Examples: + 
+===== Curl: + 
+include::{snippets}/submitJob/curl-request.adoc
 
-=== Response codes:
+===== HTTP request: + 
+include::{snippets}/submitJob/http-request.adoc[]
 
-|===
-|Code|Name|Description
 
-|`+200+`
-|`+Success+`
-|The operation completed successfully.
+=== GET /deleteJob
+Deletes a Job 
 
-|`+401+`
-|`+Unauthorized+`
-|The report requires a security token, but the security token was missing from the request or was 
-not found in the database or the report design file specified in the database didn't match the
-request or the request was made beyond the timeout period.
+==== Request fields: +
+include::{snippets}/deleteJob/request-fields.adoc[]
 
-|`+404+`
-|`+Not Found+`
-|The design file specified in the request was not found.
+==== Response fields: +
+include::{snippets}/deleteJob/response-fields.adoc[]
 
-|`+406+`
-|`+Not Acceptable+`
-|A parameter value was not of the expected data type and could not be converted or
-and explictly typed parameter was not specified correctly or an unsupported format was specified.
+==== Examples: + 
+===== Curl: + 
+include::{snippets}/deleteJob/curl-request.adoc[]
 
-|`+500+`
-|`+Internal Server Error+`
-|Some internal error prevented the operation from completing.  See the log file for a full description and traceback.
+===== HTTP request: + 
+include::{snippets}/deleteJob/http-request.adoc[]
 
-|===
+=== GET /getJobInfo
+Gets information about a Job that may be running, completed, or failed.
 
-=== Examples:
+==== Request fields: +
+include::{snippets}/getJobInfo/request-fields.adoc[]
 
-==== Curl:
+==== Response fields: +
+include::{snippets}/getJobInfo/response-fields.adoc[]
 
-include::{snippets}/submitReport/curl-request.adoc[]
+==== Examples: + 
+===== Curl: + 
+include::{snippets}/getJobInfo/curl-request.adoc[]
 
-==== HTTP request:
+===== HTTP request: + 
+include::{snippets}/getJobInfo/http-request.adoc[]
 
-include::{snippets}/submitReport/http-request.adoc[]
+=== GET /waitForJob
+Waits for a Submitted Job to complete report execution and returns the output document. Returns the output document immediately if processing is complete.
+
+==== Request fields: +
+include::{snippets}/waitForJob/request-fields.adoc[]
+
+==== Response fields: +
+include::{snippets}/waitForJob/response-fields.adoc[]
+
+==== Examples: + 
+===== Curl: + 
+include::{snippets}/waitForJob/curl-request.adoc[]
+
+===== HTTP request: + 
+include::{snippets}/waitForJob/http-request.adoc[]
 
