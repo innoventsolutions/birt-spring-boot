@@ -25,32 +25,38 @@ import lombok.Setter;
 @Component
 @ConfigurationProperties(prefix = "birt.runner")
 public class BirtConfig {
-	//@NotBlank 
+	// @NotBlank
 	@Value("birt.runner.workspace:../birt-spring-boot-starter/birt-engine-workspace")
 	private File workspace;
+	
 	@Value("${birt.runner.workspace}/rptdesign")
 	private File designDir;
 
 	// where log files are sent from the report engine
 	@Value("${birt.runner.workspace}/log")
 	private File loggingDir;
-	// any temp or long term file generated from running a rptdesign (.rptdocument,
-	// .pdf, .html,...)
+	
+	// any temp or long term file generated from running a rptdesign (.rptdocument, .pdf, .html,...)
 	@Value("${birt.runner.workspace}/output")
 	private File outputDir;
+	
 	// any resource file including .rptlibrary, .css, .js, .jar(pojos), data files
 	@Value("${birt.runner.workspace}/resources")
 	private File resourceDir;
+	
 	// jar files for event handlers
 	@Value("${birt.runner.workspace}/lib")
 	private File scriptLibDir;
+	
 	// Location for images
 	@Value("${birt.runner.workspace}/images")
 	private String baseImageURL;
+	
 	private String reportFormat = "pdf";
-	private int threadCount = 1;
+
 	// true if using commercial libraries
 	private boolean isActuate = false;
+
 	// Required when using commercial libraries
 	private File birtRuntimeHome = null;
 
