@@ -123,6 +123,13 @@ public abstract class BaseReportService {
 			if (!designFile.exists()) {
 				designFile = new File(engineService.getDesignDir(), fileName);
 			}
+			if (!designFile.exists()) {
+				StringBuffer sb = new StringBuffer();
+				sb.append("Design file does not exist: filename: ").append(fileName).append("\n");
+				sb.append("Searched as absolute path and in design folder :").append(engineService.getDesignDir().getAbsolutePath());
+				log.error(sb.toString());
+				// error will be thrown in next steps
+			}
 			log.debug("Design File: " + designFile.getAbsolutePath());
 			final FileInputStream fis = new FileInputStream(designFile);
 			design = engineService.getEngine().openReportDesign(fis);

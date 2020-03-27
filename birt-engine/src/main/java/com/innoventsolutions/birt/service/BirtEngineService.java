@@ -93,7 +93,22 @@ public class BirtEngineService {
 			config.setProperty(EngineConstants.WEBAPP_CLASSPATH_KEY, scriptlibFileNames);
 		}
 		configureLogging(config);
-		return birtConfig.isActuate() ? getActuateReportEngine(config) : getReportEngine(config);
+		IReportEngine birtEngine =birtConfig.isActuate() ? getActuateReportEngine(config) : getReportEngine(config);
+		
+		// Add test and warning if no report design folder is present 
+		File designDir = birtConfig.getDesignDir();
+		if (!designDir.exists() || !designDir.isDirectory()) {
+			StringBuffer sb = new StringBuffer();
+			sb.append("Design Dir does not exist or is not a folder. ");
+			sb.append("\nWorkspace Location: ").append(birtConfig.getWorkspace().getAbsolutePath());
+			sb.append((birtConfig.getWorkspace().exists()) ? "(exists)" : " (does not exist)");
+			String ddd = ( birtConfig.getDesignDir() == null) ? "not set" : birtConfig.getDesignDir().getAbsolutePath(); 
+			sb.append("\nDesign Dir: ").append(ddd);
+			sb.append((birtConfig.getDesignDir().exists()) ? "(exists)" : " (does not exist)");
+			sb.append("\nCheck application.properties file");
+			log.warn(sb.toString());
+		}
+		return birtEngine;
 	}
 
 	private void configureLogging(final EngineConfig config) throws BirtStarterException {

@@ -13,6 +13,7 @@ import java.io.File;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -24,20 +25,28 @@ import lombok.Setter;
 @Component
 @ConfigurationProperties(prefix = "birt.runner")
 public class BirtConfig {
-	@NotBlank
-	private File workspace = new File("../birt-engine-workspace");
-	private File designDir = new File(workspace, "rptdesign");
+	//@NotBlank 
+	@Value("birt.runner.workspace:../birt-spring-boot-starter/birt-engine-workspace")
+	private File workspace;
+	@Value("${birt.runner.workspace}/rptdesign")
+	private File designDir;
+
 	// where log files are sent from the report engine
-	private File loggingDir = new File(workspace, "log");
+	@Value("${birt.runner.workspace}/log")
+	private File loggingDir;
 	// any temp or long term file generated from running a rptdesign (.rptdocument,
 	// .pdf, .html,...)
-	private File outputDir = new File(workspace, "output");
+	@Value("${birt.runner.workspace}/output")
+	private File outputDir;
 	// any resource file including .rptlibrary, .css, .js, .jar(pojos), data files
-	private File resourceDir = new File(workspace, "resources");
+	@Value("${birt.runner.workspace}/resources")
+	private File resourceDir;
 	// jar files for event handlers
-	private File scriptLibDir = new File(workspace, "lib");
+	@Value("${birt.runner.workspace}/lib")
+	private File scriptLibDir;
 	// Location for images
-	private String baseImageURL = new File(workspace, "images").getAbsolutePath();
+	@Value("${birt.runner.workspace}/images")
+	private String baseImageURL;
 	private String reportFormat = "pdf";
 	private int threadCount = 1;
 	// true if using commercial libraries
