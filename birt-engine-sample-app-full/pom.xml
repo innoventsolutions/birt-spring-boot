@@ -21,7 +21,7 @@
 		<spring-boot.version>1.5.2.RELEASE</spring-boot.version>
 		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
         <quartz.version>2.3.0</quartz.version>
-        <c3p0.version>0.9.5.2</c3p0.version>
+        <c3p0.version>0.9.5.4</c3p0.version>
 	</properties>
 
 	<dependencies>
