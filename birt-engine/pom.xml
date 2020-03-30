@@ -81,18 +81,6 @@
 
 	<build>
 		<plugins>
-			<!-- this causes jar to be built differently and be unrecognized by sample 
-				app -->
-			<!-- <plugin> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-maven-plugin</artifactId> 
-				</plugin> -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
@@ -120,19 +108,6 @@
 			</plugin>
 
 		</plugins>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
-		<testResources>
-			<testResource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</testResource>
-		</testResources>
-
 	</build>
 
 </project>
