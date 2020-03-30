@@ -1,6 +1,7 @@
 package com.innoventsolutions.birt;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 import javax.annotation.PostConstruct;
@@ -18,7 +19,7 @@ public class BirtProperties extends BirtConfig implements Serializable {
 	private static final long serialVersionUID = -6821187546631689762L;
 	
 	@PostConstruct
-	public void setDefaults() {
+	public void setDefaults() throws IOException {
 		
 		log.info("Set Defaults");
 		if (this.getWorkspace() == null) 
@@ -52,9 +53,9 @@ public class BirtProperties extends BirtConfig implements Serializable {
 		if (!designDir.exists() || !designDir.isDirectory() ) {
 			StringBuffer sb = new StringBuffer();
 			sb.append("Design Dir does not exist or is not a folder. ");
-			sb.append("\nWorkspace Location: ").append(this.getWorkspace().getAbsolutePath());
+			sb.append("\nWorkspace Location: ").append(this.getWorkspace().getCanonicalPath());
 			sb.append((this.getWorkspace().exists()) ? "(exists)" : " (does not exist)");
-			String ddd = ( this.getDesignDir() == null) ? "not set" : this.getDesignDir().getAbsolutePath(); 
+			String ddd = ( this.getDesignDir() == null) ? "not set" : this.getDesignDir().getCanonicalPath(); 
 			sb.append("\nDesign Dir: ").append(ddd);
 			sb.append((this.getDesignDir().exists()) ? "(exists)" : " (does not exist)");
 			sb.append("\nCheck application.properties file");
@@ -63,9 +64,9 @@ public class BirtProperties extends BirtConfig implements Serializable {
 		if (designDir.exists() && designDir.isDirectory() && designDir.listFiles().length == 0) {
 			StringBuffer sb = new StringBuffer();
 			sb.append("Design Dir exists, but does not contain any file or sub-folders ");
-			sb.append("\nWorkspace Location: ").append(this.getWorkspace().getAbsolutePath());
+			sb.append("\nWorkspace Location: ").append(this.getWorkspace().getCanonicalPath());
 			sb.append((this.getWorkspace().exists()) ? "(exists)" : " (does not exist)");
-			String ddd = ( this.getDesignDir() == null) ? "not set" : this.getDesignDir().getAbsolutePath(); 
+			String ddd = ( this.getDesignDir() == null) ? "not set" : this.getDesignDir().getCanonicalPath(); 
 			sb.append("\nDesign Dir: ").append(ddd);
 			sb.append((this.getDesignDir().exists()) ? "(exists)" : " (does not exist)");
 			sb.append("\nCheck application.properties file");
