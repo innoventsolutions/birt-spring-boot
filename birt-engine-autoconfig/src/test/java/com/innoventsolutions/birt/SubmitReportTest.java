@@ -52,7 +52,7 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest(classes = BirtEngineApplication.class)
 @WebAppConfiguration
 @Slf4j
-public class SubmitReportTest  extends BaseTest {
+public class SubmitReportTest extends BaseTest {
 	private static final Object JOB_ID_DESCRIPTION = "The job id returned from /submitJob";
 	@Rule
 	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
@@ -68,12 +68,8 @@ public class SubmitReportTest  extends BaseTest {
 
 	@Test
 	public void testSubmit() throws Exception {
-		final ExecuteRequest requestObject = ExecuteRequest.builder()
-				.designFile(PARAM_TEST_RPTDESIGN)
-				.format("pdf")
-				.parameters(PARAM_MAP_1)
-				.outputName("test_submit1_out_1")
-				.build();
+		final ExecuteRequest requestObject = ExecuteRequest.builder().designFile(PARAM_TEST_RPTDESIGN).format("pdf")
+				.parameters(PARAM_MAP_1).outputName("test_submit1_out_1").build();
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		log.info("testSubmit request = " + requestString);
@@ -98,22 +94,14 @@ public class SubmitReportTest  extends BaseTest {
 
 	@Test
 	public void testSubmitBadDesignFile() throws Exception {
-		final ExecuteRequest submitRequestObject = ExecuteRequest.builder()
-				.designFile("foobar")
-				.format("pdf")
-				.parameters(PARAM_MAP_1)
-				.outputName("test_submit1_out_1")
-				.build();
+		final ExecuteRequest submitRequestObject = ExecuteRequest.builder().designFile("foobar").format("pdf")
+				.parameters(PARAM_MAP_1).outputName("test_submit1_out_1").build();
 		final ObjectMapper mapper = new ObjectMapper();
 		final String submitRequestString = mapper.writeValueAsString(submitRequestObject);
 		log.info("testSubmitBadDesignFile request = " + submitRequestString);
 
-		final MvcResult submitResult = this.mockMvc
-				.perform(get("/submitJob")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(submitRequestString)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+		final MvcResult submitResult = this.mockMvc.perform(get("/submitJob").contentType(MediaType.APPLICATION_JSON)
+				.content(submitRequestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andReturn();
 		System.out.println(submitResult);
 		final JobStatus waitForJobRequestObject = new JobStatus();
@@ -122,12 +110,9 @@ public class SubmitReportTest  extends BaseTest {
 		log.info("testGetJobInfo request = " + waitForJobRequestString);
 
 		final MvcResult waitForJobResult = this.mockMvc
-				.perform(get("/waitForJob")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(waitForJobRequestString)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().is(404))
-				.andReturn();
+				.perform(get("/waitForJob").contentType(MediaType.APPLICATION_JSON).content(waitForJobRequestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(404)).andReturn();
 		System.out.println(waitForJobResult);
 	}
 
@@ -310,13 +295,9 @@ public class SubmitReportTest  extends BaseTest {
 	 * Used for testing endpoints that require a job
 	 */
 	private String submit(final String format) throws Exception {
-		final ExecuteRequest requestObject = ExecuteRequest.builder()
-				.designFile(PARAM_TEST_RPTDESIGN)
-				.format(format)
-				.parameters(PARAM_MAP_1)
-				.outputName("test_submit_out_1")
-				.build();
-		
+		final ExecuteRequest requestObject = ExecuteRequest.builder().designFile(PARAM_TEST_RPTDESIGN).format(format)
+				.parameters(PARAM_MAP_1).outputName("test_submit_out_1").build();
+
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		log.info("submit request = " + requestString);
