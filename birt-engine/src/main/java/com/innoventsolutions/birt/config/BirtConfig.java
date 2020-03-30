@@ -11,22 +11,18 @@ package com.innoventsolutions.birt.config;
 
 import java.io.File;
 
-import javax.validation.constraints.NotBlank;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Component
 @ConfigurationProperties(prefix = "birt.runner")
 public class BirtConfig {
 	// @NotBlank
-	@Value("birt.runner.workspace:../birt-spring-boot-starter/birt-engine-workspace")
+	@Value("birt.runner.workspace:../birt-engine-workspace")
 	private File workspace;
 	
 	@Value("${birt.runner.workspace}/rptdesign")
