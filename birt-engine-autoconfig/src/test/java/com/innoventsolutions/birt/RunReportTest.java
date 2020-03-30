@@ -40,7 +40,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.innoventsolutions.birt.config.BirtConfig;
+import com.innoventsolutions.birt.config.BirtProperties;
 import com.innoventsolutions.birt.entity.ExecuteRequest;
 
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +62,7 @@ public class RunReportTest extends BaseTest {
 	}
 
 	@Autowired
-	private BirtConfig birtConfig;
+	private BirtProperties birtConfig;
 
 	@Test
 	public void testRunPDF() throws Exception {

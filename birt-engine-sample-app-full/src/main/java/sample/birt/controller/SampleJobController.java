@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.innoventsolutions.birt.config.BirtConfig;
+import com.innoventsolutions.birt.config.BirtProperties;
 import com.innoventsolutions.birt.entity.SubmitResponse;
 import com.innoventsolutions.birt.service.SubmitJobService;
 
@@ -68,7 +68,7 @@ public class SampleJobController {
 	private StartedJobList startedJobList;
 
 	@Autowired
-	private BirtConfig birtConfig;
+	private BirtProperties birtConfig;
 
 	@Autowired
 	private Scheduler scheduler;

@@ -20,7 +20,7 @@ import org.quartz.JobKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.innoventsolutions.birt.config.BirtConfig;
+import com.innoventsolutions.birt.config.BirtProperties;
 import com.innoventsolutions.birt.entity.SubmitResponse;
 import com.innoventsolutions.birt.service.SubmitJobService;
 
@@ -44,7 +44,7 @@ public class RunReportQuartzJob implements Job {
 	private EmailService emailService;
 
 	@Autowired
-	private BirtConfig birtConfig;
+	private BirtProperties birtConfig;
 
 	@Override
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
@@ -71,7 +71,7 @@ public class RunReportQuartzJob implements Job {
 		}
 		if (birtConfig == null) {
 			log.info("birtConfig not autowired");
-			birtConfig = (BirtConfig) jobDataMap.get("birtConfig");
+			birtConfig = (BirtProperties) jobDataMap.get("birtConfig");
 		}
 		if (birtConfig == null) {
 			throw new RuntimeException("birtConfig not found");

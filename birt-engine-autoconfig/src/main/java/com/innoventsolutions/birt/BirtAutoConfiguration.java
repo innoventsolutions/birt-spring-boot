@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ******************************************************************************/
-package com.innoventsolutions.birt.report.autoconfig;
+package com.innoventsolutions.birt;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,7 +17,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.innoventsolutions.birt.config.BirtConfig;
+import com.innoventsolutions.birt.config.BirtProperties;
 import com.innoventsolutions.birt.controller.RunController;
 import com.innoventsolutions.birt.controller.SubmitController;
 import com.innoventsolutions.birt.service.BirtEngineService;
@@ -25,13 +25,14 @@ import com.innoventsolutions.birt.service.ReportRunService;
 import com.innoventsolutions.birt.service.SubmitJobService;
 
 @Configuration
-@EnableConfigurationProperties(BirtConfig.class)
+@EnableConfigurationProperties(BirtProperties.class)
 public class BirtAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	public BirtEngineService engineService() {
-		return new BirtEngineService();
+		BirtProperties birtProps = new BirtProperties();
+		return new BirtEngineService(birtProps);
 	}
 
 	@Bean
@@ -65,11 +66,5 @@ public class BirtAutoConfiguration {
 	public SubmitController submitController() {
 		return new SubmitController();
 	}
-/*
-	@Bean
-	@ConditionalOnMissingBean(name = "runExecutor")
-	public BirtAsyncConfiguration asyncConfiguration() {
-		return new BirtAsyncConfiguration();
-	}
-*/
+
 }

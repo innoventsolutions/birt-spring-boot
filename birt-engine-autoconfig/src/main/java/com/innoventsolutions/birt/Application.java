@@ -7,15 +7,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ******************************************************************************/
-package com.innoventsolutions.birt.report.autoconfig;
+package com.innoventsolutions.birt;
 
-// test doesn't work in mvn package
-// can't find spring classes
-// @SpringBootTest
-class ApplicationTests {
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-	// @Test
-	void contextLoads() {
+@SpringBootApplication
+public class Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
 	}
 
 }

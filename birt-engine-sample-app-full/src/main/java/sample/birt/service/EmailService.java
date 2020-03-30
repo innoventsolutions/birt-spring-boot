@@ -15,7 +15,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import com.innoventsolutions.birt.config.BirtConfig;
+import com.innoventsolutions.birt.config.BirtProperties;
 import com.innoventsolutions.birt.entity.SubmitResponse.StatusEnum;
 
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class EmailService {
 	private EmailConfig config;
 
 	@Autowired
-	private BirtConfig birtConfig;
+	private BirtProperties birtConfig;
 
 	@Autowired
 	private JavaMailSender javaMailSender;
