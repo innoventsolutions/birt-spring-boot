@@ -117,7 +117,7 @@ public abstract class BaseReportService {
 		try {
 			File designFile;
 
-			designFile = new File(execRequest.getDesignFile());
+			designFile = new File(fileName);
 
 			// not a full qualified file, look in design file dir
 			if (!designFile.exists()) {
