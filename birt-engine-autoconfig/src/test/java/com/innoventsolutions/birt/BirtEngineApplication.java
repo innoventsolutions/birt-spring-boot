@@ -14,7 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = "com.innoventsolutions")
+@ComponentScan(basePackages = "com.innoventsolutions.birt")
 public class BirtEngineApplication {
 
 	public static void main(final String[] args) {

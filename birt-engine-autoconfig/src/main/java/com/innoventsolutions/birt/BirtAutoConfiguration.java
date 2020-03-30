@@ -26,28 +26,37 @@ import com.innoventsolutions.birt.service.ReportRunService;
 import com.innoventsolutions.birt.service.SubmitJobService;
 
 @Configuration
-@EnableConfigurationProperties(BirtConfig.class)
+@EnableConfigurationProperties(BirtProperties.class)
 public class BirtAutoConfiguration {
+	@Autowired 
+	BirtProperties birtProperties;
 	
-	@Autowired
-	BirtConfig birtConfig;
+	@Bean
+	@ConditionalOnMissingBean
+	public BirtProperties birtPropertiesFilled() {
+		return null;
+	};
 
 	@Bean
 	@ConditionalOnMissingBean
 	public BirtEngineService engineService() {
 		
-		return new BirtEngineService(birtConfig);
+		return new BirtEngineService(birtProperties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public ReportRunService runService() {
+		//TODO use the engineService bean
 		return new ReportRunService(engineService());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public SubmitJobService submitService() {
+		//TODO use the engineService bean
+		//TODO make the fork join pool configurable from birtProperties
+		
 		ForkJoinPool fjp = new ForkJoinPool(10);
 		return new SubmitJobService(engineService(), fjp);
 	}

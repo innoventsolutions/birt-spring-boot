@@ -24,7 +24,7 @@ import org.eclipse.birt.report.engine.api.EngineConstants;
 import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.eclipse.birt.report.engine.api.IReportEngineFactory;
 
-import com.innoventsolutions.birt.config.BirtProperties;
+import com.innoventsolutions.birt.config.BirtConfig;
 import com.innoventsolutions.birt.exception.BirtStarterException;
 import com.innoventsolutions.birt.exception.BirtStarterException.BirtErrorCode;
 
@@ -33,10 +33,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BirtEngineService {
 
-	private final BirtProperties birtProperties;
+	private final BirtConfig birtProperties;
 	private IReportEngine engine = null;
 
-	public BirtEngineService(final BirtProperties birtProperties) {
+	public BirtEngineService(final BirtConfig birtProperties) {
 		this.birtProperties = birtProperties;
 	}
 
@@ -91,19 +91,6 @@ public class BirtEngineService {
 		configureLogging(config);
 		IReportEngine birtEngine =birtProperties.isActuate() ? getActuateReportEngine(config) : getReportEngine(config);
 		
-		// Add test and warning if no report design folder is present 
-		File designDir = birtProperties.getDesignDir();
-		if (!designDir.exists() || !designDir.isDirectory()) {
-			StringBuffer sb = new StringBuffer();
-			sb.append("Design Dir does not exist or is not a folder. ");
-			sb.append("\nWorkspace Location: ").append(birtProperties.getWorkspace().getAbsolutePath());
-			sb.append((birtProperties.getWorkspace().exists()) ? "(exists)" : " (does not exist)");
-			String ddd = ( birtProperties.getDesignDir() == null) ? "not set" : birtProperties.getDesignDir().getAbsolutePath(); 
-			sb.append("\nDesign Dir: ").append(ddd);
-			sb.append((birtProperties.getDesignDir().exists()) ? "(exists)" : " (does not exist)");
-			sb.append("\nCheck application.properties file");
-			log.warn(sb.toString());
-		}
 		return birtEngine;
 	}
 

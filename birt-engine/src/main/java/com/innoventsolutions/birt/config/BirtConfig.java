@@ -16,7 +16,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BirtProperties {
+public class BirtConfig {
 	// @NotBlank
 	private File workspace;
 	private File designDir;

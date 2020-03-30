@@ -12,7 +12,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.innoventsolutions.birt.config.BirtProperties;
+import com.innoventsolutions.birt.config.BirtConfig;
 import com.innoventsolutions.birt.service.BirtEngineService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class BirtEngineServiceTest {
 			e.printStackTrace();
 		}
 		
-		BirtProperties bp = new BirtProperties();
+		BirtConfig bp = new BirtConfig();
 		File workspace = new File(appProps.getProperty("birt.runner.workspace")); 
 		bp.setWorkspace(workspace);
 		bp.setActuate(false);
