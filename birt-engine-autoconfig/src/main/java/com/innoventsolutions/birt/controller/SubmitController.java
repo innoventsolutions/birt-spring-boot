@@ -78,13 +78,9 @@ public class SubmitController {
 			params.put("paramDecimal", (i * 1.9) * i);
 			params.put("paramInteger", i);
 			params.put("delay", delay);
-			
-			final ExecuteRequest request = ExecuteRequest.builder()
-					.designFile(rptDesign)
-					.outputName(outputName)
-					.format(format)
-					.parameters(params)
-					.build();
+
+			final ExecuteRequest request = ExecuteRequest.builder().designFile(rptDesign).outputName(outputName)
+					.format(format).parameters(params).build();
 
 			executeSubmitJob(request, httpResponse);
 
@@ -182,7 +178,7 @@ public class SubmitController {
 
 			if (StatusEnum.EXCEPTION.equals(submitResponse.getStatus())) {
 				log.error("Broken again");
-				
+
 			}
 
 		} catch (final Exception e) {
@@ -192,7 +188,7 @@ public class SubmitController {
 
 		// TODO: Can we get here and not be processing?
 		return new ResponseEntity<Resource>(HttpStatus.PROCESSING);
-		
+
 	}
 
 	// TODO Is this the right place for this lookup? perhaps a Util method?

@@ -12,8 +12,6 @@ package com.innoventsolutions.birt.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,8 +27,8 @@ import lombok.ToString;
 @Getter @Setter @Builder @ToString
 @AllArgsConstructor @NoArgsConstructor
 public class ExecuteRequest {
-	private @NotNull String designFile;
-	private @NotNull String outputName;
+	private String designFile;
+	private String outputName;
 	@Builder.Default private String format = "HTML";
 	@Builder.Default private Map<String, Object> parameters = new HashMap<String, Object>();
 	@Builder.Default private Boolean wrapError = true;

@@ -15,7 +15,6 @@ import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 
 import org.eclipse.birt.report.engine.api.EngineException;
@@ -26,10 +25,7 @@ import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunTask;
 import org.eclipse.birt.report.engine.api.RenderOption;
 import org.eclipse.birt.report.engine.api.UnsupportedFormatException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
 
 import com.innoventsolutions.birt.entity.ExecuteRequest;
 import com.innoventsolutions.birt.entity.SubmitResponse;
@@ -40,26 +36,22 @@ import com.innoventsolutions.birt.exception.BirtStarterException.BirtErrorCode;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
 public class SubmitJobService extends BaseReportService {
 
-	@Autowired
-	ExecutorService executorService;
+	private final ForkJoinPool submitPool;
 
-	ForkJoinPool submitPool = new ForkJoinPool(10);
-
-	@Autowired
-	public SubmitJobService() {
+	public SubmitJobService(BirtEngineService engineService, ForkJoinPool submitPool) {
+		super(engineService);
+		this.submitPool = submitPool;
 		log.info("Start RunService");
 	}
 
-	@Async
 	public CompletableFuture<SubmitResponse> executeRunThenRender(final SubmitResponse submitResponse) {
 		log.info("RunThenRender: " + submitResponse.getRequest().getOutputName());
 
 		// to use Fork/join change the executor to submitPool (or opposite)
 		final CompletableFuture<SubmitResponse> runThenRender = CompletableFuture
-				.supplyAsync((() -> executeRun(submitResponse)), executorService)
+				.supplyAsync((() -> executeRun(submitResponse)), submitPool)
 				.thenApply(l -> executeRender(submitResponse))
 				.exceptionally (err -> {
 					if (err != null)

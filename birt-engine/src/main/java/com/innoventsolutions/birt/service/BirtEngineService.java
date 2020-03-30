@@ -23,8 +23,6 @@ import org.eclipse.birt.report.engine.api.EngineConfig;
 import org.eclipse.birt.report.engine.api.EngineConstants;
 import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.eclipse.birt.report.engine.api.IReportEngineFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.innoventsolutions.birt.config.BirtConfig;
 import com.innoventsolutions.birt.exception.BirtStarterException;
@@ -33,15 +31,13 @@ import com.innoventsolutions.birt.exception.BirtStarterException.BirtErrorCode;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
 public class BirtEngineService {
 
-	@Autowired
-	private BirtConfig birtConfig;
+	private final BirtConfig birtProperties;
 	private IReportEngine engine = null;
 
-	@Autowired
-	public BirtEngineService() {
+	public BirtEngineService(final BirtConfig birtProperties) {
+		this.birtProperties = birtProperties;
 	}
 
 	@PostConstruct
@@ -56,36 +52,36 @@ public class BirtEngineService {
 	// Pass up required configuration parameters, does it make sense to just have
 	// the calling classes use the configuration directly?
 	public String getBaseImageURL() {
-		return birtConfig.getBaseImageURL();
+		return birtProperties.getBaseImageURL();
 	}
 
 	public File getOutputDir() {
-		return birtConfig.getOutputDir();
+		return birtProperties.getOutputDir();
 	}
 
 	public File getWorkspace() {
-		return birtConfig.getWorkspace();
+		return birtProperties.getWorkspace();
 	}
 
 	public File getDesignDir() {
-		return birtConfig.getDesignDir();
+		return birtProperties.getDesignDir();
 	}
 
 	private IReportEngine getReportEngine() throws BirtStarterException {
 
 		log.info("getReportEngine");
 		final EngineConfig config = new EngineConfig();
-		log.info(birtConfig.toString());
-		if (birtConfig.getBirtRuntimeHome() != null) {
-			final String birtHome = birtConfig.getBirtRuntimeHome().getAbsolutePath();
-			if (birtConfig.isActuate()) {
+		log.info(birtProperties.toString());
+		if (birtProperties.getBirtRuntimeHome() != null) {
+			final String birtHome = birtProperties.getBirtRuntimeHome().getAbsolutePath();
+			if (birtProperties.isActuate()) {
 				config.setBIRTHome(birtHome);
 			} else {
 				config.setEngineHome(birtHome);
 			}
 		}
-		if (birtConfig.getResourceDir() != null) {
-			final File workspaceDir = new File(birtConfig.getWorkspace().getAbsolutePath());
+		if (birtProperties.getResourceDir() != null) {
+			final File workspaceDir = new File(birtProperties.getWorkspace().getAbsolutePath());
 			config.setResourcePath(workspaceDir.getAbsolutePath());
 		}
 		final String scriptlibFileNames = getScriptLibFileNames();
@@ -93,27 +89,14 @@ public class BirtEngineService {
 			config.setProperty(EngineConstants.WEBAPP_CLASSPATH_KEY, scriptlibFileNames);
 		}
 		configureLogging(config);
-		IReportEngine birtEngine =birtConfig.isActuate() ? getActuateReportEngine(config) : getReportEngine(config);
+		IReportEngine birtEngine =birtProperties.isActuate() ? getActuateReportEngine(config) : getReportEngine(config);
 		
-		// Add test and warning if no report design folder is present 
-		File designDir = birtConfig.getDesignDir();
-		if (!designDir.exists() || !designDir.isDirectory()) {
-			StringBuffer sb = new StringBuffer();
-			sb.append("Design Dir does not exist or is not a folder. ");
-			sb.append("\nWorkspace Location: ").append(birtConfig.getWorkspace().getAbsolutePath());
-			sb.append((birtConfig.getWorkspace().exists()) ? "(exists)" : " (does not exist)");
-			String ddd = ( birtConfig.getDesignDir() == null) ? "not set" : birtConfig.getDesignDir().getAbsolutePath(); 
-			sb.append("\nDesign Dir: ").append(ddd);
-			sb.append((birtConfig.getDesignDir().exists()) ? "(exists)" : " (does not exist)");
-			sb.append("\nCheck application.properties file");
-			log.warn(sb.toString());
-		}
 		return birtEngine;
 	}
 
 	private void configureLogging(final EngineConfig config) throws BirtStarterException {
 		// control debug of BIRT components.
-		final File loggingDirFile = birtConfig.getLoggingDir() == null ? new File("./log") : birtConfig.getLoggingDir();
+		final File loggingDirFile = birtProperties.getLoggingDir() == null ? new File("./log") : birtProperties.getLoggingDir();
 		if (!loggingDirFile.exists()) {
 			loggingDirFile.mkdirs();
 		}
@@ -181,13 +164,13 @@ public class BirtEngineService {
 	 * using the standard file system separator to divide the files
 	 */
 	private String getScriptLibFileNames() {
-		if (birtConfig.getScriptLibDir() == null) {
+		if (birtProperties.getScriptLibDir() == null) {
 			return null;
 		}
-		if (!birtConfig.getScriptLibDir().exists()) {
-			birtConfig.getScriptLibDir().mkdirs();
+		if (!birtProperties.getScriptLibDir().exists()) {
+			birtProperties.getScriptLibDir().mkdirs();
 		}
-		final File[] files = birtConfig.getScriptLibDir().listFiles(new JarFilter());
+		final File[] files = birtProperties.getScriptLibDir().listFiles(new JarFilter());
 		final StringBuilder sb = new StringBuilder();
 		String sep = "";
 		final String fileSeparatorString = new String(new char[] { File.pathSeparatorChar });

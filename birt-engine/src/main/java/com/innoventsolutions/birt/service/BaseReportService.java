@@ -33,7 +33,6 @@ import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.PDFRenderOption;
 import org.eclipse.birt.report.engine.api.RenderOption;
 import org.eclipse.birt.report.model.api.ParameterHandle;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.innoventsolutions.birt.entity.ExecuteRequest;
 import com.innoventsolutions.birt.exception.BirtStarterException;
@@ -45,11 +44,12 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class BaseReportService {
 
 	private static final SimpleDateFormat PARAM_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-	@Autowired
-	protected BirtEngineService engineService;
 
-	public BaseReportService() {
+	protected final BirtEngineService engineService;
+
+	public BaseReportService(BirtEngineService engineService) {
 		super();
+		this.engineService = engineService;
 	}
 
 	@SuppressWarnings("unused")
@@ -117,7 +117,7 @@ public abstract class BaseReportService {
 		try {
 			File designFile;
 
-			designFile = new File(execRequest.getDesignFile());
+			designFile = new File(fileName);
 
 			// not a full qualified file, look in design file dir
 			if (!designFile.exists()) {
