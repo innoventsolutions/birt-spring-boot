@@ -49,9 +49,20 @@ public class BirtProperties extends BirtConfig implements Serializable {
 		
 		// Add test and warning if no report design folder is present 
 		File designDir = this.getDesignDir();
-		if (!designDir.exists() || !designDir.isDirectory()) {
+		if (!designDir.exists() || !designDir.isDirectory() ) {
 			StringBuffer sb = new StringBuffer();
 			sb.append("Design Dir does not exist or is not a folder. ");
+			sb.append("\nWorkspace Location: ").append(this.getWorkspace().getAbsolutePath());
+			sb.append((this.getWorkspace().exists()) ? "(exists)" : " (does not exist)");
+			String ddd = ( this.getDesignDir() == null) ? "not set" : this.getDesignDir().getAbsolutePath(); 
+			sb.append("\nDesign Dir: ").append(ddd);
+			sb.append((this.getDesignDir().exists()) ? "(exists)" : " (does not exist)");
+			sb.append("\nCheck application.properties file");
+			log.warn(sb.toString());
+		}
+		if (designDir.exists() && designDir.isDirectory() && designDir.listFiles().length == 0) {
+			StringBuffer sb = new StringBuffer();
+			sb.append("Design Dir exists, but does not contain any file or sub-folders ");
 			sb.append("\nWorkspace Location: ").append(this.getWorkspace().getAbsolutePath());
 			sb.append((this.getWorkspace().exists()) ? "(exists)" : " (does not exist)");
 			String ddd = ( this.getDesignDir() == null) ? "not set" : this.getDesignDir().getAbsolutePath(); 
