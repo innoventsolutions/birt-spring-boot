@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.eclipse.birt.report.engine.api.EmitterInfo;
 import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.junit.Assert;
 import org.junit.Before;
@@ -64,6 +65,12 @@ public class BirtEngineServiceTest {
 		log.info("Create Engine with: " );
 		IReportEngine engine = engineService.getEngine();
 		Assert.assertNotNull(engine);
+		Object rootScope = engine.getRootScope();
+		EmitterInfo[] emitterInfo = engine.getEmitterInfo();
+		String[] formats = engine.getSupportedFormats();
+		for (int i = 0; i < formats.length; i++) {
+			log.info(formats[i]);			
+		}
 	}
 	
 }

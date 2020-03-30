@@ -11,13 +11,14 @@ package com.innoventsolutions.birt;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.innoventsolutions.birt.config.BirtProperties;
 import com.innoventsolutions.birt.controller.RunController;
 import com.innoventsolutions.birt.controller.SubmitController;
 import com.innoventsolutions.birt.service.BirtEngineService;
@@ -25,26 +26,30 @@ import com.innoventsolutions.birt.service.ReportRunService;
 import com.innoventsolutions.birt.service.SubmitJobService;
 
 @Configuration
-@EnableConfigurationProperties(BirtProperties.class)
+@EnableConfigurationProperties(BirtConfig.class)
 public class BirtAutoConfiguration {
+	
+	@Autowired
+	BirtConfig birtConfig;
 
 	@Bean
 	@ConditionalOnMissingBean
 	public BirtEngineService engineService() {
-		BirtProperties birtProps = new BirtProperties();
-		return new BirtEngineService(birtProps);
+		
+		return new BirtEngineService(birtConfig);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public ReportRunService runService() {
-		return new ReportRunService();
+		return new ReportRunService(engineService());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public SubmitJobService submitService() {
-		return new SubmitJobService();
+		ForkJoinPool fjp = new ForkJoinPool(10);
+		return new SubmitJobService(engineService(), fjp);
 	}
 
 	@ConditionalOnMissingBean
@@ -66,5 +71,4 @@ public class BirtAutoConfiguration {
 	public SubmitController submitController() {
 		return new SubmitController();
 	}
-
 }

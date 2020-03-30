@@ -23,8 +23,6 @@ import org.eclipse.birt.report.engine.api.EngineConfig;
 import org.eclipse.birt.report.engine.api.EngineConstants;
 import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.eclipse.birt.report.engine.api.IReportEngineFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.innoventsolutions.birt.config.BirtProperties;
 import com.innoventsolutions.birt.exception.BirtStarterException;
@@ -33,14 +31,11 @@ import com.innoventsolutions.birt.exception.BirtStarterException.BirtErrorCode;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
 public class BirtEngineService {
 
-	@Autowired
 	private final BirtProperties birtProperties;
 	private IReportEngine engine = null;
 
-	@Autowired
 	public BirtEngineService(final BirtProperties birtProperties) {
 		this.birtProperties = birtProperties;
 	}
