@@ -128,17 +128,11 @@ public class RunReportTest extends BaseTest {
 		log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
 
 		final MvcResult statusResult = this.mockMvc
-				.perform(get("/runReport")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(requestString)
-				.accept(MediaType.APPLICATION_JSON))
-				.andDo(MvcResult::getAsyncResult)
-				.andExpect(status().is(400))
-				.andExpect(APIERROR_EXISTS)
-				.andExpect(APIERROR_STATUS_BAD_REQUEST)
-				.andExpect(APIERROR_MSG_RUNFAIL_PARAM)
-				.andExpect(APIERROR_SUBERRORS_EMPTY)
-				.andReturn();
+				.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andDo(MvcResult::getAsyncResult).andExpect(status().is(400)).andExpect(APIERROR_EXISTS)
+				.andExpect(APIERROR_STATUS_BAD_REQUEST).andExpect(APIERROR_MSG_RUNFAIL_PARAM)
+				.andExpect(APIERROR_SUBERRORS_EMPTY).andReturn();
 
 		System.out.println(statusResult);
 
@@ -180,7 +174,7 @@ public class RunReportTest extends BaseTest {
 		System.out.println(statusResult);
 		/*
 		 * errorMessage = Failure to run report
-		 * 
+		 *
 		 */
 	}
 
@@ -206,15 +200,10 @@ public class RunReportTest extends BaseTest {
 		log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
 
 		final MvcResult statusResult = this.mockMvc
-				.perform(get("/runReport")
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(requestString)
-					.accept(MediaType.APPLICATION_JSON))
-					.andDo(MvcResult::getAsyncResult)
-					.andExpect(status().is(404))
-					.andExpect(APIERROR_MSG_RUNFAIL_DESIGN)
-					.andExpect(content().string(containsString("{\"apierror\":{\"status\":\"NOT_FOUND\"")))
-					.andReturn();
+				.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andDo(MvcResult::getAsyncResult).andExpect(status().is(404)).andExpect(APIERROR_MSG_RUNFAIL_DESIGN)
+				.andExpect(content().string(containsString("{\"apierror\":{\"status\":\"NOT_FOUND\""))).andReturn();
 
 		System.out.println(statusResult);
 	}
@@ -229,15 +218,13 @@ public class RunReportTest extends BaseTest {
 		log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
 
 		final MvcResult statusResult = this.mockMvc
-				.perform(get("/runReport")
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(requestString)		
-					.accept(MediaType.APPLICATION_JSON))
-					.andDo(MvcResult::getAsyncResult)
-					.andExpect(status().isOk())
-					.andExpect(content().string(containsString(HTML_INTRO)))
-					.andExpect(content().string(containsString("{ font-family: arial; padding-top: 0pt;}")))  // comes from .CSS
-					.andReturn();
+				.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andDo(MvcResult::getAsyncResult).andExpect(status().isOk())
+				.andExpect(content().string(containsString(HTML_INTRO)))
+				.andExpect(content().string(containsString("{ font-family: arial; padding-top: 0pt;}"))) // comes from
+																											// .CSS
+				.andReturn();
 
 		System.out.println(statusResult);
 	}
@@ -247,10 +234,9 @@ public class RunReportTest extends BaseTest {
 		final ExecuteRequest requestObject = ExecuteRequest.builder().designFile("resource_test.rptdesign")
 				.format("html").wrapError(false).build();
 
-
 		try {
-			File resDir = new File(birtConfig.getWorkspace(), "resources");
-			File resDirNew = new File(birtConfig.getWorkspace(), "resources_temp");
+			final File resDir = new File(birtConfig.getWorkspace(), "resources");
+			final File resDirNew = new File(birtConfig.getWorkspace(), "resources_temp");
 			resDir.renameTo(resDirNew);
 			requestObject.setOutputName("resource_out");
 			final ObjectMapper mapper = new ObjectMapper();
@@ -258,36 +244,31 @@ public class RunReportTest extends BaseTest {
 			log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
 
 			final MvcResult statusResult = this.mockMvc
-					.perform(get("/runReport")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(requestString)
-						.accept(MediaType.APPLICATION_JSON))
-						.andDo(MvcResult::getAsyncResult)
-						.andExpect(status().isOk())
-						.andExpect(content().string(containsString(HTML_INTRO)))
-						.andReturn();
+					.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+							.accept(MediaType.APPLICATION_JSON))
+					.andDo(MvcResult::getAsyncResult).andExpect(status().isOk())
+					.andExpect(content().string(containsString(HTML_INTRO))).andReturn();
 
-			String str = new String(statusResult.getResponse().getContentAsString());
+			final String str = new String(statusResult.getResponse().getContentAsString());
 			Assert.assertFalse(str.contains("{ font-family: arial; padding-top: 0pt;}"));
 			System.out.println(statusResult);
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 
 		} finally {
-			File resDir = new File(birtConfig.getWorkspace(), "resources");
-			File resDirNew = new File(birtConfig.getWorkspace(), "resources_temp");
+			final File resDir = new File(birtConfig.getWorkspace(), "resources");
+			final File resDirNew = new File(birtConfig.getWorkspace(), "resources_temp");
 			resDirNew.renameTo(resDir);
 		}
 	}
-	
+
 	@Test
 	public void testResourceReportNoData() {
 		final ExecuteRequest requestObject = ExecuteRequest.builder().designFile("resource_test.rptdesign")
 				.format("html").wrapError(false).build();
 
-
 		try {
-			File dataDir = new File(birtConfig.getWorkspace(), "data");
-			File dataDirNew = new File(birtConfig.getWorkspace(), "data_temp");
+			final File dataDir = new File(birtConfig.getWorkspace(), "data");
+			final File dataDirNew = new File(birtConfig.getWorkspace(), "data_temp");
 			dataDir.renameTo(dataDirNew);
 			requestObject.setOutputName("resource_out");
 			final ObjectMapper mapper = new ObjectMapper();
@@ -297,16 +278,14 @@ public class RunReportTest extends BaseTest {
 			final MvcResult statusResult = this.mockMvc
 					.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
 							.accept(MediaType.APPLICATION_JSON))
-					.andDo(MvcResult::getAsyncResult)
-					.andExpect(status().is(500))
-					.andReturn();
+					.andDo(MvcResult::getAsyncResult).andExpect(status().is(500)).andReturn();
 
 			System.out.println(statusResult);
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 
 		} finally {
-			File dataDir = new File(birtConfig.getWorkspace(), "data_temp");
-			File dataDirOrig = new File(birtConfig.getWorkspace(), "data");
+			final File dataDir = new File(birtConfig.getWorkspace(), "data_temp");
+			final File dataDirOrig = new File(birtConfig.getWorkspace(), "data");
 			dataDir.renameTo(dataDirOrig);
 		}
 	}
