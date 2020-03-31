@@ -76,7 +76,14 @@ public class JobControllerTest {
 	}
 
 	@Test
-	public void testSchedule() throws Exception {
+	public void testAllScheduling() throws Exception {
+		testSchedule();
+		testGetJob();
+		testGetJobs();
+		testDeleteJob();
+	}
+
+	private void testSchedule() throws Exception {
 		final ObjectMapper mapper = new ObjectMapper();
 		final ExtendedExecuteRequest extendedRequestObject = new ExtendedExecuteRequest();
 		extendedRequestObject.setDesignFile(PARAM_TEST_RPTDESIGN);
@@ -140,16 +147,13 @@ public class JobControllerTest {
 		final Map<String, Object> scheduleResponseMap = mapper.readValue(jsonString, Map.class);
 		@SuppressWarnings("unchecked")
 		final Map<String, String> jobKey = (Map<String, String>) scheduleResponseMap.get("jobKey");
-		log.info("testScheduleCron jobKey = " + jobKey);
 		final String message = (String) scheduleResponseMap.get("message");
-		log.info("testScheduleCron message = " + message);
 		Assert.assertFalse("Message is not null and not blank: " + message,
 				message != null && message.trim().length() > 0);
 		Assert.assertNotNull("Job key is null", jobKey);
 	}
 
-	@Test
-	public void testGetJob() throws Exception {
+	private void testGetJob() throws Exception {
 		final ObjectMapper mapper = new ObjectMapper();
 		final GetJobRequest jobRequestObject = new GetJobRequest();
 		jobRequestObject.setGroup("test-group-1");
@@ -176,10 +180,9 @@ public class JobControllerTest {
 								 * "This is an object where each key is a report run UUID and the value is the "
 								 * + "same as what is returned from /status."),
 								 */
-								subsectionWithPath("jobKey").description("x")
-						/*
-						 * , subsectionWithPath("jobDataMap"). description("x")
-						 */ ))).andReturn();
+								subsectionWithPath("jobKey").description("x"),
+								subsectionWithPath("jobDataMap").description("x"))))
+				.andReturn();
 		final MockHttpServletResponse jobResponse = jobResult.getResponse();
 		Assert.assertTrue(jobResponse.getContentType().startsWith("application/json"));
 		final String jobResponseString = jobResponse.getContentAsString();
@@ -189,8 +192,7 @@ public class JobControllerTest {
 		log.info("responseMap = " + jobResponseMap);
 	}
 
-	@Test
-	public void testDeleteJob() throws Exception {
+	private void testDeleteJob() throws Exception {
 		final ObjectMapper mapper = new ObjectMapper();
 		final GetJobRequest jobRequestObject = new GetJobRequest();
 		jobRequestObject.setGroup("test-group-1");
@@ -221,8 +223,20 @@ public class JobControllerTest {
 		log.info("responseMap = " + jobResponseMap);
 	}
 
-	@Test
-	public void testGetJobs() throws Exception {
-
+	private void testGetJobs() throws Exception {
+		final ObjectMapper mapper = new ObjectMapper();
+		log.info("GET /jobs request");
+		final MvcResult jobResult = this.mockMvc.perform(get("/jobs").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				// .andDo(document("getjobs",
+				// responseFields(subsectionWithPath("test-group-1.test-1").description("x"))))
+				.andReturn();
+		final MockHttpServletResponse jobResponse = jobResult.getResponse();
+		Assert.assertTrue(jobResponse.getContentType().startsWith("application/json"));
+		final String jobResponseString = jobResponse.getContentAsString();
+		log.info("GET /jobs response = " + jobResponseString);
+		@SuppressWarnings("unchecked")
+		final Map<String, Object> jobResponseMap = mapper.readValue(jobResponseString, Map.class);
+		log.info("responseMap = " + jobResponseMap);
 	}
 }
