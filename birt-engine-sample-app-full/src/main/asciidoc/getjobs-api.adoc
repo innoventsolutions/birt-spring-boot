@@ -1,0 +1,35 @@
+== GET /jobs
+
+=== Request fields:
+
+include::{snippets}/getjobs/request-fields.adoc[]
+
+=== Response fields:
+
+include::{snippets}/getjobs/response-fields.adoc[]
+
+=== Response codes:
+
+|===
+|Code|Name|Description
+
+|`+200+`
+|`+Success+`
+|The operation completed successfully.
+
+|`+500+`
+|`+Internal Server Error+`
+|Some internal error prevented the operation from completing.  See the log file for a full description and traceback.
+
+|===
+
+=== Examples:
+
+==== Curl:
+
+include::{snippets}/getjobs/curl-request.adoc[]
+
+==== HTTP request:
+
+include::{snippets}/getjobs/http-request.adoc[]
+

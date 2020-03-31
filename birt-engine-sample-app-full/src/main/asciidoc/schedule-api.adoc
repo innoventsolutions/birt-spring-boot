@@ -1,15 +1,16 @@
-== GET /submitReport
+== GET /schedule
 
-This request is used to start generating the report asynchronously.  A string is returned that identifies the job.
+This request is used to start generating a report at a later time.  
+A string is returned that identifies the job.
 Both the request and the response content types are application/json.
 
 === Request fields:
 
-include::{snippets}/submitReport/request-fields.adoc[]
+include::{snippets}/schedule/request-fields.adoc[]
 
 === Response fields:
 
-include::{snippets}/submitReport/response-fields.adoc[]
+include::{snippets}/schedule/response-fields.adoc[]
 
 === Response codes:
 
@@ -19,12 +20,6 @@ include::{snippets}/submitReport/response-fields.adoc[]
 |`+200+`
 |`+Success+`
 |The operation completed successfully.
-
-|`+401+`
-|`+Unauthorized+`
-|The report requires a security token, but the security token was missing from the request or was 
-not found in the database or the report design file specified in the database didn't match the
-request or the request was made beyond the timeout period.
 
 |`+404+`
 |`+Not Found+`
@@ -45,9 +40,9 @@ and explictly typed parameter was not specified correctly or an unsupported form
 
 ==== Curl:
 
-include::{snippets}/submitReport/curl-request.adoc[]
+include::{snippets}/schedule/curl-request.adoc[]
 
 ==== HTTP request:
 
-include::{snippets}/submitReport/http-request.adoc[]
+include::{snippets}/schedule/http-request.adoc[]
 

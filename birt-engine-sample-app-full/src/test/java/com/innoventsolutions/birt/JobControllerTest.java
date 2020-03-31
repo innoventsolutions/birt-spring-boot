@@ -6,6 +6,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -75,11 +76,6 @@ public class JobControllerTest {
 	}
 
 	@Test
-	public void test() {
-
-	}
-
-	@Test
 	public void testSchedule() throws Exception {
 		final ObjectMapper mapper = new ObjectMapper();
 		final ExtendedExecuteRequest extendedRequestObject = new ExtendedExecuteRequest();
@@ -95,7 +91,7 @@ public class JobControllerTest {
 		scheduleRequestObject.setName("test-1");
 		extendedRequestObject.setSchedule(scheduleRequestObject);
 		final String scheduleRequestString = mapper.writeValueAsString(extendedRequestObject);
-		log.info("testScheduleCron schedule request = " + scheduleRequestString);
+		log.info("GET /schedule request = " + scheduleRequestString);
 		final MvcResult scheduleResult = this.mockMvc
 				.perform(get("/schedule").contentType(MediaType.APPLICATION_JSON).content(scheduleRequestString)
 						.accept(MediaType.APPLICATION_JSON))
@@ -139,7 +135,7 @@ public class JobControllerTest {
 		final MockHttpServletResponse scheduleResponse = scheduleResult.getResponse();
 		Assert.assertTrue(scheduleResponse.getContentType().startsWith("application/json"));
 		final String jsonString = scheduleResponse.getContentAsString();
-		log.info("testScheduleCron response = " + jsonString);
+		log.info("GET /schedule response = " + jsonString);
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> scheduleResponseMap = mapper.readValue(jsonString, Map.class);
 		@SuppressWarnings("unchecked")
@@ -159,12 +155,12 @@ public class JobControllerTest {
 		jobRequestObject.setGroup("test-group-1");
 		jobRequestObject.setName("test-1");
 		final String jobRequestString = mapper.writeValueAsString(jobRequestObject);
-		log.info("testGetJob job request = " + jobRequestString);
+		log.info("GET /job request = " + jobRequestString);
 		final MvcResult jobResult = this.mockMvc
 				.perform(get("/job").contentType(MediaType.APPLICATION_JSON).content(jobRequestString)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andDo(document("job",
+				.andDo(document("getjob",
 						requestFields(
 								fieldWithPath("name")
 										.description(JOB_NAME_DESCRIPTION + " that was used to create the schedule"),
@@ -187,9 +183,46 @@ public class JobControllerTest {
 		final MockHttpServletResponse jobResponse = jobResult.getResponse();
 		Assert.assertTrue(jobResponse.getContentType().startsWith("application/json"));
 		final String jobResponseString = jobResponse.getContentAsString();
-		log.info("testGetJob job response = " + jobResponseString);
+		log.info("GET /job response = " + jobResponseString);
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> jobResponseMap = mapper.readValue(jobResponseString, Map.class);
 		log.info("responseMap = " + jobResponseMap);
+	}
+
+	@Test
+	public void testDeleteJob() throws Exception {
+		final ObjectMapper mapper = new ObjectMapper();
+		final GetJobRequest jobRequestObject = new GetJobRequest();
+		jobRequestObject.setGroup("test-group-1");
+		jobRequestObject.setName("test-1");
+		final String jobRequestString = mapper.writeValueAsString(jobRequestObject);
+		log.info("DELETE /job request = " + jobRequestString);
+		final MvcResult jobResult = this.mockMvc
+				.perform(delete("/job").contentType(MediaType.APPLICATION_JSON).content(jobRequestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("deletejob",
+						requestFields(
+								fieldWithPath("name")
+										.description(JOB_NAME_DESCRIPTION + " that was used to create the schedule"),
+								fieldWithPath("group")
+										.description(JOB_GROUP_DESCRIPTION + " that was used to create the schedule")),
+						responseFields(fieldWithPath("jobDeleted")
+								.description(
+										"True if the job was deleted or false if the job group/name was not found.")
+								.type(JsonFieldType.BOOLEAN))))
+				.andReturn();
+		final MockHttpServletResponse jobResponse = jobResult.getResponse();
+		Assert.assertTrue(jobResponse.getContentType().startsWith("application/json"));
+		final String jobResponseString = jobResponse.getContentAsString();
+		log.info("DELETE /job response = " + jobResponseString);
+		@SuppressWarnings("unchecked")
+		final Map<String, Object> jobResponseMap = mapper.readValue(jobResponseString, Map.class);
+		log.info("responseMap = " + jobResponseMap);
+	}
+
+	@Test
+	public void testGetJobs() throws Exception {
+
 	}
 }
