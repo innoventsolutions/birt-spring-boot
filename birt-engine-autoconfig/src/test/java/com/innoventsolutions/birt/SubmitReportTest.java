@@ -230,7 +230,7 @@ public class SubmitReportTest extends BaseTest {
 		requestObject.setJobid(jobId);
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
-		log.info("testDeleteJob request = " + requestString);
+		log.info("/deleteJob request = " + requestString);
 
 		final MvcResult result = this.mockMvc
 				.perform(delete("/deleteJob").contentType(MediaType.APPLICATION_JSON).content(requestString)
@@ -241,7 +241,7 @@ public class SubmitReportTest extends BaseTest {
 		final MockHttpServletResponse httpServletResponse = result.getResponse();
 		Assert.assertTrue(httpServletResponse.getContentType().startsWith("application/json"));
 		final String jsonString = httpServletResponse.getContentAsString();
-		log.info("getJobInfo response = " + jsonString);
+		log.info("/deleteJob response = " + jsonString);
 		final Boolean response = mapper.readValue(jsonString, Boolean.class);
 		System.out.println(response);
 	}

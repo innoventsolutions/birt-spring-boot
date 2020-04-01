@@ -6,6 +6,7 @@ target/
 !**/src/test/**
 .attach*
 output/
+stop
 
 ### STS ###
 .apt_generated

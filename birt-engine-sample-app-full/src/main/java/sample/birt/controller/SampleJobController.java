@@ -186,7 +186,6 @@ public class SampleJobController {
 	public ResponseEntity<DeleteJobResponse> deleteJob(@RequestBody final GetJobRequest request) {
 		log.info("delete-job " + request);
 		try {
-			final Scheduler scheduler = new StdSchedulerFactory().getScheduler();
 			final JobKey jobKey = new JobKey(request.getName(), request.getGroup());
 			final boolean result = scheduler.deleteJob(jobKey);
 			return new ResponseEntity<DeleteJobResponse>(new DeleteJobResponse(result), HttpStatus.OK);
@@ -201,7 +200,6 @@ public class SampleJobController {
 	public ResponseEntity<GetJobResponse> getJob(@RequestBody final GetJobRequest request) {
 		log.info("job " + request);
 		try {
-			final Scheduler scheduler = new StdSchedulerFactory().getScheduler();
 			final JobKey jobKey = new JobKey(request.getName(), request.getGroup());
 			final GetJobResponse jobResponse = new GetJobResponse();
 			@SuppressWarnings("unchecked")
@@ -224,7 +222,6 @@ public class SampleJobController {
 		log.info("jobs");
 		final Map<JobKey, GetJobResponse> response = new HashMap<>();
 		try {
-			final Scheduler scheduler = new StdSchedulerFactory().getScheduler();
 			for (final JobKey jobKey : scheduler.getJobKeys(GroupMatcher.anyJobGroup())) {
 				final GetJobResponse jobResponse = new GetJobResponse();
 				@SuppressWarnings("unchecked")
