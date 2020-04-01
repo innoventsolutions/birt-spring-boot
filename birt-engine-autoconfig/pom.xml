@@ -63,7 +63,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.innoventsolutions.birt-spring-boot-modules</groupId>
+			<groupId>com.innoventsolutions.birt-spring-boot</groupId>
 			<artifactId>birt-engine</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<optional>false</optional>

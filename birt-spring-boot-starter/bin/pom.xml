@@ -22,12 +22,12 @@
 	        <version>2.2.4.RELEASE</version>
 		</dependency>
 		<dependency>
-			<groupId>com.innoventsolutions.birt-spring-boot-modules</groupId>
+			<groupId>com.innoventsolutions.birt-spring-boot</groupId>
 			<artifactId>birt-spring-boot-autoconfigure</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.innoventsolutions.birt-spring-boot-modules</groupId>
+			<groupId>com.innoventsolutions.birt-spring-boot</groupId>
 			<artifactId>birt-engine</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
