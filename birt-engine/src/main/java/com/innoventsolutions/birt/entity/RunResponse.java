@@ -32,7 +32,6 @@ public class RunResponse {
 	public RunResponse(final ExecuteRequest request) {
 		this.request = request;
 		this.submitTime = new Date();
-		final long id = submitTime.getTime();
 		this.outFileName = request.getOutputName() + "." + request.getFormat();
 		this.status = StatusEnum.INIT;
 		this.httpStatus = HttpStatus.OK;

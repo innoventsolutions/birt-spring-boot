@@ -6,8 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -31,8 +29,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class BirtEngineTest {
-	static final String HTML_INTRO = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">";  // the HTML header	
-	static final String RPT_DOC_STR = "dsKeys = new Packages.java.util.ArrayList();";  // random birt script in the test report
+	static final String HTML_INTRO = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">"; // the
+																																		// HTML
+																																		// header
+	static final String RPT_DOC_STR = "dsKeys = new Packages.java.util.ArrayList();"; // random birt script in the test
+																						// report
 	BirtEngineService engineService;
 
 	@Before
@@ -47,19 +48,19 @@ public class BirtEngineTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		BirtConfig bp = new BirtConfig();
-		File workspace = new File(appProps.getProperty("birt.runner.workspace")); 
+		File workspace = new File(appProps.getProperty("birt.runner.workspace"));
 		bp.setWorkspace(workspace);
 		bp.setActuate(false);
-		//bp.setBaseImageURL();
-		File designDir = new File(bp.getWorkspace(), (String)appProps.getProperty("birt.runner.designDir"));
-		File loggingDir = new File(bp.getWorkspace(), (String)appProps.getProperty("birt.runner.loggingDir"));
-		File outputDir = new File(bp.getWorkspace(), (String)appProps.getProperty("birt.runner.outputDir"));
-		File resourceDir = new File(bp.getWorkspace(), (String)appProps.getProperty("birt.runner.resourceDir"));
-		File scriptLibDir = new File(bp.getWorkspace(), (String)appProps.getProperty("birt.runner.scriptLibDir"));
-		File baseImageDir = new File(bp.getWorkspace(), (String)appProps.getProperty("birt.runner.baseImageURL"));
-		
+		// bp.setBaseImageURL();
+		File designDir = new File(bp.getWorkspace(), (String) appProps.getProperty("birt.runner.designDir"));
+		File loggingDir = new File(bp.getWorkspace(), (String) appProps.getProperty("birt.runner.loggingDir"));
+		File outputDir = new File(bp.getWorkspace(), (String) appProps.getProperty("birt.runner.outputDir"));
+		File resourceDir = new File(bp.getWorkspace(), (String) appProps.getProperty("birt.runner.resourceDir"));
+		File scriptLibDir = new File(bp.getWorkspace(), (String) appProps.getProperty("birt.runner.scriptLibDir"));
+		File baseImageDir = new File(bp.getWorkspace(), (String) appProps.getProperty("birt.runner.baseImageURL"));
+
 		bp.setBirtRuntimeHome(null);
 		bp.setDesignDir(designDir);
 		bp.setLoggingDir(loggingDir);
@@ -68,21 +69,23 @@ public class BirtEngineTest {
 		bp.setResourceDir(resourceDir);
 		bp.setScriptLibDir(scriptLibDir);
 		bp.setBaseImageURL(baseImageDir.getAbsolutePath());
-		
+
 		this.engineService = new BirtEngineService(bp);
-		
+
 	}
-	
-	@Test 
+
+	@Test
 	public void testEngine() {
-		log.info("Create Engine with: " );
+		log.info("Create Engine with: ");
 		IReportEngine engine = engineService.getEngine();
 		Assert.assertNotNull(engine);
+		@SuppressWarnings("unused")
 		Object rootScope = engine.getRootScope();
+		@SuppressWarnings("unused")
 		EmitterInfo[] emitterInfo = engine.getEmitterInfo();
 		String[] formats = engine.getSupportedFormats();
 		Assert.assertEquals(13, formats.length);
-		List<String> formatList = (List<String>)Arrays.asList(formats);
+		List<String> formatList = (List<String>) Arrays.asList(formats);
 		Assert.assertTrue(formatList.contains("pdf"));
 		Assert.assertTrue(formatList.contains("html"));
 		Assert.assertTrue(formatList.contains("xlsx"));
@@ -91,42 +94,40 @@ public class BirtEngineTest {
 		Assert.assertTrue(formatList.contains("odp"));
 		Assert.assertTrue(formatList.contains("xls"));
 		/*
-		for (int i = 0; i < formats.length; i++) {
-			log.info(formats[i]);			
-		}
-		*/
+		 * for (int i = 0; i < formats.length; i++) { log.info(formats[i]); }
+		 */
 	}
-	
+
 	@Test
 	public void testRunReport() throws IOException {
 		ReportRunService rrs = new ReportRunService(engineService);
 		Assert.assertNotNull(rrs);
-		
+
 		MockHttpServletResponse httpResp = new MockHttpServletResponse();
-		
+
 		Assert.assertNotNull(httpResp);
 		ExecuteRequest execReq = new ExecuteRequest();
 		execReq.setDesignFile("test.rptdesign");
 		execReq.setFormat("HTML");
 		execReq.setWrapError(false);
-		
+
 		rrs.execute(execReq, httpResp);
 
 		Assert.assertTrue(httpResp.getContentAsString().startsWith(HTML_INTRO));
-		
+
 	}
-	
+
 	@Test
 	public void testSubmitReport() {
-		
+
 		File outputDir = engineService.getOutputDir();
-		String outputFileName = "TEST_123456789"; 
+		String outputFileName = "TEST_123456789";
 		FilenameFilter filter = (dir, name) -> name.startsWith(outputFileName);
 		File[] curFiles = outputDir.listFiles(filter);
 		for (int i = 0; i < curFiles.length; i++) {
 			curFiles[i].delete();
 		}
-		
+
 		ForkJoinPool ffjp = new ForkJoinPool(5);
 		SubmitJobService sjs = new SubmitJobService(engineService, ffjp);
 		ExecuteRequest execReq = new ExecuteRequest();
@@ -134,11 +135,11 @@ public class BirtEngineTest {
 		execReq.setOutputName(outputFileName);
 		execReq.setFormat("HTML");
 		execReq.setWrapError(false);
-		
+
 		SubmitResponse submitResponse = new SubmitResponse(execReq);
 		sjs.executeRun(submitResponse);
 		sjs.executeRender(submitResponse);
-		
+
 		filter = (dir, name) -> name.startsWith(outputFileName);
 		curFiles = outputDir.listFiles(filter);
 		Assert.assertTrue(2 == curFiles.length);
@@ -149,24 +150,23 @@ public class BirtEngineTest {
 				Assert.assertTrue(fileSearch(curFiles[i], HTML_INTRO) == 0);
 			}
 		}
-		
-		
+
 	}
 
-	private int fileSearch(File f, final String cStr)  {
+	private int fileSearch(File f, final String cStr) {
 		try {
 			StringBuffer sb = new StringBuffer();
-            FileInputStream fis = new FileInputStream(f);
-            int content;
-            while ((content = fis.read()) != -1) {
-                sb.append((char)content);
-            }
-            fis.close();
+			FileInputStream fis = new FileInputStream(f);
+			int content;
+			while ((content = fis.read()) != -1) {
+				sb.append((char) content);
+			}
+			fis.close();
 			return sb.indexOf(cStr);
-			
+
 		} catch (IOException e) {
 			log.error("Failure to find string: " + e.getMessage());
-		} 
+		}
 		return -1;
 	}
 }
