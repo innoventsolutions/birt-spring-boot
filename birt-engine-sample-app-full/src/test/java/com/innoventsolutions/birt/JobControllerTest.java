@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -221,6 +222,10 @@ public class JobControllerTest {
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> jobResponseMap = mapper.readValue(jobResponseString, Map.class);
 		log.info("responseMap = " + jobResponseMap);
+		validateJobResponse(jobResponseMap);
+	}
+
+	private void validateJobResponse(final Map<String, Object> jobResponseMap) throws ParseException {
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> jobKeyMap = (Map<String, Object>) jobResponseMap.get("jobKey");
 		Assert.assertEquals(jobKeyMap.get("name"), "test-1");
@@ -273,6 +278,8 @@ public class JobControllerTest {
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> jobResponseMap = mapper.readValue(jobResponseString, Map.class);
 		log.info("responseMap = " + jobResponseMap);
+		final Boolean jobDeleted = (Boolean) jobResponseMap.get("jobDeleted");
+		Assert.assertTrue(jobDeleted.booleanValue());
 	}
 
 	private void testGetJobs() throws Exception {
@@ -290,5 +297,10 @@ public class JobControllerTest {
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> jobResponseMap = mapper.readValue(jobResponseString, Map.class);
 		log.info("responseMap = " + jobResponseMap);
+		Assert.assertTrue(jobResponseMap.size() == 1);
+		@SuppressWarnings("unchecked")
+		final Map<String, Object> jobMap = (Map<String, Object>) jobResponseMap.get("test-group-1.test-1");
+		Assert.assertNotNull(jobMap);
+		validateJobResponse(jobMap);
 	}
 }
