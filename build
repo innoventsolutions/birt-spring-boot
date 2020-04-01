@@ -1,5 +1,6 @@
 #!/bin/sh
-cd $HOME/projects/birt-spring-boot-starter-mvn
+cd "$(dirname "${BASH_SOURCE[0]}")"
+pwd
 echo "building..."
 if ! mvn clean package > build.log 2> build.err.log; then
 	echo "failed to build - see build.log"
