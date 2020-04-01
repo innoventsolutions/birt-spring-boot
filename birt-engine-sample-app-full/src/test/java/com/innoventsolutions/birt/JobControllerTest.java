@@ -10,8 +10,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -81,6 +84,7 @@ public class JobControllerTest {
 		testGetJob();
 		testGetJobs();
 		testDeleteJob();
+		testScheduleImmediate();
 	}
 
 	private void testSchedule() throws Exception {
@@ -153,6 +157,33 @@ public class JobControllerTest {
 		Assert.assertNotNull("Job key is null", jobKey);
 	}
 
+	private void testScheduleImmediate() throws Exception {
+		final ObjectMapper mapper = new ObjectMapper();
+		final ExtendedExecuteRequest extendedRequestObject = new ExtendedExecuteRequest();
+		extendedRequestObject.setDesignFile(PARAM_TEST_RPTDESIGN);
+		extendedRequestObject.setFormat("pdf");
+		extendedRequestObject.setParameters(PARAM_MAP_1);
+		extendedRequestObject.setOutputName("test_submit_out_1");
+		final String scheduleRequestString = mapper.writeValueAsString(extendedRequestObject);
+		log.info("GET /schedule(immediate) request = " + scheduleRequestString);
+		final MvcResult scheduleResult = this.mockMvc.perform(get("/schedule").contentType(MediaType.APPLICATION_JSON)
+				.content(scheduleRequestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andReturn();
+		final MockHttpServletResponse scheduleResponse = scheduleResult.getResponse();
+		Assert.assertTrue(scheduleResponse.getContentType().startsWith("application/json"));
+		final String jsonString = scheduleResponse.getContentAsString();
+		log.info("GET /schedule(immediate) response = " + jsonString);
+		@SuppressWarnings("unchecked")
+		final Map<String, Object> scheduleResponseMap = mapper.readValue(jsonString, Map.class);
+		// @SuppressWarnings("unchecked")
+		// final Map<String, String> jobKey = (Map<String, String>)
+		// scheduleResponseMap.get("jobKey");
+		final String message = (String) scheduleResponseMap.get("message");
+		Assert.assertFalse("Message is not null and not blank: " + message,
+				message != null && message.trim().length() > 0);
+		// Assert.assertNotNull("Job key is null", jobKey);
+	}
+
 	private void testGetJob() throws Exception {
 		final ObjectMapper mapper = new ObjectMapper();
 		final GetJobRequest jobRequestObject = new GetJobRequest();
@@ -190,6 +221,27 @@ public class JobControllerTest {
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> jobResponseMap = mapper.readValue(jobResponseString, Map.class);
 		log.info("responseMap = " + jobResponseMap);
+		@SuppressWarnings("unchecked")
+		final Map<String, Object> jobKeyMap = (Map<String, Object>) jobResponseMap.get("jobKey");
+		Assert.assertEquals(jobKeyMap.get("name"), "test-1");
+		Assert.assertEquals(jobKeyMap.get("group"), "test-group-1");
+		@SuppressWarnings("unchecked")
+		final Map<String, Object> jobDataMap = (Map<String, Object>) jobResponseMap.get("jobDataMap");
+		Assert.assertNotNull(jobDataMap);
+		Assert.assertNotNull(jobDataMap.get("submitRequest"));
+		Assert.assertNotNull(jobDataMap.get("birtConfig"));
+		@SuppressWarnings("unchecked")
+		final List<Map<String, Object>> triggerList = (List<Map<String, Object>>) jobResponseMap.get("triggers");
+		Assert.assertNotNull(triggerList);
+		Assert.assertTrue(triggerList.size() == 1);
+		final Map<String, Object> triggerMap = triggerList.get(0);
+		final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		final String startTimeString = (String) triggerMap.get("startTime");
+		final Date startTime = df.parse(startTimeString);
+		Assert.assertTrue(startTime.getTime() < System.currentTimeMillis());
+		final String nextFireTimeString = (String) triggerMap.get("nextFireTime");
+		final Date nextFireTime = df.parse(nextFireTimeString);
+		Assert.assertTrue(nextFireTime.getTime() > System.currentTimeMillis());
 	}
 
 	private void testDeleteJob() throws Exception {
