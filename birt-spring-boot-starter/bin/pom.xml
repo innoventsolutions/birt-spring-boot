@@ -4,24 +4,22 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>birt-spring-boot-starter</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-
-    <parent>
-        <groupId>com.innoventsolutions.birt-spring-boot-modules</groupId>
-        <artifactId>birt-spring-boot-modules</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-    </parent>
-
+	<parent>
+		<groupId>com.innoventsolutions.birt-spring-boot</groupId>
+		<artifactId>birt-spring-boot</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring-boot.version>1.5.2.RELEASE</spring-boot.version>
+        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
-			<version>${spring-boot.version}</version>
+	        <version>2.2.4.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>com.innoventsolutions.birt-spring-boot-modules</groupId>
@@ -33,20 +31,24 @@
 			<artifactId>birt-engine</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.innoventsolutions.birt.runtime</groupId>
+			<artifactId>org.eclipse.birt.runtime_4.8.0-20180626</artifactId>
+			<version>4.8.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>
+						com.innoventsolutions.birt.runtime
+					</groupId>
+					<artifactId>
+						org.eclipse.orbit.mongodb_3.2.2.v20170222-2110
+					</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
 
 </project>

@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.innoventsolutions.birt-spring-boot-modules</groupId>
-    <artifactId>birt-spring-boot-modules</artifactId>
+    <groupId>com.innoventsolutions.birt-spring-boot</groupId>
+    <artifactId>birt-spring-boot</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>birt-spring-boot-modules</name>
+    <name>birt-spring-boot</name>
     <packaging>pom</packaging>
 
     <parent>

@@ -7,8 +7,8 @@
 	<name>birt-spring-boot-autoconfigure</name>
 
 	<parent>
-		<groupId>com.innoventsolutions.birt-spring-boot-modules</groupId>
-		<artifactId>birt-spring-boot-modules</artifactId>
+		<groupId>com.innoventsolutions.birt-spring-boot</groupId>
+		<artifactId>birt-spring-boot</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
