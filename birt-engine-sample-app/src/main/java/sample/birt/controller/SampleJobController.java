@@ -26,9 +26,6 @@ import com.innoventsolutions.birt.entity.ExecuteRequest;
 import com.innoventsolutions.birt.entity.SubmitResponse;
 import com.innoventsolutions.birt.service.SubmitJobService;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Controller
 public class SampleJobController {
 	
@@ -44,7 +41,7 @@ public class SampleJobController {
 
 	@GetMapping("/welcome")
 	public ResponseEntity<String> getWelcome() {
-		log.info("Welcome ");
+		System.out.println("Welcome ");
 		
 		String welcome_msg = "<h1>Welcome to the BIRT Starter sample app.</h1><p>Try /testPDF, /testHTML, or /testSubmit to exercise any of the built in BIRT REST endpoints.</p><p><a href=\"/index.html\">/index.html</a> provides documentation of the rest endpoints</p>";
 		
@@ -55,8 +52,15 @@ public class SampleJobController {
 	@GetMapping("/test")
 	public ResponseEntity<SubmitResponse> getTestSubmit(@RequestBody(required = false) Integer numToRun,
 			final HttpServletResponse httpResponse) {
-		log.info("testSubmit ");
+		
+		/* Example of using birt-engine service classes directly 
+		 *
+		 * Built in REST end points exist at /runReport and /submitJob
+		 */
 
+		System.out.println("testSubmit Outer:");
+
+		
 		if (numToRun == null)
 			numToRun = 10;
 
@@ -90,9 +94,11 @@ public class SampleJobController {
 
 	}
 
-	@GetMapping("/submitJob2")
+	@GetMapping("/sampleSubmitJob")
 	public ResponseEntity<SubmitResponse> executeSubmitJob(@RequestBody final ExecuteRequest request,
 			final HttpServletResponse httpResponse) {
+
+		System.out.println("Submit Job Inner:");
 
 		final SubmitResponse submitResponse = new SubmitResponse(request);
 		@SuppressWarnings("unused")

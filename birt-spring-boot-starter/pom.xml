@@ -8,13 +8,8 @@
 		<groupId>com.innoventsolutions.birt-spring-boot</groupId>
 		<artifactId>birt-spring-boot</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath />
 	</parent>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring-boot.version>1.5.2.RELEASE</spring-boot.version>
-        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -47,7 +42,6 @@
 		</dependency>
 	</dependencies>
 
-    <build>
-    </build>
+	<build/>
 
 </project>
