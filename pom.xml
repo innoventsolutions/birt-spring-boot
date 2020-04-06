@@ -123,6 +123,18 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<resources>
 			<resource>
@@ -138,7 +150,7 @@
 		</testResources>
 
 	</build>
-	
+
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -151,7 +163,7 @@
 			</url>
 		</repository>
 	</distributionManagement>
-	
+
 	<profiles>
 		<!-- mvn release:perform to sign -->
 		<profile>
@@ -181,5 +193,5 @@
 			</build>
 		</profile>
 	</profiles>
-	
+
 </project>

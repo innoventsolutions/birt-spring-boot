@@ -30,7 +30,7 @@ import lombok.Setter;
  * - ...
  * 
  * Should be coordinated with users use of Resource Home in BIRT Designer
- *  (Resource Home is under Window -> Preferences -> Report Design -> Resources)
+ *  (Resource Home is under Window, Preferences, Report Design, Resources)
  *   
  * @author Scott Rosenbaum / Steve Schafer
  *
