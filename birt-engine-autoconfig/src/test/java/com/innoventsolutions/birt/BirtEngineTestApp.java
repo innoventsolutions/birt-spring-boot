@@ -13,12 +13,18 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
+/**
+ * Used to test REST functions using Spring Framework.
+ * 
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
 @SpringBootApplication
 @ComponentScan(basePackages = "com.innoventsolutions.birt")
-public class BirtEngineApplication {
+public class BirtEngineTestApp {
 
 	public static void main(final String[] args) {
-		SpringApplication.run(BirtEngineApplication.class, args);
+		SpringApplication.run(BirtEngineTestApp.class, args);
 	}
 
 }

@@ -45,8 +45,14 @@ import com.innoventsolutions.birt.entity.ExecuteRequest;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Used to test RunReport Function using SpringBoot 
+ * 
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = BirtEngineApplication.class)
+@SpringBootTest(classes = BirtEngineTestApp.class)
 @WebAppConfiguration
 @Slf4j
 public class RunReportTest extends BaseTest {

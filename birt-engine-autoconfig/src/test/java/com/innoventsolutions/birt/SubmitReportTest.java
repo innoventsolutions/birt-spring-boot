@@ -48,8 +48,14 @@ import com.innoventsolutions.birt.entity.SubmitResponse.StatusEnum;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Used to test the SubmitJob function and related actions
+ * 
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = BirtEngineApplication.class)
+@SpringBootTest(classes = BirtEngineTestApp.class)
 @WebAppConfiguration
 @Slf4j
 public class SubmitReportTest extends BaseTest {

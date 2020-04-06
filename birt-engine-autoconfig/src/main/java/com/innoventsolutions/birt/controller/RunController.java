@@ -29,8 +29,15 @@ import com.innoventsolutions.birt.util.Util;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-@RestController
+/**
+ * Used to perform synchronous run Requests. 
+ *  The StreamingResponseBody will cause the actual report execution to be 
+ *   performed in a separate thread, with the response streamed directly to the caller.
+ *   
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
+@Slf4j @RestController
 public class RunController {
 
 	@Autowired

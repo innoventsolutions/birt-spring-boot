@@ -38,8 +38,13 @@ import com.innoventsolutions.birt.util.Util;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-@RestController
+/**
+ * Controls the Async functions used to run reports and get status or fetch content
+ * 
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
+@Slf4j @RestController
 public class SubmitController {
 
 	@Autowired

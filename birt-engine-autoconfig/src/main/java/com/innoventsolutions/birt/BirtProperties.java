@@ -12,11 +12,22 @@ import com.innoventsolutions.birt.config.BirtConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+/**
+ * Wraps the BirtConfig class to populate values from application.properties and supply them 
+ * to the BIRT-Engine at startup. 
+ *  
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
+@Slf4j 
 @ConfigurationProperties(prefix = "birt.runner")
 public class BirtProperties extends BirtConfig implements Serializable {
 
 	private static final long serialVersionUID = -6821187546631689762L;
+	
+	private Integer submitJobPoolSize = 10;
+	private Integer runReportPoolSize = 10;
+
 	
 	@PostConstruct
 	public void setDefaults() throws IOException {
@@ -75,6 +86,22 @@ public class BirtProperties extends BirtConfig implements Serializable {
 
 		
 			
+	}
+
+	public Integer getSubmitJobPoolSize() {
+		return submitJobPoolSize;
+	}
+
+	public void setSubmitJobPoolSize(Integer submitJobThreads) {
+		this.submitJobPoolSize = submitJobThreads;
+	}
+
+	public Integer getRunReportPoolSize() {
+		return runReportPoolSize;
+	}
+
+	public void setRunReportPoolSize(Integer runReportPoolSize) {
+		this.runReportPoolSize = runReportPoolSize;
 	}
 
 }

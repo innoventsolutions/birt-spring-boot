@@ -16,6 +16,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+/**
+ * Common static strings used during testing of BIRT Engine
+ * 
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
 public class BaseTest {
 
 	protected static final String WRAP_ERROR_DESCRIPTION = "If true, generate a JSON error response.  If false, generate a simple error response that will generate a whitelabel error page.";

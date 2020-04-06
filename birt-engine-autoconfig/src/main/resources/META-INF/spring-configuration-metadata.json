@@ -53,6 +53,18 @@
 			"type": "java.lang.String",
 			"description": "Open Source BIRT, not required. If using OpenText commercial libraries (requires license), specify the location of the library plugins directory.",
 			"defaultValue": "not-specified"
+		},
+		{
+			"name": "birt.runner.submitJobPoolSize",
+			"type": "java.lang.Integer",
+			"description": "Number of threads to configure in the SubmitJob pool of threads",
+			"defaultValue": "10"
+		},
+		{
+			"name": "birt.runner.runReportPoolSize",
+			"type": "java.lang.Integer",
+			"description": "ReportRun and SubmitJob run in thread pools. Each Pool",
+			"defaultValue": "10"
 		}
 	]
 }
