@@ -30,6 +30,15 @@ import com.innoventsolutions.birt.exception.BirtStarterException.BirtErrorCode;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Wraps off a BIRT Engine Service.
+ *  Supports either BIRT Open Source libraries or
+ *  Commercial BIRT libraries from OpenText.
+ *  Use of OpenText libraries requires configuration of BIRT_HOME
+ *  
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
 @Slf4j
 public class BirtEngineService {
 

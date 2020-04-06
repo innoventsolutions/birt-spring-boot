@@ -11,6 +11,12 @@ package com.innoventsolutions.birt.util;
 
 import org.springframework.http.MediaType;
 
+/**
+ * Convert media strings to MediaTypes
+ * 
+ * @author Steve Schafer
+ *
+ */
 public class Util {
 
 	public Util() {

@@ -11,6 +11,12 @@ package com.innoventsolutions.birt.entity;
 
 import lombok.Data;
 
+/**
+ * Entity object containing the jobID that is to be looked up or fetched.
+ * 
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
 @Data
 public class JobStatus {
 	private String jobid;

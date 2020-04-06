@@ -27,6 +27,12 @@ import com.innoventsolutions.birt.exception.BirtStarterException.BirtErrorCode;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Utility method to implement a RunAndRender Task
+ * 
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
 @Slf4j
 public class ReportRunService extends BaseReportService {
 

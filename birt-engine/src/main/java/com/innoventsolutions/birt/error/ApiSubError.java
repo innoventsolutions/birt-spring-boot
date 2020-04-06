@@ -9,6 +9,12 @@
  ******************************************************************************/
 package com.innoventsolutions.birt.error;
 
+/**
+ * Used to wrap off Exceptions as Error Messages to be returned as REST response
+ * 
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
 public class ApiSubError {
 
 }

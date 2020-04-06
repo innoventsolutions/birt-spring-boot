@@ -12,6 +12,12 @@ package com.innoventsolutions.birt.util;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.jsontype.impl.TypeIdResolverBase;
 
+/**
+ * Used in ApiError handling to convert Exceptions to Errors in REST message
+ * 
+ * @author Steve Schafer
+ *
+ */
 public class LowerCaseClassNameResolver extends TypeIdResolverBase {
 
 	@Override

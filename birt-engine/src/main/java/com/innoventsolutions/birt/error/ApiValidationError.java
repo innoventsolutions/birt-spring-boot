@@ -13,6 +13,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * Used to wrap off Exceptions as Error Messages to be returned as REST response
+ * 
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor

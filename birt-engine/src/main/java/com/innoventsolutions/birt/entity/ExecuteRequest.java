@@ -20,9 +20,10 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * The report run request.
+ * Common requests object shared by RunReport and SubmitJob
+ *  Parameters should be a comma separated string of Name/Value pairs
  *
- * @author Steve Schafer, Innovent Solutions Inc.
+ * @author Scott Rosenbaum / Steve Schafer
  */
 @Getter @Setter @Builder @ToString
 @AllArgsConstructor @NoArgsConstructor

@@ -24,6 +24,12 @@ import com.innoventsolutions.birt.error.ApiError;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Class to wrap all Exceptions thrown by BIRT-ENGINE
+ * 
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
 @Slf4j
 public class BirtStarterException extends RuntimeException {
 	private static final long serialVersionUID = 1L;

@@ -40,6 +40,14 @@ import com.innoventsolutions.birt.exception.BirtStarterException.BirtErrorCode;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Common methods shared by RunReport or SubmitJob
+ *   In general, RunReport is RunAndRender
+ *   SubmitJob is Run Then Render
+ *   
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
 @Slf4j
 public abstract class BaseReportService {
 

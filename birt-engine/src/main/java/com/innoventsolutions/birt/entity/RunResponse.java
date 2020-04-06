@@ -17,9 +17,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-@Getter
-@Setter
-@Slf4j
+/**
+ * Used as response for RunReport operations which are synchronous
+ * RunReport operations will be performed in unique threads, but the response should contain the report content.
+ * 
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
+@Getter @Setter @Slf4j
 public class RunResponse {
 	private String outFileName;
 	private Date submitTime;

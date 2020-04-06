@@ -14,8 +14,28 @@ import java.io.File;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+/**
+ * Configuration for the BIRT Engine.
+ *  By convention, the Workspace will be the parent directory for all other content
+ *   The directories are considered roots for other content.
+ *   In most cases, the resourceDir will be the same as the Workspace, e.g. the typical folder structure will be
+ *   
+ * Workspace (Resource)
+ * - designDir
+ * - dataDir
+ * - propertyDir
+ * - jsDir
+ * - scriptLibDir
+ * - rptlibrary
+ * - ...
+ * 
+ * Should be coordinated with users use of Resource Home in BIRT Designer
+ *  (Resource Home is under Window -> Preferences -> Report Design -> Resources)
+ *   
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
+@Getter @Setter
 public class BirtConfig {
 	// @NotBlank
 	private File workspace;

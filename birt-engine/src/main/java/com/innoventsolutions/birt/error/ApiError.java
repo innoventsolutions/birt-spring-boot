@@ -29,6 +29,13 @@ import com.innoventsolutions.birt.util.LowerCaseClassNameResolver;
 
 import lombok.Data;
 
+/**
+ * Want to be able to wrap Exceptions into a logical error message
+ * that is returned in the REST response
+ * 
+ * @author scott
+ *
+ */
 @Data
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.CUSTOM, property = "error", visible = true)
 @JsonTypeIdResolver(LowerCaseClassNameResolver.class)

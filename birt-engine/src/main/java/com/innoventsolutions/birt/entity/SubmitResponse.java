@@ -17,9 +17,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-@Getter
-@Setter
-@Slf4j
+/**
+ * Response for SubmitJob which is an asynchronous operation.
+ * This response should be returned before report is complete and will have a Jobid
+ * Use the Jobid to lookup the report status and to fetch completed reports
+ * 
+ * @author Scott Rosenbaum / Steve Schafer
+ *
+ */
+@Getter @Setter @Slf4j
 public class SubmitResponse {
 	protected String jobid;
 	protected String rptDocName;
