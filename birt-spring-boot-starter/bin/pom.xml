@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>com.innoventsolutions.birt-spring-boot</groupId>
 		<artifactId>birt-spring-boot</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.1</version>
 	</parent>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,12 +24,12 @@
 		<dependency>
 			<groupId>com.innoventsolutions.birt-spring-boot</groupId>
 			<artifactId>birt-spring-boot-autoconfigure</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.innoventsolutions.birt-spring-boot</groupId>
 			<artifactId>birt-engine</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.innoventsolutions.birt.runtime</groupId>
