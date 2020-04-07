@@ -22,7 +22,7 @@
 
 	<scm>
 		<connection>scm:git:git://github.com/innoventsolutions/birt-spring-boot.git</connection>
-		<developerConnection>scm:git:ssh://github.com:innoventsolutions/birt-spring-boot.git</developerConnection>
+		<developerConnection>scm:git:git@github.com:innoventsolutions/birt-spring-boot.git</developerConnection>
 		<url>http://github.com/innoventsolutions/birt-spring-boot/tree/master</url>
 		<tag>birt-spring-boot-0.0.1</tag>
 	</scm>
