@@ -26,11 +26,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.innoventsolutions.birt.entity.ExecuteRequest;
-import com.innoventsolutions.birt.entity.JobStatus;
 import com.innoventsolutions.birt.entity.SubmitResponse;
 import com.innoventsolutions.birt.entity.SubmitResponse.StatusEnum;
 import com.innoventsolutions.birt.service.SubmitJobService;
@@ -39,12 +40,14 @@ import com.innoventsolutions.birt.util.Util;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Controls the Async functions used to run reports and get status or fetch content
+ * Controls the Async functions used to run reports and get status or fetch
+ * content
  * 
  * @author Scott Rosenbaum / Steve Schafer
  *
  */
-@Slf4j @RestController
+@Slf4j
+@RestController
 public class SubmitController {
 
 	@Autowired
@@ -97,7 +100,7 @@ public class SubmitController {
 
 	private final Map<String, CompletableFuture<SubmitResponse>> submitList = new HashMap<String, CompletableFuture<SubmitResponse>>();
 
-	@GetMapping("/submitJob")
+	@PostMapping("/submitJob")
 	public ResponseEntity<SubmitResponse> executeSubmitJob(@RequestBody final ExecuteRequest request,
 			final HttpServletResponse httpResponse) {
 		final SubmitResponse submitResponse = new SubmitResponse(request);
@@ -107,40 +110,40 @@ public class SubmitController {
 	}
 
 	@GetMapping("/getJobInfo")
-	public ResponseEntity<CompletableFuture<SubmitResponse>> getJobInfo(@RequestBody final JobStatus jobStatus) {
+	public ResponseEntity<CompletableFuture<SubmitResponse>> getJobInfo(@RequestParam final String jobId) {
 
-		final CompletableFuture<SubmitResponse> job = submitList.get(jobStatus.getJobid());
+		final CompletableFuture<SubmitResponse> job = submitList.get(jobId);
 		if (job == null) {
-			log.info("Failure to find job: " + jobStatus.getJobid() + " on job stack");
+			log.info("Failure to find job: " + jobId + " on job stack");
 			return new ResponseEntity<CompletableFuture<SubmitResponse>>(HttpStatus.NOT_FOUND);
 		}
-		log.info("Get Job: " + jobStatus.getJobid() + " stat: " + getJobStatus(job));
+		log.info("Get Job: " + jobId + " stat: " + getJobStatus(job));
 
 		return new ResponseEntity<CompletableFuture<SubmitResponse>>(job, HttpStatus.OK);
 
 	}
 
 	@GetMapping("/waitForJob")
-	public ResponseEntity<SubmitResponse> waitForJobInfo(@RequestBody final JobStatus jobStatus) {
+	public ResponseEntity<SubmitResponse> waitForJobInfo(@RequestParam final String jobId) {
 
-		final CompletableFuture<SubmitResponse> job = submitList.get(jobStatus.getJobid());
+		final CompletableFuture<SubmitResponse> job = submitList.get(jobId);
 		if (job == null) {
-			log.info("Failure to find job: " + jobStatus.getJobid() + " on job stack");
+			log.info("Failure to find job: " + jobId + " on job stack");
 			return new ResponseEntity<SubmitResponse>(HttpStatus.NOT_FOUND);
 		}
-		log.info("/waitForJob: " + jobStatus.getJobid() + " stat: " + getJobStatus(job));
+		log.info("/waitForJob: " + jobId + " stat: " + getJobStatus(job));
 		try {
 			final SubmitResponse response = job.get();
 			return new ResponseEntity<SubmitResponse>(response, response.getHttpStatus());
 		} catch (final Exception e) {
-			log.info("Failure to complete job: " + jobStatus.getJobid(), e);
+			log.info("Failure to complete job: " + jobId, e);
 			return new ResponseEntity<SubmitResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
+	// TODO change to be a url parameter
 	@DeleteMapping("/deleteJob")
-	public ResponseEntity<Boolean> deleteJob(@RequestBody final JobStatus jobStatus) throws IOException {
-		final String jobId = jobStatus.getJobid();
+	public ResponseEntity<Boolean> deleteJob(@RequestParam final String jobId) throws IOException {
 		final CompletableFuture<SubmitResponse> job = submitList.get(jobId);
 		if (job == null) {
 			log.info("Failure to find job: " + jobId + " on job stack");
@@ -154,16 +157,18 @@ public class SubmitController {
 		return new ResponseEntity<Boolean>(Boolean.valueOf(cancelled), HttpStatus.OK);
 	}
 
+	// TODO This is an empty method
 	@GetMapping("/getJob")
-	public ResponseEntity<Object> getJob(@RequestBody final JobStatus jobStatus) {
+	public ResponseEntity<Object> getJob(@RequestParam final String jobId) {
 
 		return new ResponseEntity<Object>(null, HttpStatus.OK);
 	}
 
+	// TODO change to be a URL
 	@GetMapping("/getReport")
-	public ResponseEntity<Resource> getReport(@RequestBody final JobStatus jobStatus) {
-		log.debug("getReport " + jobStatus);
-		final CompletableFuture<SubmitResponse> jobFuture = submitList.get(jobStatus.getJobid());
+	public ResponseEntity<Resource> getReport(@RequestParam final String jobId) {
+		log.debug("getReport " + jobId);
+		final CompletableFuture<SubmitResponse> jobFuture = submitList.get(jobId);
 		if (jobFuture == null) {
 			return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
 		}

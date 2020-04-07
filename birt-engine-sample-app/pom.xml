@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.innoventsolutions</groupId>
 	<artifactId>birt-engine-sample-app</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>birt-engine-sample-app</name>
 	<description>Sample app built from birt-starter</description>
 
@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>com.innoventsolutions.birt-spring-boot</groupId>
 			<artifactId>birt-spring-boot-starter</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
+			<version>0.0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

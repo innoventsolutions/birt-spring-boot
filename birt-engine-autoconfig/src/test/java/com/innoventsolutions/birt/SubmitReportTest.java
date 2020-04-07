@@ -13,6 +13,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
@@ -43,7 +44,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.innoventsolutions.birt.entity.ExecuteRequest;
-import com.innoventsolutions.birt.entity.JobStatus;
 import com.innoventsolutions.birt.entity.SubmitResponse.StatusEnum;
 
 import lombok.extern.slf4j.Slf4j;
@@ -81,7 +81,7 @@ public class SubmitReportTest extends BaseTest {
 		log.info("testSubmit request = " + requestString);
 
 		final MvcResult result = this.mockMvc
-				.perform(get("/submitJob").contentType(MediaType.APPLICATION_JSON).content(requestString)
+				.perform(post("/submitJob").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andDo(document("submitJob", requestFields(
@@ -106,55 +106,61 @@ public class SubmitReportTest extends BaseTest {
 		final String submitRequestString = mapper.writeValueAsString(submitRequestObject);
 		log.info("testSubmitBadDesignFile request = " + submitRequestString);
 
-		final MvcResult submitResult = this.mockMvc.perform(get("/submitJob").contentType(MediaType.APPLICATION_JSON)
+		final MvcResult submitResult = this.mockMvc.perform(post("/submitJob").contentType(MediaType.APPLICATION_JSON)
 				.content(submitRequestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andReturn();
 		System.out.println(submitResult);
-		final JobStatus waitForJobRequestObject = new JobStatus();
-		waitForJobRequestObject.setJobid(getJobId(submitResult));
-		final String waitForJobRequestString = mapper.writeValueAsString(waitForJobRequestObject);
+		String jobId = getJobId(submitResult);
+		final String waitForJobRequestString = getRequestBasedOnJobId(jobId);
 		log.info("testGetJobInfo request = " + waitForJobRequestString);
 
 		final MvcResult waitForJobResult = this.mockMvc
-				.perform(get("/waitForJob").contentType(MediaType.APPLICATION_JSON).content(waitForJobRequestString)
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().is(404)).andReturn();
+				.perform(get("/waitForJob")
+				.param("jobId", jobId)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(404))
+				.andReturn();
 		System.out.println(waitForJobResult);
+	}
+
+	private String getRequestBasedOnJobId(String jobId) {
+		return "?jobStatus" + jobId;
 	}
 
 	@Test
 	public void testSubmitBadFormat() throws Exception {
 		final String jobId = submit("foobar");
-		final JobStatus requestObject = new JobStatus();
-		requestObject.setJobid(jobId);
-		final ObjectMapper mapper = new ObjectMapper();
-		final String requestString = mapper.writeValueAsString(requestObject);
+		final String requestString = getRequestBasedOnJobId(jobId);;
 		log.info("testGetJobInfo request = " + requestString);
 
-		final MvcResult result = this.mockMvc.perform(get("/waitForJob").contentType(MediaType.APPLICATION_JSON)
-				.content(requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().is(415)).andReturn();
+		final MvcResult result = this.mockMvc.perform(get("/waitForJob")
+				.param("jobId", jobId)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(415))
+				.andReturn();
 		System.out.println(result);
 	}
 
 	@Test
 	public void testGetJobInfo() throws Exception {
 		final String jobId = submit("pdf");
-		final JobStatus requestObject = new JobStatus();
-		requestObject.setJobid(jobId);
-		final ObjectMapper mapper = new ObjectMapper();
-		final String requestString = mapper.writeValueAsString(requestObject);
+		final String requestString = getRequestBasedOnJobId(jobId);
 		log.info("testGetJobInfo request = " + requestString);
 
 		final MvcResult result = this.mockMvc
-				.perform(get("/getJobInfo").contentType(MediaType.APPLICATION_JSON).content(requestString)
-						.accept(MediaType.APPLICATION_JSON))
+				.perform(get("/getJobInfo")
+				.param("jobId", jobId)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andDo(document("getJobInfo", requestFields(fieldWithPath("jobid").description(JOB_ID_DESCRIPTION))))
+				//TODO
+				//.andDo(document("getJobInfo", requestFields(fieldWithPath("jobid").description(JOB_ID_DESCRIPTION))))
 				.andReturn();
 		final MockHttpServletResponse httpServletResponse = result.getResponse();
 		Assert.assertTrue(httpServletResponse.getContentType().startsWith("application/json"));
 		final String jsonString = httpServletResponse.getContentAsString();
 		log.info("getJobInfo response = " + jsonString);
+
+		final ObjectMapper mapper = new ObjectMapper();
 		@SuppressWarnings("unchecked")
 		final Map<String, String> getJobInfoResponse = mapper.readValue(jsonString, Map.class);
 		// {cancelled=false, completedExceptionally=false, numberOfDependents=0,
@@ -175,36 +181,31 @@ public class SubmitReportTest extends BaseTest {
 
 	@Test
 	public void testGetJobInfoInvalidId() throws Exception {
-		final JobStatus requestObject = new JobStatus();
-		requestObject.setJobid("foobar");
-		final ObjectMapper mapper = new ObjectMapper();
-		final String requestString = mapper.writeValueAsString(requestObject);
-		log.info("testGetJobInfo request = " + requestString);
+		String jobId = "foobar";
+		log.info("testGetJobInfo request = " + jobId);
 
-		final MvcResult result = this.mockMvc.perform(get("/getJobInfo").contentType(MediaType.APPLICATION_JSON)
-				.content(requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().is(404)).andReturn();
+		final MvcResult result = this.mockMvc.perform(get("/getJobInfo").param("jobId", jobId).accept(MediaType.APPLICATION_JSON)).andExpect(status().is(404)).andReturn();
 		System.out.println(result);
 	}
 
 	@Test
 	public void testWaitForJob() throws Exception {
 		final String jobId = submit("pdf");
-		final JobStatus requestObject = new JobStatus();
-		requestObject.setJobid(jobId);
-		final ObjectMapper mapper = new ObjectMapper();
-		final String requestString = mapper.writeValueAsString(requestObject);
-		log.info("testWaitForJob request = " + requestString);
+		log.info("testWaitForJob request = " + jobId);
 
 		final MvcResult result = this.mockMvc
-				.perform(get("/waitForJob").contentType(MediaType.APPLICATION_JSON).content(requestString)
-						.accept(MediaType.APPLICATION_JSON))
+				.perform(get("/waitForJob")
+				.param("jobId", jobId)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andDo(document("waitForJob", requestFields(fieldWithPath("jobid").description(JOB_ID_DESCRIPTION))))
+				//TODO clean this up
+				//	.andDo(document("waitForJob", requestFields(fieldWithPath("jobid").description(JOB_ID_DESCRIPTION))))
 				.andReturn();
 		final MockHttpServletResponse httpServletResponse = result.getResponse();
 		Assert.assertTrue(httpServletResponse.getContentType().startsWith("application/json"));
 		final String jsonString = httpServletResponse.getContentAsString();
 		log.info("testWaitForJob response = " + jsonString);
+		final ObjectMapper mapper = new ObjectMapper();
 		@SuppressWarnings("unchecked")
 		final Map<String, String> submitResponse = mapper.readValue(jsonString, Map.class);
 		final String responseJobId = submitResponse.get("jobid");
@@ -218,64 +219,61 @@ public class SubmitReportTest extends BaseTest {
 
 	@Test
 	public void testWaitForJobInvalidId() throws Exception {
-		final JobStatus requestObject = new JobStatus();
-		requestObject.setJobid("foobar");
-		final ObjectMapper mapper = new ObjectMapper();
-		final String requestString = mapper.writeValueAsString(requestObject);
+		String jobId = "foobar";
+		final String requestString = getRequestBasedOnJobId(jobId);
 		log.info("testWaitForJob request = " + requestString);
 
-		final MvcResult result = this.mockMvc.perform(get("/waitForJob").contentType(MediaType.APPLICATION_JSON)
-				.content(requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().is(404)).andReturn();
+		final MvcResult result = this.mockMvc.perform(get("/waitForJob")
+				.param("jobId", jobId)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(404))
+				.andReturn();
 		System.out.println(result);
 	}
 
 	@Test
 	public void testDeleteJob() throws Exception {
 		final String jobId = submit("pdf");
-		final JobStatus requestObject = new JobStatus();
-		requestObject.setJobid(jobId);
-		final ObjectMapper mapper = new ObjectMapper();
-		final String requestString = mapper.writeValueAsString(requestObject);
+	
+		final String requestString = getRequestBasedOnJobId(jobId);
 		log.info("/deleteJob request = " + requestString);
 
 		final MvcResult result = this.mockMvc
-				.perform(delete("/deleteJob").contentType(MediaType.APPLICATION_JSON).content(requestString)
-						.accept(MediaType.APPLICATION_JSON))
+				.perform(delete("/deleteJob")
+				.param("jobId", jobId)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andDo(document("deleteJob", requestFields(fieldWithPath("jobid").description(JOB_ID_DESCRIPTION))))
+				//TODO
+				//.andDo(document("deleteJob", requestFields(fieldWithPath("jobid").description(JOB_ID_DESCRIPTION))))
 				.andReturn();
 		final MockHttpServletResponse httpServletResponse = result.getResponse();
 		Assert.assertTrue(httpServletResponse.getContentType().startsWith("application/json"));
 		final String jsonString = httpServletResponse.getContentAsString();
 		log.info("/deleteJob response = " + jsonString);
+		final ObjectMapper mapper = new ObjectMapper();
 		final Boolean response = mapper.readValue(jsonString, Boolean.class);
 		System.out.println(response);
 	}
 
 	@Test
 	public void testDeleteJobInvalidId() throws Exception {
-		final JobStatus requestObject = new JobStatus();
-		requestObject.setJobid("foobar");
-		final ObjectMapper mapper = new ObjectMapper();
-		final String requestString = mapper.writeValueAsString(requestObject);
-		log.info("testDeleteJob request = " + requestString);
+		String jobId = "foobar";
 
-		final MvcResult result = this.mockMvc.perform(delete("/deleteJob").contentType(MediaType.APPLICATION_JSON)
-				.content(requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().is(404)).andReturn();
+		final MvcResult result = this.mockMvc.perform(delete("/deleteJob").param("jobId", jobId).accept(MediaType.APPLICATION_JSON)).andExpect(status().is(404)).andReturn();
 		System.out.println(result);
 	}
 
 	@Test
 	public void testGetReport() throws Exception {
 		final String jobId = submit("pdf");
-		final JobStatus requestObject = new JobStatus();
-		requestObject.setJobid(jobId);
-		final ObjectMapper mapper = new ObjectMapper();
-		final String requestString = mapper.writeValueAsString(requestObject);
+		final String requestString = getRequestBasedOnJobId(jobId);
 		log.info("testGetReport request = " + requestString);
 
-		final MvcResult result = this.mockMvc.perform(get("/getReport").contentType(MediaType.APPLICATION_JSON)
-				.content(requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+		final MvcResult result = this.mockMvc.perform(get("/getReport")
+				.param("jobId", jobId)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn();
 		final MockHttpServletResponse httpServletResponse = result.getResponse();
 		final String contentType = httpServletResponse.getContentType();
 		Assert.assertEquals("application/pdf", contentType);
@@ -286,14 +284,14 @@ public class SubmitReportTest extends BaseTest {
 
 	@Test
 	public void testGetReportInvalidId() throws Exception {
-		final JobStatus requestObject = new JobStatus();
-		requestObject.setJobid("foobar");
-		final ObjectMapper mapper = new ObjectMapper();
-		final String requestString = mapper.writeValueAsString(requestObject);
-		log.info("testGetReport request = " + requestString);
+		String jobId = "foobar";
+		log.info("testGetReport request = " + jobId);
 
-		final MvcResult result = this.mockMvc.perform(get("/getReport").contentType(MediaType.APPLICATION_JSON)
-				.content(requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().is(404)).andReturn();
+		final MvcResult result = this.mockMvc.perform(get("/getReport")
+				.param("jobId", jobId)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(404))
+				.andReturn();
 		System.out.println(result);
 	}
 
@@ -307,7 +305,7 @@ public class SubmitReportTest extends BaseTest {
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		log.info("submit request = " + requestString);
-		final MvcResult result = this.mockMvc.perform(get("/submitJob").contentType(MediaType.APPLICATION_JSON)
+		final MvcResult result = this.mockMvc.perform(post("/submitJob").contentType(MediaType.APPLICATION_JSON)
 				.content(requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 		return getJobId(result);
 	}
