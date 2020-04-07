@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.innoventsolutions</groupId>
 	<artifactId>birt-engine-sample-app-full</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>birt-engine-sample-app-full</name>
 	<description>BIRT Report Engine Sample App with Email and Scheduling</description>
 
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>com.innoventsolutions.birt-spring-boot</groupId>
 			<artifactId>birt-spring-boot-starter</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
