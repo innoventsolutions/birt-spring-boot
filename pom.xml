@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.innoventsolutions.birt-spring-boot</groupId>
 	<artifactId>birt-spring-boot</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>birt-spring-boot</name>
 	<packaging>pom</packaging>
 

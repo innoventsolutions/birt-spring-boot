@@ -7,6 +7,7 @@ target/
 .attach*
 output/
 stop
+bin/
 
 ### STS ###
 .apt_generated
@@ -36,3 +37,4 @@ build/
 *.log
 *.lck
 *.releaseBackup
+release.properties
