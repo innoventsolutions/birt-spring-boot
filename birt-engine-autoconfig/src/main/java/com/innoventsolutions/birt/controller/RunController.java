@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
@@ -80,6 +81,7 @@ public class RunController {
 		return executeRunReport(request, response);
 	}
 
+
 	/*
 	 * Using the StreamingResponseBody causes a thread to spawn off we are using the
 	 * default TaskExecutor to spawn those threads. may want to figure out how to
@@ -88,7 +90,7 @@ public class RunController {
 	 * StreamingResponseBody
 	 *
 	 */
-	@GetMapping(value = "/runReport")
+	@PostMapping(value = "/runReport")
 	public ResponseEntity<StreamingResponseBody> executeRunReport(@RequestBody final ExecuteRequest request,
 			final HttpServletResponse response) {
 

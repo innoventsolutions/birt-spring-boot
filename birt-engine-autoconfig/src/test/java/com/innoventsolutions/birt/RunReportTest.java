@@ -12,7 +12,7 @@ package com.innoventsolutions.birt;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
@@ -79,7 +79,7 @@ public class RunReportTest extends BaseTest {
 		log.info("testRunReport request = " + requestString);
 
 		final MvcResult statusResult = this.mockMvc
-				.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+				.perform(post("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andDo(document("runReport",
@@ -104,7 +104,7 @@ public class RunReportTest extends BaseTest {
 		log.info("testRunReport request = " + requestString);
 
 		final MvcResult statusResult = this.mockMvc
-				.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+				.perform(post("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andDo(MvcResult::getAsyncResult)
 				.andExpect(content().string(containsString(HTML_INTRO))).andReturn();
@@ -134,7 +134,7 @@ public class RunReportTest extends BaseTest {
 		log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
 
 		final MvcResult statusResult = this.mockMvc
-				.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+				.perform(post("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
 				.andDo(MvcResult::getAsyncResult).andExpect(status().is(400)).andExpect(APIERROR_EXISTS)
 				.andExpect(APIERROR_STATUS_BAD_REQUEST).andExpect(APIERROR_MSG_RUNFAIL_PARAM)
@@ -172,7 +172,7 @@ public class RunReportTest extends BaseTest {
 		log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
 
 		final MvcResult statusResult = this.mockMvc
-				.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+				.perform(post("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
 				.andDo(MvcResult::getAsyncResult).andExpect(status().is(400))
 				.andExpect(status().reason(containsString("Failure to run report"))).andReturn();
@@ -206,7 +206,7 @@ public class RunReportTest extends BaseTest {
 		log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
 
 		final MvcResult statusResult = this.mockMvc
-				.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+				.perform(post("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
 				.andDo(MvcResult::getAsyncResult).andExpect(status().is(404)).andExpect(APIERROR_MSG_RUNFAIL_DESIGN)
 				.andExpect(content().string(containsString("{\"apierror\":{\"status\":\"NOT_FOUND\""))).andReturn();
@@ -224,7 +224,7 @@ public class RunReportTest extends BaseTest {
 		log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
 
 		final MvcResult statusResult = this.mockMvc
-				.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+				.perform(post("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
 				.andDo(MvcResult::getAsyncResult).andExpect(status().isOk())
 				.andExpect(content().string(containsString(HTML_INTRO)))
@@ -250,7 +250,7 @@ public class RunReportTest extends BaseTest {
 			log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
 
 			final MvcResult statusResult = this.mockMvc
-					.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+					.perform(post("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
 							.accept(MediaType.APPLICATION_JSON))
 					.andDo(MvcResult::getAsyncResult).andExpect(status().isOk())
 					.andExpect(content().string(containsString(HTML_INTRO))).andReturn();
@@ -282,7 +282,7 @@ public class RunReportTest extends BaseTest {
 			log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
 
 			final MvcResult statusResult = this.mockMvc
-					.perform(get("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
+					.perform(post("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
 							.accept(MediaType.APPLICATION_JSON))
 					.andDo(MvcResult::getAsyncResult).andExpect(status().is(500)).andReturn();
 
