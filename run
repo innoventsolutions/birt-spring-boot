@@ -1,4 +1,5 @@
 #!/bin/sh
+cd "$(dirname "${BASH_SOURCE[0]}")"
 ./stop
 SUSPEND="n"
 while (( "$#" )); do
@@ -13,10 +14,9 @@ while (( "$#" )); do
 	esac
 	shift
 done
-cd "$(dirname "${BASH_SOURCE[0]}")"
 pwd
 echo "building..."
-if ! mvn clean package > build.log 2> build.err.log; then
+if ! ./build; then
 	echo "failed to build - see build.log"
 	exit 1
 fi

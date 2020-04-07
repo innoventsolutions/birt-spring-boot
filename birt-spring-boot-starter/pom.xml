@@ -8,7 +8,6 @@
 		<groupId>com.innoventsolutions.birt-spring-boot</groupId>
 		<artifactId>birt-spring-boot</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath />
 	</parent>
 	<dependencies>
 		<dependency>
