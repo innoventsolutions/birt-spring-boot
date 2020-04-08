@@ -49,7 +49,7 @@ public class BirtProperties extends BirtConfig implements Serializable {
 			this.setReportFormat("PDF");
 		
 		if (this.getResourceDir() == null)
-			this.setResourceDir(new File(this.getWorkspace(), "resources"));
+			this.setResourceDir(this.getWorkspace());
 		
 		if (this.getScriptLibDir() == null)
 			this.setScriptLibDir(new File(this.getWorkspace(), "lib"));
