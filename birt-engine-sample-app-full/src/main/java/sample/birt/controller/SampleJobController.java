@@ -34,7 +34,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,7 +49,6 @@ import sample.birt.entity.DeleteJobResponse;
 import sample.birt.entity.EmailRequest;
 import sample.birt.entity.ExtendedExecuteRequest;
 import sample.birt.entity.ExtendedSubmitResponse;
-import sample.birt.entity.GetJobRequest;
 import sample.birt.entity.GetJobResponse;
 import sample.birt.entity.ScheduleRequest;
 import sample.birt.quartz.RunReportQuartzJob;
@@ -75,7 +76,7 @@ public class SampleJobController {
 
 	private final Map<String, CompletableFuture<SubmitResponse>> submitList = new HashMap<String, CompletableFuture<SubmitResponse>>();
 
-	@GetMapping("/schedule")
+	@PostMapping("/schedule")
 	public ResponseEntity<ExtendedSubmitResponse> executeSubmitJob(@RequestBody final ExtendedExecuteRequest request) {
 		log.info("/schedule " + request);
 
@@ -183,10 +184,11 @@ public class SampleJobController {
 
 	@DeleteMapping("/job")
 	@ResponseBody
-	public ResponseEntity<DeleteJobResponse> deleteJob(@RequestBody final GetJobRequest request) {
-		log.info("delete-job " + request);
+	public ResponseEntity<DeleteJobResponse> deleteJob(@RequestParam(required = true) final String name,
+			@RequestParam(required = true) final String group) {
+		log.info("DELETE /job name=" + name + ", group=" + group);
 		try {
-			final JobKey jobKey = new JobKey(request.getName(), request.getGroup());
+			final JobKey jobKey = new JobKey(name, group);
 			final boolean result = scheduler.deleteJob(jobKey);
 			return new ResponseEntity<DeleteJobResponse>(new DeleteJobResponse(result), HttpStatus.OK);
 		} catch (final SchedulerException e) {
@@ -197,10 +199,11 @@ public class SampleJobController {
 
 	@GetMapping("/job")
 	@ResponseBody
-	public ResponseEntity<GetJobResponse> getJob(@RequestBody final GetJobRequest request) {
-		log.info("job " + request);
+	public ResponseEntity<GetJobResponse> getJob(@RequestParam(required = true) final String name,
+			@RequestParam(required = true) final String group) {
+		log.info("GET /job name=" + name + ", group=" + group);
 		try {
-			final JobKey jobKey = new JobKey(request.getName(), request.getGroup());
+			final JobKey jobKey = new JobKey(name, group);
 			final GetJobResponse jobResponse = new GetJobResponse();
 			@SuppressWarnings("unchecked")
 			final List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);

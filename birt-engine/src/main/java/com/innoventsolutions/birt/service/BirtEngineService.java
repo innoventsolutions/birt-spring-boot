@@ -90,8 +90,7 @@ public class BirtEngineService {
 			}
 		}
 		if (birtProperties.getResourceDir() != null) {
-			final File workspaceDir = new File(birtProperties.getWorkspace().getAbsolutePath());
-			config.setResourcePath(workspaceDir.getAbsolutePath());
+			config.setResourcePath(birtProperties.getResourceDir().getAbsolutePath());
 		}
 		final String scriptlibFileNames = getScriptLibFileNames();
 		if (scriptlibFileNames != null) {

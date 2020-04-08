@@ -1,0 +1,13 @@
+#!/bin/sh
+cd "$(dirname "${BASH_SOURCE[0]}")"
+pwd
+BIRT_SPRING_BOOT_VERSION="$1"
+if [ -z "$BIRT_SPRING_BOOT_VERSION" ]; then
+	BIRT_SPRING_BOOT_VERSION="0.0.1"
+fi
+echo "building using birt-spring-boot-starter version $BIRT_SPRING_BOOT_VERSION..."
+if ! mvn -Dbirt-spring-boot-version=$BIRT_SPRING_BOOT_VERSION clean package > build.log 2> build-root.err.log; then
+	echo "build failed - see build.log"
+	exit 1
+fi
+echo "build successful"

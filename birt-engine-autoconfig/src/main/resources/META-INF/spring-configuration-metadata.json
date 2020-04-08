@@ -7,6 +7,12 @@
 			"defaultValue": "../birt-engine-workspace"
 		},
 		{
+			"name": "birt.runner.resourceDir",
+			"type": "java.lang.String",
+			"description": "General purpose location for .rptlibrary, .css, .properties, and .js files. Should use relative path within report to this location.",
+			"defaultValue": "${birt.runner.workspace}"
+		},
+		{
 			"name": "birt.runner.designDir",
 			"type": "java.lang.String",
 			"description": "Root path of BIRT report designs",
@@ -29,12 +35,6 @@
 			"type": "java.lang.String",
 			"description": "Location to generate output files during RunThenRender tasks (submit). Includes rptdocument and formatted files (PDF, EXCEL, DOC, HTML...)",
 			"defaultValue": "${birt.runner.workspace}/output"
-		},
-		{
-			"name": "birt.runner.resourceDir",
-			"type": "java.lang.String",
-			"description": "General purpose location for .rptlibrary, .css, .properties, and .js files. Should use relative path within report to this location.",
-			"defaultValue": "${birt.runner.workspace}/resources"
 		},
 		{
 			"name": "birt.runner.scriptLibDir",

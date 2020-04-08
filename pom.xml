@@ -46,9 +46,13 @@
 		<module>birt-engine</module>
 		<module>birt-spring-boot-starter</module>
 		<module>birt-engine-autoconfig</module>
-		<module>birt-engine-workspace</module>
-		<!-- NOTE: Sample projects are not sub projects, they are independent Spring-Boot-Starter 
-			projects -->
+		<!-- Sample projects and the workspace are a part of the project for version control
+			 but are not a part of the build for distibution to Maven
+			 
+			<module>birt-engine-workspace</module>
+			<module>birt-engine-sample-app</module>
+			<module>birt-engine-sample-app-full</module> 
+		-->
 	</modules>
 
 	<properties>

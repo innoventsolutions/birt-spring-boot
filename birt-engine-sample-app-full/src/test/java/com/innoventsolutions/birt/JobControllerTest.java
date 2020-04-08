@@ -4,10 +4,14 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.text.DateFormat;
@@ -42,7 +46,6 @@ import lombok.extern.slf4j.Slf4j;
 import sample.birt.BirtSample;
 import sample.birt.controller.SampleJobController;
 import sample.birt.entity.ExtendedExecuteRequest;
-import sample.birt.entity.GetJobRequest;
 import sample.birt.entity.ScheduleRequest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -103,9 +106,9 @@ public class JobControllerTest {
 		scheduleRequestObject.setName("test-1");
 		extendedRequestObject.setSchedule(scheduleRequestObject);
 		final String scheduleRequestString = mapper.writeValueAsString(extendedRequestObject);
-		log.info("GET /schedule request = " + scheduleRequestString);
+		log.info("POST /schedule request = " + scheduleRequestString);
 		final MvcResult scheduleResult = this.mockMvc
-				.perform(get("/schedule").contentType(MediaType.APPLICATION_JSON).content(scheduleRequestString)
+				.perform(post("/schedule").contentType(MediaType.APPLICATION_JSON).content(scheduleRequestString)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andDo(document("schedule", requestFields(
@@ -166,8 +169,8 @@ public class JobControllerTest {
 		extendedRequestObject.setParameters(PARAM_MAP_1);
 		extendedRequestObject.setOutputName("test_submit_out_1");
 		final String scheduleRequestString = mapper.writeValueAsString(extendedRequestObject);
-		log.info("GET /schedule(immediate) request = " + scheduleRequestString);
-		final MvcResult scheduleResult = this.mockMvc.perform(get("/schedule").contentType(MediaType.APPLICATION_JSON)
+		log.info("POST /schedule(immediate) request = " + scheduleRequestString);
+		final MvcResult scheduleResult = this.mockMvc.perform(post("/schedule").contentType(MediaType.APPLICATION_JSON)
 				.content(scheduleRequestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andReturn();
 		final MockHttpServletResponse scheduleResponse = scheduleResult.getResponse();
@@ -187,21 +190,16 @@ public class JobControllerTest {
 
 	private void testGetJob() throws Exception {
 		final ObjectMapper mapper = new ObjectMapper();
-		final GetJobRequest jobRequestObject = new GetJobRequest();
-		jobRequestObject.setGroup("test-group-1");
-		jobRequestObject.setName("test-1");
-		final String jobRequestString = mapper.writeValueAsString(jobRequestObject);
-		log.info("GET /job request = " + jobRequestString);
+		log.info("GET /job request");
 		final MvcResult jobResult = this.mockMvc
-				.perform(get("/job").contentType(MediaType.APPLICATION_JSON).content(jobRequestString)
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andDo(document("getjob",
-						requestFields(
-								fieldWithPath("name")
-										.description(JOB_NAME_DESCRIPTION + " that was used to create the schedule"),
-								fieldWithPath("group")
-										.description(JOB_GROUP_DESCRIPTION + " that was used to create the schedule")),
+				.perform(get("/job")
+						.param("name", "test-1").param("group", "test-group-1").accept(MediaType.APPLICATION_JSON))
+				.andDo(print()).andExpect(status().isOk())
+				.andDo(document("getjob", requestParameters(
+						parameterWithName("name")
+								.description(JOB_NAME_DESCRIPTION + " that was used to create the schedule"),
+						parameterWithName("group")
+								.description(JOB_GROUP_DESCRIPTION + " that was used to create the schedule")),
 						responseFields(
 								fieldWithPath("description").description("x").type(JsonFieldType.STRING).optional(),
 								fieldWithPath("jobClass").description("x").type(JsonFieldType.STRING).optional(),
@@ -251,21 +249,16 @@ public class JobControllerTest {
 
 	private void testDeleteJob() throws Exception {
 		final ObjectMapper mapper = new ObjectMapper();
-		final GetJobRequest jobRequestObject = new GetJobRequest();
-		jobRequestObject.setGroup("test-group-1");
-		jobRequestObject.setName("test-1");
-		final String jobRequestString = mapper.writeValueAsString(jobRequestObject);
-		log.info("DELETE /job request = " + jobRequestString);
+		log.info("DELETE /job");
 		final MvcResult jobResult = this.mockMvc
-				.perform(delete("/job").contentType(MediaType.APPLICATION_JSON).content(jobRequestString)
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andDo(document("deletejob",
-						requestFields(
-								fieldWithPath("name")
-										.description(JOB_NAME_DESCRIPTION + " that was used to create the schedule"),
-								fieldWithPath("group")
-										.description(JOB_GROUP_DESCRIPTION + " that was used to create the schedule")),
+				.perform(delete("/job")
+						.param("name", "test-1").param("group", "test-group-1").accept(MediaType.APPLICATION_JSON))
+				.andDo(print()).andExpect(status().isOk())
+				.andDo(document("deletejob", requestParameters(
+						parameterWithName("name")
+								.description(JOB_NAME_DESCRIPTION + " that was used to create the schedule"),
+						parameterWithName("group")
+								.description(JOB_GROUP_DESCRIPTION + " that was used to create the schedule")),
 						responseFields(fieldWithPath("jobDeleted")
 								.description(
 										"True if the job was deleted or false if the job group/name was not found.")

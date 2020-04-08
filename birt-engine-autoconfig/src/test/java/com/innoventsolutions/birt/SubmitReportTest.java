@@ -16,6 +16,8 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -115,11 +117,8 @@ public class SubmitReportTest extends BaseTest {
 		log.info("testGetJobInfo request = " + waitForJobRequestString);
 
 		final MvcResult waitForJobResult = this.mockMvc
-				.perform(get("/waitForJob")
-				.param("jobId", jobId)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().is(404))
-				.andReturn();
+				.perform(get("/waitForJob").param("jobId", jobId).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(404)).andReturn();
 		System.out.println(waitForJobResult);
 	}
 
@@ -130,14 +129,13 @@ public class SubmitReportTest extends BaseTest {
 	@Test
 	public void testSubmitBadFormat() throws Exception {
 		final String jobId = submit("foobar");
-		final String requestString = getRequestBasedOnJobId(jobId);;
+		final String requestString = getRequestBasedOnJobId(jobId);
+		;
 		log.info("testGetJobInfo request = " + requestString);
 
-		final MvcResult result = this.mockMvc.perform(get("/waitForJob")
-				.param("jobId", jobId)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().is(415))
-				.andReturn();
+		final MvcResult result = this.mockMvc
+				.perform(get("/waitForJob").param("jobId", jobId).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(415)).andReturn();
 		System.out.println(result);
 	}
 
@@ -148,12 +146,9 @@ public class SubmitReportTest extends BaseTest {
 		log.info("testGetJobInfo request = " + requestString);
 
 		final MvcResult result = this.mockMvc
-				.perform(get("/getJobInfo")
-				.param("jobId", jobId)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				//TODO
-				//.andDo(document("getJobInfo", requestFields(fieldWithPath("jobid").description(JOB_ID_DESCRIPTION))))
+				.perform(get("/getJobInfo").param("jobId", jobId).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andDo(document("getJobInfo",
+						requestParameters(parameterWithName("jobId").description(JOB_ID_DESCRIPTION))))
 				.andReturn();
 		final MockHttpServletResponse httpServletResponse = result.getResponse();
 		Assert.assertTrue(httpServletResponse.getContentType().startsWith("application/json"));
@@ -184,7 +179,9 @@ public class SubmitReportTest extends BaseTest {
 		String jobId = "foobar";
 		log.info("testGetJobInfo request = " + jobId);
 
-		final MvcResult result = this.mockMvc.perform(get("/getJobInfo").param("jobId", jobId).accept(MediaType.APPLICATION_JSON)).andExpect(status().is(404)).andReturn();
+		final MvcResult result = this.mockMvc
+				.perform(get("/getJobInfo").param("jobId", jobId).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(404)).andReturn();
 		System.out.println(result);
 	}
 
@@ -194,12 +191,9 @@ public class SubmitReportTest extends BaseTest {
 		log.info("testWaitForJob request = " + jobId);
 
 		final MvcResult result = this.mockMvc
-				.perform(get("/waitForJob")
-				.param("jobId", jobId)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				//TODO clean this up
-				//	.andDo(document("waitForJob", requestFields(fieldWithPath("jobid").description(JOB_ID_DESCRIPTION))))
+				.perform(get("/waitForJob").param("jobId", jobId).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andDo(document("waitForJob",
+						requestParameters(parameterWithName("jobId").description(JOB_ID_DESCRIPTION))))
 				.andReturn();
 		final MockHttpServletResponse httpServletResponse = result.getResponse();
 		Assert.assertTrue(httpServletResponse.getContentType().startsWith("application/json"));
@@ -223,28 +217,23 @@ public class SubmitReportTest extends BaseTest {
 		final String requestString = getRequestBasedOnJobId(jobId);
 		log.info("testWaitForJob request = " + requestString);
 
-		final MvcResult result = this.mockMvc.perform(get("/waitForJob")
-				.param("jobId", jobId)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().is(404))
-				.andReturn();
+		final MvcResult result = this.mockMvc
+				.perform(get("/waitForJob").param("jobId", jobId).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(404)).andReturn();
 		System.out.println(result);
 	}
 
 	@Test
 	public void testDeleteJob() throws Exception {
 		final String jobId = submit("pdf");
-	
+
 		final String requestString = getRequestBasedOnJobId(jobId);
 		log.info("/deleteJob request = " + requestString);
 
 		final MvcResult result = this.mockMvc
-				.perform(delete("/deleteJob")
-				.param("jobId", jobId)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				//TODO
-				//.andDo(document("deleteJob", requestFields(fieldWithPath("jobid").description(JOB_ID_DESCRIPTION))))
+				.perform(delete("/deleteJob").param("jobId", jobId).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andDo(document("deleteJob",
+						requestParameters(parameterWithName("jobId").description(JOB_ID_DESCRIPTION))))
 				.andReturn();
 		final MockHttpServletResponse httpServletResponse = result.getResponse();
 		Assert.assertTrue(httpServletResponse.getContentType().startsWith("application/json"));
@@ -259,7 +248,9 @@ public class SubmitReportTest extends BaseTest {
 	public void testDeleteJobInvalidId() throws Exception {
 		String jobId = "foobar";
 
-		final MvcResult result = this.mockMvc.perform(delete("/deleteJob").param("jobId", jobId).accept(MediaType.APPLICATION_JSON)).andExpect(status().is(404)).andReturn();
+		final MvcResult result = this.mockMvc
+				.perform(delete("/deleteJob").param("jobId", jobId).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(404)).andReturn();
 		System.out.println(result);
 	}
 
@@ -269,11 +260,9 @@ public class SubmitReportTest extends BaseTest {
 		final String requestString = getRequestBasedOnJobId(jobId);
 		log.info("testGetReport request = " + requestString);
 
-		final MvcResult result = this.mockMvc.perform(get("/getReport")
-				.param("jobId", jobId)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andReturn();
+		final MvcResult result = this.mockMvc
+				.perform(get("/getReport").param("jobId", jobId).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andReturn();
 		final MockHttpServletResponse httpServletResponse = result.getResponse();
 		final String contentType = httpServletResponse.getContentType();
 		Assert.assertEquals("application/pdf", contentType);
@@ -287,11 +276,9 @@ public class SubmitReportTest extends BaseTest {
 		String jobId = "foobar";
 		log.info("testGetReport request = " + jobId);
 
-		final MvcResult result = this.mockMvc.perform(get("/getReport")
-				.param("jobId", jobId)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().is(404))
-				.andReturn();
+		final MvcResult result = this.mockMvc
+				.perform(get("/getReport").param("jobId", jobId).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(404)).andReturn();
 		System.out.println(result);
 	}
 

@@ -20,7 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.innoventsolutions.birt.entity.ExecuteRequest;
 import com.innoventsolutions.birt.entity.SubmitResponse;
@@ -43,14 +45,14 @@ public class SampleJobController {
 	public ResponseEntity<String> getWelcome() {
 		System.out.println("Welcome ");
 		
-		String welcome_msg = "<h1>Welcome to the BIRT Starter sample app.</h1><p>Try /testPDF, /testHTML, or /testSubmit to exercise any of the built in BIRT REST endpoints.</p><p><a href=\"/index.html\">/index.html</a> provides documentation of the rest endpoints</p>";
+		String welcome_msg = "<h1>Welcome to the BIRT Starter sample app.</h1><p>Try /test, or /testSubmit to exercise any of the built in BIRT REST endpoints.</p><p><a href=\"/index.html\">/index.html</a> provides documentation of the rest endpoints</p>";
 		
 		return new ResponseEntity<String>(welcome_msg, HttpStatus.OK);
 
 	}
 	
 	@GetMapping("/test")
-	public ResponseEntity<SubmitResponse> getTestSubmit(@RequestBody(required = false) Integer numToRun,
+	public ResponseEntity<SubmitResponse> getTestSubmit(@RequestParam(required = false) Integer numToRun,
 			final HttpServletResponse httpResponse) {
 		
 		/* Example of using birt-engine service classes directly 
@@ -94,7 +96,7 @@ public class SampleJobController {
 
 	}
 
-	@GetMapping("/sampleSubmitJob")
+	@PostMapping("/sampleSubmitJob")
 	public ResponseEntity<SubmitResponse> executeSubmitJob(@RequestBody final ExecuteRequest request,
 			final HttpServletResponse httpResponse) {
 

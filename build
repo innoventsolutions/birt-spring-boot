@@ -1,9 +1,19 @@
 #!/bin/sh
 cd "$(dirname "${BASH_SOURCE[0]}")"
 pwd
-echo "building..."
-if ! mvn clean package > build.log 2> build.err.log; then
-	echo "failed to build - see build.log"
+echo "building birt-spring-boot..."
+if ! mvn clean package > build.log 2> build-root.err.log; then
+	echo "failed to build birt-spring-boot - see build.log"
 	exit 1
 fi
-echo "succeeded - see build.log"
+echo "birt-spring-boot build succeeded - see build.log"
+if ! ./mvn-install-local; then
+	exit 1
+fi
+echo "install succeeded - see install.log"
+if ! ./birt-engine-sample-app/build "0.0.3-SNAPSHOT"; then
+	exit 1
+fi
+if ! ./birt-engine-sample-app-full/build "0.0.3-SNAPSHOT"; then
+	exit 1
+fi
