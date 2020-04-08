@@ -4,9 +4,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.innoventsolutions</groupId>
-	<artifactId>birt-engine-sample-app-full</artifactId>
+	<artifactId>birt-full</artifactId>
 	<version>0.0.3-SNAPSHOT</version>
-	<name>birt-engine-sample-app-full</name>
+	<name>birt-full</name>
 	<description>BIRT Report Engine Sample App with Email and Scheduling</description>
 
 	<parent>
