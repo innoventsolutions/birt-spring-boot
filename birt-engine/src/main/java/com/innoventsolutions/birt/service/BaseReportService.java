@@ -41,10 +41,9 @@ import com.innoventsolutions.birt.exception.BirtStarterException.BirtErrorCode;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Common methods shared by RunReport or SubmitJob
- *   In general, RunReport is RunAndRender
- *   SubmitJob is Run Then Render
- *   
+ * Common methods shared by RunReport or SubmitJob In general, RunReport is
+ * RunAndRender SubmitJob is Run Then Render
+ * 
  * @author Scott Rosenbaum / Steve Schafer
  *
  */
@@ -134,7 +133,8 @@ public abstract class BaseReportService {
 			if (!designFile.exists()) {
 				StringBuffer sb = new StringBuffer();
 				sb.append("Design file does not exist: filename: ").append(fileName).append("\n");
-				sb.append("Searched as absolute path and in design folder :").append(engineService.getDesignDir().getAbsolutePath());
+				sb.append("Searched as absolute path and in design folder :")
+						.append(engineService.getDesignDir().getAbsolutePath());
 				log.error(sb.toString());
 				// error will be thrown in next steps
 			}
@@ -168,8 +168,16 @@ public abstract class BaseReportService {
 			final ParameterHandle handle = (ParameterHandle) defn.getHandle();
 			final Object dataType = handle.getProperty("dataType");
 			log.debug(" param " + key + " = " + paramValue + ", type = " + dataType + " " + defn.getTypeName());
-			if (paramValue instanceof Object[]) {
-				final Object[] values = (Object[]) paramValue;
+			final Object[] values;
+			if (paramValue instanceof List) {
+				List<?> list = (List<?>) paramValue;
+				values = list.toArray(new Object[0]);
+			} else if (paramValue instanceof Object[]) {
+				values = (Object[]) paramValue;
+			} else {
+				values = null;
+			}
+			if (values != null) {
 				log.debug(" param " + key + " " + values.length);
 				for (int i = 0; i < values.length; i++) {
 					final Object value = values[i];
@@ -184,7 +192,8 @@ public abstract class BaseReportService {
 		log.debug("validating parameters");
 
 		try {
-			// TODO: This does not test whether a required parameter is missing (with no default value)
+			// TODO: This does not test whether a required parameter is missing (with no
+			// default value)
 			task.validateParameters();
 		} catch (Exception e) {
 			throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION, "Failure to validate parameters", e);
