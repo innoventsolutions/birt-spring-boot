@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.innoventsolutions.birt-spring-boot</groupId>
 	<artifactId>birt-spring-boot</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.3</version>
 	<name>birt-spring-boot</name>
 	<packaging>pom</packaging>
 
@@ -24,7 +24,7 @@
 		<connection>scm:git:git://github.com/innoventsolutions/birt-spring-boot.git</connection>
 		<developerConnection>scm:git:git@github.com:innoventsolutions/birt-spring-boot.git</developerConnection>
 		<url>http://github.com/innoventsolutions/birt-spring-boot/tree/master</url>
-		<tag>birt-spring-boot-0.0.1</tag>
+		<tag>birt-spring-boot-0.0.3</tag>
 	</scm>
 
 	<developers>
