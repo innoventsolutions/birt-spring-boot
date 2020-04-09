@@ -1,0 +1,3 @@
+[submodule "birt-engine-workspace"]
+	path = birt-engine-workspace
+	url = https://github.com/innoventsolutions/birt-engine-workspace.git
