@@ -1,4 +1,4 @@
-=== GET /runReport
+=== Put /runReport
 
 This request is used to immediately generate a report and return the output in the response. 
 The request content type is application/json.
