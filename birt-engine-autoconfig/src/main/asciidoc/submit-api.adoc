@@ -1,6 +1,5 @@
 === POST /submitJob +  
 This request is used to start generating the report asynchronously.  A string is returned that identifies the job.
-=======
 Both the request and the response content types are application/json.  
 
 ==== Request fields: + 
