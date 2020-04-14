@@ -1,4 +1,4 @@
-=== GET /submitJob +  
+=== POST /submitJob +  
 This request is used to start generating the report asynchronously.  A string is returned that identifies the job.
 Both the request and the response content types are application/json.  
 
@@ -17,7 +17,7 @@ include::{snippets}/submitJob/curl-request.adoc
 include::{snippets}/submitJob/http-request.adoc[]
 
 
-=== GET /deleteJob
+=== DELETE /deleteJob
 Deletes a Job 
 
 ==== Request fields: +
@@ -50,7 +50,8 @@ include::{snippets}/getJobInfo/curl-request.adoc[]
 include::{snippets}/getJobInfo/http-request.adoc[]
 
 === GET /waitForJob
-Waits for a Submitted Job to complete report execution and returns the output document. Returns the output document immediately if processing is complete.
+Waits for a Submitted Job to complete report execution and returns the job information. 
+Returns the job information immediately if processing is complete.
 
 ==== Request fields: +
 include::{snippets}/waitForJob/request-fields.adoc[]
@@ -64,4 +65,21 @@ include::{snippets}/waitForJob/curl-request.adoc[]
 
 ===== HTTP request: + 
 include::{snippets}/waitForJob/http-request.adoc[]
+
+=== GET /getReport
+Waits for a Submitted Job to complete report execution and returns the output document. 
+Returns the output document immediately if processing is complete.
+
+==== Request fields: +
+include::{snippets}/getReport/request-fields.adoc[]
+
+==== Response fields: +
+include::{snippets}/getReport/response-fields.adoc[]
+
+==== Examples: + 
+===== Curl: + 
+include::{snippets}/getReport/curl-request.adoc[]
+
+===== HTTP request: + 
+include::{snippets}/getReport/http-request.adoc[]
 

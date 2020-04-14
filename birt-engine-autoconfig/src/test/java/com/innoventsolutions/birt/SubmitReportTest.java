@@ -262,7 +262,8 @@ public class SubmitReportTest extends BaseTest {
 
 		final MvcResult result = this.mockMvc
 				.perform(get("/getReport").param("jobId", jobId).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andReturn();
+				.andExpect(status().isOk()).andDo(document("getReport",
+						requestParameters(parameterWithName("jobId").description(JOB_ID_DESCRIPTION)))).andReturn();
 		final MockHttpServletResponse httpServletResponse = result.getResponse();
 		final String contentType = httpServletResponse.getContentType();
 		Assert.assertEquals("application/pdf", contentType);
