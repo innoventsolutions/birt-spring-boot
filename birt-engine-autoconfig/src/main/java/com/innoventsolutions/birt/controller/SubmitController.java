@@ -35,6 +35,7 @@ import com.innoventsolutions.birt.entity.ExecuteRequest;
 import com.innoventsolutions.birt.entity.SubmitResponse;
 import com.innoventsolutions.birt.entity.SubmitResponse.StatusEnum;
 import com.innoventsolutions.birt.service.SubmitJobService;
+import com.innoventsolutions.birt.service.SubmitListService;
 import com.innoventsolutions.birt.util.Util;
 
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 public class SubmitController {
-
+	@Autowired
+	SubmitListService submitList;
+	
 	@Autowired
 	public SubmitController() {
 		log.info("Create Job Controller");
@@ -97,8 +100,6 @@ public class SubmitController {
 		return new ResponseEntity<SubmitResponse>(outerResponse, HttpStatus.OK);
 
 	}
-
-	private final Map<String, CompletableFuture<SubmitResponse>> submitList = new HashMap<String, CompletableFuture<SubmitResponse>>();
 
 	@PostMapping("/submitJob")
 	public ResponseEntity<SubmitResponse> executeSubmitJob(@RequestBody final ExecuteRequest request,

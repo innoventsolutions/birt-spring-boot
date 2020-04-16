@@ -24,10 +24,11 @@ import com.innoventsolutions.birt.controller.SubmitController;
 import com.innoventsolutions.birt.service.BirtEngineService;
 import com.innoventsolutions.birt.service.ReportRunService;
 import com.innoventsolutions.birt.service.SubmitJobService;
+import com.innoventsolutions.birt.service.SubmitListService;
 
 /**
- * AutoConfigure class instantiate BIRT-Engine Service and 
- * the the two BIRT Controller classes.
+ * AutoConfigure class instantiate BIRT-Engine Service and the the two BIRT
+ * Controller classes.
  * 
  * @author Scott Rosenbaum / Steve Schafer
  *
@@ -57,6 +58,12 @@ public class BirtAutoConfiguration {
 	public SubmitJobService submitService() {
 		final ForkJoinPool fjp = new ForkJoinPool(birtProperties.getSubmitJobPoolSize());
 		return new SubmitJobService(engineService(), fjp);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public SubmitListService submitList() {
+		return new SubmitListService();
 	}
 
 	@ConditionalOnMissingBean
