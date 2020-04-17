@@ -2,7 +2,8 @@
 rm -rf $HOME/.m2/repository/com/innoventsolutions/birt-spring-boot
 VERSION="$1"
 if [ -z "$VERSION" ]; then
-  VERSION="0.0.1-SNAPSHOT"
+  echo "missing parameter 1 (version)"
+  exit 1
 fi
 cd "$(dirname "${BASH_SOURCE[0]}")"
 echo "installing birt-spring-boot pom"
