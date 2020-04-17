@@ -124,8 +124,10 @@ public class BirtEngineTest {
 		String outputFileName = "TEST_123456789";
 		FilenameFilter filter = (dir, name) -> name.startsWith(outputFileName);
 		File[] curFiles = outputDir.listFiles(filter);
-		for (int i = 0; i < curFiles.length; i++) {
-			curFiles[i].delete();
+		if(curFiles != null) {
+			for (int i = 0; i < curFiles.length; i++) {
+				curFiles[i].delete();
+			}
 		}
 
 		ForkJoinPool ffjp = new ForkJoinPool(5);

@@ -169,7 +169,7 @@ public class RunReportTest extends BaseTest {
 		requestObject.setOutputName("failure_out");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
-		log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
+		log.error("testMissingParameterNoWrapper request = " + requestString + " " + Thread.currentThread());
 
 		final MvcResult statusResult = this.mockMvc
 				.perform(post("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
@@ -203,7 +203,7 @@ public class RunReportTest extends BaseTest {
 		requestObject.setOutputName("failure_out");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
-		log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
+		log.error("testBadReportDesign request = " + requestString + " " + Thread.currentThread());
 
 		final MvcResult statusResult = this.mockMvc
 				.perform(post("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
@@ -221,7 +221,7 @@ public class RunReportTest extends BaseTest {
 		requestObject.setOutputName("resource_out");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
-		log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
+		log.error("testResourceReport request = " + requestString + " " + Thread.currentThread());
 
 		final MvcResult statusResult = this.mockMvc
 				.perform(post("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
@@ -247,7 +247,7 @@ public class RunReportTest extends BaseTest {
 			requestObject.setOutputName("resource_out");
 			final ObjectMapper mapper = new ObjectMapper();
 			final String requestString = mapper.writeValueAsString(requestObject);
-			log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
+			log.error("testResourceReportNoResource request = " + requestString + " " + Thread.currentThread());
 
 			final MvcResult statusResult = this.mockMvc
 					.perform(post("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
@@ -279,7 +279,7 @@ public class RunReportTest extends BaseTest {
 			requestObject.setOutputName("resource_out");
 			final ObjectMapper mapper = new ObjectMapper();
 			final String requestString = mapper.writeValueAsString(requestObject);
-			log.error("testMissingParameter request = " + requestString + " " + Thread.currentThread());
+			log.error("testResourceReportNoData request = " + requestString + " " + Thread.currentThread());
 
 			final MvcResult statusResult = this.mockMvc
 					.perform(post("/runReport").contentType(MediaType.APPLICATION_JSON).content(requestString)
