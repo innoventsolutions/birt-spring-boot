@@ -99,7 +99,7 @@ public class RunController {
 
 			log.info("Run Report Lambda: " + Thread.currentThread());
 			try {
-				runner.execute(request, response);
+				runner.execute(request, response.getOutputStream());
 			} catch (final BirtStarterException e) {
 				e.sendError(response, request.getWrapError());
 			}

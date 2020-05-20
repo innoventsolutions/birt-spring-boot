@@ -7,10 +7,10 @@ if ! mvn clean package > build.log 2> build-root.err.log; then
 	exit 1
 fi
 echo "birt-spring-boot build succeeded - see build.log"
-if ! ./mvn-install-local "0.0.4-SNAPSHOT"; then
+if ! ./mvn-install-local; then
 	exit 1
 fi
 echo "install succeeded - see install.log"
-if ! ./birt-simple/build "0.0.4-SNAPSHOT"; then
+if ! ./birt-simple/build "0.0.5-SNAPSHOT"; then
 	exit 1
 fi

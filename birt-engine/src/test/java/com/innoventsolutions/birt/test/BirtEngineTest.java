@@ -29,11 +29,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class BirtEngineTest {
-	static final String HTML_INTRO = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">"; // the
-																																		// HTML
-																																		// header
-	static final String RPT_DOC_STR = "dsKeys = new Packages.java.util.ArrayList();"; // random birt script in the test
-																						// report
+	// the HTML header
+	static final String HTML_INTRO = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">"; 
+	// random birt script in the test report
+	static final String RPT_DOC_STR = "dsKeys = new Packages.java.util.ArrayList();"; 
 	BirtEngineService engineService;
 
 	@Before
@@ -71,7 +70,6 @@ public class BirtEngineTest {
 		bp.setBaseImageURL(baseImageDir.getAbsolutePath());
 
 		this.engineService = new BirtEngineService(bp);
-
 	}
 
 	@Test
@@ -111,7 +109,7 @@ public class BirtEngineTest {
 		execReq.setFormat("HTML");
 		execReq.setWrapError(false);
 
-		rrs.execute(execReq, httpResp);
+		rrs.execute(execReq, httpResp.getOutputStream());
 
 		Assert.assertTrue(httpResp.getContentAsString().startsWith(HTML_INTRO));
 

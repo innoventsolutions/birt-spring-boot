@@ -1,17 +1,12 @@
 #!/bin/sh
 rm -rf $HOME/.m2/repository/com/innoventsolutions/birt-spring-boot
-VERSION="$1"
-if [ -z "$VERSION" ]; then
-  echo "missing parameter 1 (version)"
-  exit 1
-fi
 cd "$(dirname "${BASH_SOURCE[0]}")"
 echo "installing birt-spring-boot pom"
 if ! mvn install:install-file \
   -Dfile="./pom.xml" \
   -DgroupId="com.innoventsolutions.birt-spring-boot" \
   -DartifactId="birt-spring-boot" \
-  -Dversion="$VERSION" \
+  -Dversion="0.0.5-SNAPSHOT" \
   -Dpackaging=pom \
   -DgeneratePom=false > birt-spring-boot-install.log 2> birt-spring-boot-install.err.log; then
     echo "install root failed - see birt-spring-boot-install.log"
@@ -19,10 +14,10 @@ if ! mvn install:install-file \
 fi
 echo "installing birt-spring-boot-starter jar"
 if ! mvn install:install-file \
-  -Dfile="./birt-spring-boot-starter/target/birt-spring-boot-starter-$VERSION.jar" \
+  -Dfile="./birt-spring-boot-starter/target/birt-spring-boot-starter-0.0.4-SNAPSHOT.jar" \
   -DgroupId="com.innoventsolutions.birt-spring-boot" \
   -DartifactId="birt-spring-boot-starter" \
-  -Dversion="$VERSION" \
+  -Dversion="0.0.5-SNAPSHOT" \
   -Dpackaging=jar \
   -DgeneratePom=false > birt-spring-boot-starter-jar-install.log 2> birt-spring-boot-starter-jar-install.err.log; then
     echo "birt-spring-boot-starter jar install failed - see birt-spring-boot-starter-jar-install.log"
@@ -33,7 +28,7 @@ if ! mvn install:install-file \
   -Dfile="./birt-spring-boot-starter/pom.xml" \
   -DgroupId="com.innoventsolutions.birt-spring-boot" \
   -DartifactId="birt-spring-boot-starter" \
-  -Dversion="$VERSION" \
+  -Dversion="0.0.5-SNAPSHOT" \
   -Dpackaging=pom \
   -DgeneratePom=false > birt-spring-boot-starter-pom-install.log 2> birt-spring-boot-starter-pom-install.err.log; then
     echo "birt-spring-boot-starter pom install failed - see birt-spring-boot-starter-pom-install.log"
@@ -41,10 +36,10 @@ if ! mvn install:install-file \
 fi
 echo "installing birt-engine jar"
 if ! mvn install:install-file \
-  -Dfile="./birt-engine/target/birt-engine-$VERSION.jar" \
+  -Dfile="./birt-engine/target/birt-engine-0.0.5-SNAPSHOT.jar" \
   -DgroupId="com.innoventsolutions.birt-spring-boot" \
   -DartifactId="birt-engine" \
-  -Dversion="$VERSION" \
+  -Dversion="0.0.5-SNAPSHOT" \
   -Dpackaging=jar \
   -DgeneratePom=true > birt-engine-install.log 2> birt-engine-install.err.log; then
     echo "birt-engine install failed - see birt-engine-install.log"
@@ -52,10 +47,10 @@ if ! mvn install:install-file \
 fi
 echo "installing birt-spring-boot-autoconfigure jar"
 if ! mvn install:install-file \
-  -Dfile="./birt-engine-autoconfig/target/birt-spring-boot-autoconfigure-$VERSION.jar" \
+  -Dfile="./birt-engine-autoconfig/target/birt-spring-boot-autoconfigure-0.0.5-SNAPSHOT.jar" \
   -DgroupId="com.innoventsolutions.birt-spring-boot" \
   -DartifactId="birt-spring-boot-autoconfigure" \
-  -Dversion="$VERSION" \
+  -Dversion="0.0.5-SNAPSHOT" \
   -Dpackaging=jar \
   -DgeneratePom=true > birt-spring-boot-autoconfigure-install.log 2> birt-spring-boot-autoconfigure-install.err.log; then
     echo "birt-spring-boot-autoconfigure install failed - see birt-spring-boot-autoconfigure-install.log"

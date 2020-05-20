@@ -9,11 +9,9 @@
  ******************************************************************************/
 package com.innoventsolutions.birt.service;
 
-import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
@@ -42,7 +40,7 @@ public class ReportRunService extends BaseReportService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void execute(final ExecuteRequest request, HttpServletResponse response) throws BirtStarterException {
+	public void execute(final ExecuteRequest request, final OutputStream outputStream) throws BirtStarterException {
 		log.info("runReport reportRun = " + request);
 		IRunAndRenderTask rrTask = null;
 		try {
@@ -58,7 +56,7 @@ public class ReportRunService extends BaseReportService {
 			log.info("getRenderOptions");
 			final String format = request.getFormat();
 			final RenderOption options = configureRenderOptions(format);
-			options.setOutputStream(response.getOutputStream());
+			options.setOutputStream(outputStream);
 			rrTask.setRenderOption(options);
 			log.info("run-and-render report");
 			rrTask.run();
@@ -67,11 +65,10 @@ public class ReportRunService extends BaseReportService {
 				throw new BirtStarterException(BirtErrorCode.RUNANDRENDER_TASK, errors);
 			}
 			rrTask.close();
-		} catch (final IOException e) {
-			throw new BirtStarterException(BirtErrorCode.DESIGN_FILE_LOCATION, "Failure to run report (design file)", e);
 		} catch (EngineException e) {
 			if (e instanceof ParameterValidationException) {
-				throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION, "Failure to run report (parameter)" , e);
+				throw new BirtStarterException(BirtErrorCode.PARAMETER_VALIDATION, "Failure to run report (parameter)",
+						e);
 			} else {
 				throw new BirtStarterException(BirtErrorCode.RUNANDRENDER_TASK, "Failure to run report", e);
 			}
