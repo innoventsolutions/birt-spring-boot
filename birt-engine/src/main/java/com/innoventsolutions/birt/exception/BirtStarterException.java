@@ -9,17 +9,11 @@
  ******************************************************************************/
 package com.innoventsolutions.birt.exception;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.springframework.http.HttpStatus;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.innoventsolutions.birt.error.ApiError;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -83,14 +77,10 @@ public class BirtStarterException extends RuntimeException {
 
 	@Getter
 	public enum BirtErrorCode {
-		PLATFORM_START(HttpStatus.INTERNAL_SERVER_ERROR), 
-		BAD_REQUEST(HttpStatus.BAD_REQUEST),
-		UNKNOWN_PARAMETER(HttpStatus.BAD_REQUEST), 
-		PARAMETER_VALIDATION(HttpStatus.BAD_REQUEST),
-		BAD_FORMAT(HttpStatus.UNSUPPORTED_MEDIA_TYPE), 
-		DESIGN_FILE_LOCATION(HttpStatus.NOT_FOUND),
-		RUNANDRENDER_TASK(HttpStatus.INTERNAL_SERVER_ERROR), 
-		RUN_TASK(HttpStatus.INTERNAL_SERVER_ERROR),
+		PLATFORM_START(HttpStatus.INTERNAL_SERVER_ERROR), BAD_REQUEST(HttpStatus.BAD_REQUEST),
+		UNKNOWN_PARAMETER(HttpStatus.BAD_REQUEST), PARAMETER_VALIDATION(HttpStatus.BAD_REQUEST),
+		BAD_FORMAT(HttpStatus.UNSUPPORTED_MEDIA_TYPE), DESIGN_FILE_LOCATION(HttpStatus.NOT_FOUND),
+		RUNANDRENDER_TASK(HttpStatus.INTERNAL_SERVER_ERROR), RUN_TASK(HttpStatus.INTERNAL_SERVER_ERROR),
 		RENDER_TASK(HttpStatus.INTERNAL_SERVER_ERROR);
 
 		private final HttpStatus httpStatus;
@@ -99,24 +89,4 @@ public class BirtStarterException extends RuntimeException {
 			this.httpStatus = httpStatus;
 		}
 	}
-
-	public void sendError(final HttpServletResponse response, final boolean wrapError) {
-		try {
-			if (wrapError) {
-				// send JSON with error code
-				response.setStatus(this.getHttpCode().value());
-				response.setContentType("application/json");
-				final ApiError apiError = new ApiError(this.getHttpCode(), this.getMessage());
-				final ObjectMapper mapper = new ObjectMapper();
-				mapper.writeValue(response.getOutputStream(), apiError);
-				
-				
-			} else {
-				response.sendError(this.getHttpCode().value(), this.getMessage());
-			}
-		} catch (final IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	};
 }

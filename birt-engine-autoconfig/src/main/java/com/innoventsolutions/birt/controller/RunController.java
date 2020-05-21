@@ -9,6 +9,7 @@
  ******************************************************************************/
 package com.innoventsolutions.birt.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +24,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.innoventsolutions.birt.entity.ExecuteRequest;
+import com.innoventsolutions.birt.error.ApiError;
 import com.innoventsolutions.birt.exception.BirtStarterException;
 import com.innoventsolutions.birt.service.ReportRunService;
 import com.innoventsolutions.birt.util.Util;
@@ -101,7 +104,22 @@ public class RunController {
 			try {
 				runner.execute(request, response.getOutputStream());
 			} catch (final BirtStarterException e) {
-				e.sendError(response, request.getWrapError());
+				try {
+					if (request.getWrapError()) {
+						// send JSON with error code
+						response.setStatus(e.getHttpCode().value());
+						response.setContentType("application/json");
+						final ApiError apiError = new ApiError(e.getHttpCode(), e.getMessage());
+						final ObjectMapper mapper = new ObjectMapper();
+						mapper.writeValue(response.getOutputStream(), apiError);
+						
+						
+					} else {
+						response.sendError(e.getHttpCode().value(), e.getMessage());
+					}
+				} catch (final IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 		};
 
