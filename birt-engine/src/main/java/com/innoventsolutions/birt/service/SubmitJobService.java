@@ -36,8 +36,8 @@ import com.innoventsolutions.birt.exception.BirtStarterException.BirtErrorCode;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Wraps the function of a RunThenRender Task, 
- * Provides utility Async method to combine the two into a single call.
+ * Wraps the function of a RunThenRender Task, Provides utility Async method to
+ * combine the two into a single call.
  * 
  * @author Scott Rosenbaum / Steve Schafer
  *
@@ -58,11 +58,14 @@ public class SubmitJobService extends BaseReportService {
 
 		// to use Fork/join change the executor to submitPool (or opposite)
 		final CompletableFuture<SubmitResponse> runThenRender = CompletableFuture
-				.supplyAsync((() -> executeRun(submitResponse)), submitPool)
-				.thenApply(l -> executeRender(submitResponse))
-				.exceptionally (err -> {
-					if (err != null)
-						log.info("LOOK AT ME: " + err.getMessage() + " " + err.getClass().toString() );
+				.supplyAsync((() -> executeRun(submitResponse)), submitPool) //
+				.thenApply(l -> executeRender(submitResponse)) //
+				.exceptionally(err -> {
+					if (err != null) {
+						log.info("Completed exceptionally: " + err.getMessage() + " " + err.getClass().toString());
+					} else {
+						log.info("Completed exceptionally: err is null");
+					}
 					submitResponse.setHttpStatusMessage("WE GOT THE ERROR and modified things");
 					return submitResponse;
 				});
@@ -81,6 +84,7 @@ public class SubmitJobService extends BaseReportService {
 	public SubmitResponse executeRender(final SubmitResponse submitResponse) {
 		if (StatusEnum.EXCEPTION.equals(submitResponse.getStatus())) {
 			// don't try to render if the run failed
+			log.info("render skipped because run failed");
 			return submitResponse;
 		}
 		submitResponse.setStatus(StatusEnum.RENDER);
@@ -189,8 +193,9 @@ public class SubmitJobService extends BaseReportService {
 			}
 			rTask.close();
 		} catch (final BirtStarterException e1) {
-			//TODO Rather than bury the error, throw it and move this logic to the Exceptionaly clause 
-			
+			// TODO Rather than bury the error, throw it and move this logic to the
+			// Exceptionaly clause
+
 			submitResponse.setHttpStatus(e1.getHttpCode());
 			submitResponse.setHttpStatusMessage(e1.getMessage());
 			submitResponse.setStatus(StatusEnum.EXCEPTION);
