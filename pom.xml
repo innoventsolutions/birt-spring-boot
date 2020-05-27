@@ -159,7 +159,7 @@
 						<configuration>
 							<executable>git</executable>
 							<arguments>
-								<argument>birt-engine-workspace</argument>
+								<argument>submodule</argument>
 								<argument>update</argument>
 								<argument>--init</argument>
 								<argument>--recursive</argument>
@@ -263,8 +263,7 @@
 							<autoReleaseAfterClose>true</autoReleaseAfterClose>
 						</configuration>
 					</plugin>
-					<!-- clones the sub-module workspace during the mvn release:perform 
-						step -->
+					<!-- clones the sub-module workspace during the mvn release:perform step -->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
@@ -276,7 +275,7 @@
 								<configuration>
 									<executable>git</executable>
 									<arguments>
-										<argument>birt-engine-workspace</argument>
+										<argument>submodule</argument>
 										<argument>update</argument>
 										<argument>--init</argument>
 										<argument>--recursive</argument>
