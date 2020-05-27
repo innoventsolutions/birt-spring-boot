@@ -4,7 +4,7 @@
 
 	<groupId>com.innoventsolutions.birt-spring-boot</groupId>
 	<artifactId>birt-spring-boot</artifactId>
-	<version>0.0.5-SNAPSHOT</version>
+	<version>0.0.5</version>
 	<name>birt-spring-boot</name>
 	<packaging>pom</packaging>
 
