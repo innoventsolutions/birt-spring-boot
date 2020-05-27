@@ -4,12 +4,12 @@
 
 	<artifactId>birt-spring-boot-autoconfigure</artifactId>
 	<name>birt-spring-boot-autoconfigure</name>
-	<version>0.0.5-SNAPSHOT</version>
+	<version>0.0.6-SNAPSHOT</version>
 
 	<parent>
 		<groupId>com.innoventsolutions.birt-spring-boot</groupId>
 		<artifactId>birt-spring-boot</artifactId>
-		<version>0.0.5-SNAPSHOT</version>
+		<version>0.0.6-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
