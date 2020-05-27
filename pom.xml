@@ -159,7 +159,7 @@
 						<configuration>
 							<executable>git</executable>
 							<arguments>
-								<argument>submodule</argument>
+								<argument>birt-engine-workspace</argument>
 								<argument>update</argument>
 								<argument>--init</argument>
 								<argument>--recursive</argument>
