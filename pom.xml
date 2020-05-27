@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.innoventsolutions.birt-spring-boot</groupId>
@@ -47,13 +49,9 @@
 		<module>birt-engine</module>
 		<module>birt-spring-boot-starter</module>
 		<module>birt-engine-autoconfig</module>
-		<!-- Sample projects and the workspace are a part of the project for version control
-			 but are not a part of the build for distibution to Maven
-			 
-			<module>birt-engine-workspace</module>
-			<module>birt-engine-sample-app</module>
-			<module>birt-engine-sample-app-full</module> 
-		-->
+		<!-- Sample projects and the workspace are a part of the project for version 
+			control but are not a part of the build for distibution to Maven <module>birt-engine-workspace</module> 
+			<module>birt-engine-sample-app</module> <module>birt-engine-sample-app-full</module> -->
 	</modules>
 
 	<properties>
@@ -145,6 +143,30 @@
 						<id>attach-javadocs</id>
 						<goals>
 							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- clones the sub-module workspace during the mvn release:perform step -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<inherited>false</inherited> <!-- only execute these in the parent -->
+				<executions>
+					<execution>
+						<id>git submodule update</id>
+						<phase>initialize</phase>
+						<configuration>
+							<executable>git</executable>
+							<arguments>
+								<argument>submodule</argument>
+								<argument>update</argument>
+								<argument>--init</argument>
+								<argument>--recursive</argument>
+							</arguments>
+						</configuration>
+						<goals>
+							<goal>exec</goal>
 						</goals>
 					</execution>
 				</executions>
