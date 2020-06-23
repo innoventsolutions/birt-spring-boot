@@ -51,6 +51,7 @@ public class BirtStarterException extends RuntimeException {
 	public BirtStarterException(final BirtErrorCode errorCode, final List<EngineException> errors) {
 		super("Engine Exception");
 		for (final EngineException exception : errors) {
+			log.error("BIRT error", exception);
 			exceptions.add(exception);
 		}
 	}

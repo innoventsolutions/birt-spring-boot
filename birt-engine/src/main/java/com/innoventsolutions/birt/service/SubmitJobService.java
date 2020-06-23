@@ -15,7 +15,7 @@ import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Executor;
 
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.IRenderTask;
@@ -45,9 +45,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SubmitJobService extends BaseReportService {
 
-	private final ForkJoinPool submitPool;
+	private final Executor submitPool;
 
-	public SubmitJobService(BirtEngineService engineService, ForkJoinPool submitPool) {
+	public SubmitJobService(BirtEngineService engineService, Executor submitPool) {
 		super(engineService);
 		this.submitPool = submitPool;
 		log.info("Start RunService");
