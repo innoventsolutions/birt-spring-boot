@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 
 import org.eclipse.birt.report.engine.api.EngineException;
@@ -63,10 +64,27 @@ public class SubmitJobService extends BaseReportService {
 				.exceptionally(err -> {
 					if (err != null) {
 						log.info("Completed exceptionally: " + err.getMessage() + " " + err.getClass().toString());
+						if (err instanceof CompletionException) {
+							final CompletionException completionException = (CompletionException) err;
+							final Throwable cause = completionException.getCause();
+							log.info("cause = " + cause.getClass().toString());
+							if (cause instanceof BirtStarterException) {
+								final BirtStarterException birtStarterException = (BirtStarterException) cause;
+								submitResponse.setHttpStatus(birtStarterException.getHttpCode());
+								submitResponse.setHttpStatusMessage(birtStarterException.getMessage());
+							} else {
+								submitResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+								submitResponse.setHttpStatusMessage(err.getMessage());
+							}
+						} else {
+							submitResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+							submitResponse.setHttpStatusMessage(err.getMessage());
+						}
 					} else {
 						log.info("Completed exceptionally: err is null");
+						submitResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 					}
-					submitResponse.setHttpStatusMessage("WE GOT THE ERROR and modified things");
+					submitResponse.setStatus(StatusEnum.EXCEPTION);
 					return submitResponse;
 				});
 
@@ -131,17 +149,15 @@ public class SubmitJobService extends BaseReportService {
 
 			rptdoc.close();
 			renderTask.close();
-		} catch (final BirtStarterException e1) {
-			submitResponse.setHttpStatus(e1.getHttpCode());
-			submitResponse.setHttpStatusMessage(e1.getMessage());
-			submitResponse.setStatus(StatusEnum.EXCEPTION);
-			return submitResponse;
+			/*
+			 * } catch (final BirtStarterException e1) {
+			 * submitResponse.setHttpStatus(e1.getHttpCode());
+			 * submitResponse.setHttpStatusMessage(e1.getMessage());
+			 * submitResponse.setStatus(StatusEnum.EXCEPTION); return submitResponse;
+			 */
 		} catch (final EngineException e1) {
 			log.error("Failed to render report", e1);
-			submitResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-			submitResponse.setHttpStatusMessage(e1.getMessage());
-			submitResponse.setStatus(StatusEnum.EXCEPTION);
-			return submitResponse;
+			throw new RuntimeException("Failed to render report", e1);
 		} finally {
 			// Failure to close the report doc will result in a locked file
 			if (rptdoc != null) {
@@ -192,14 +208,14 @@ public class SubmitJobService extends BaseReportService {
 				throw new BirtStarterException(BirtErrorCode.RUN_TASK, errors);
 			}
 			rTask.close();
-		} catch (final BirtStarterException e1) {
-			// TODO Rather than bury the error, throw it and move this logic to the
-			// Exceptionaly clause
-
-			submitResponse.setHttpStatus(e1.getHttpCode());
-			submitResponse.setHttpStatusMessage(e1.getMessage());
-			submitResponse.setStatus(StatusEnum.EXCEPTION);
-			return submitResponse;
+			/*
+			 * } catch (final BirtStarterException e1) { // TODO Rather than bury the error,
+			 * throw it and move this logic to the // Exceptionaly clause
+			 * 
+			 * submitResponse.setHttpStatus(e1.getHttpCode());
+			 * submitResponse.setHttpStatusMessage(e1.getMessage());
+			 * submitResponse.setStatus(StatusEnum.EXCEPTION); return submitResponse;
+			 */
 		} finally {
 			if (rTask != null)
 				rTask.close();

@@ -10,7 +10,7 @@ echo "birt-spring-boot build succeeded - see build.log"
 if ! ./mvn-install-local; then
 	exit 1
 fi
-echo "install succeeded - see install.log"
-if ! ./birt-simple/build "0.0.5-SNAPSHOT"; then
+echo "install succeeded"
+if ! ./birt-simple/build "0.0.7-SNAPSHOT"; then
 	exit 1
 fi
