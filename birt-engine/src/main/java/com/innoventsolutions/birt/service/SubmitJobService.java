@@ -131,14 +131,14 @@ public class SubmitJobService extends BaseReportService {
 
 			outputFile.getParentFile().mkdirs();
 			options.setOutputFileName(outputFile.getAbsolutePath());
-			options.setOutputFormat(format);
+			options.setOutputFormat(format == null || format.length() == 0 ? "HTML" : format);
 			options.setOutputFileName(outputFile.getAbsolutePath());
 			renderTask.setRenderOption(options);
 
 			try {
 				renderTask.render();
 			} catch (final UnsupportedFormatException e) {
-				throw new BirtStarterException(BirtErrorCode.BAD_FORMAT, "Unsupported output format");
+				throw new BirtStarterException(BirtErrorCode.BAD_FORMAT, "Unsupported output format: '" + format + "'");
 			} catch (final Exception e) {
 				throw new BirtStarterException(BirtErrorCode.RENDER_TASK, "Run Task failed", e);
 			}
