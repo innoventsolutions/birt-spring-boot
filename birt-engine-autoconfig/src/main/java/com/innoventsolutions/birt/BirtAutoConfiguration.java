@@ -9,9 +9,11 @@
  ******************************************************************************/
 package com.innoventsolutions.birt;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinWorkerThread;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -56,8 +58,28 @@ public class BirtAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public SubmitJobService submitService() {
-		final ForkJoinPool fjp = new ForkJoinPool(birtProperties.getSubmitJobPoolSize());
-		return new SubmitJobService(engineService(), fjp);
+		// final ForkJoinPool fjp = new
+		// ForkJoinPool(birtProperties.getSubmitJobPoolSize());
+		// Use our own custom thread factory
+		final ForkJoinPool.ForkJoinWorkerThreadFactory threadFactory = new ThreadFactory();
+		final Executor executor = new ForkJoinPool(birtProperties.getSubmitJobPoolSize(), threadFactory, null, false);
+		return new SubmitJobService(engineService(), executor);
+	}
+
+	/**
+	 * Create our own thread factory so the threads use the
+	 * TomcatEmbeddedWebappClassLoader class loader. This is so InitialContext will
+	 * be able to find JNDI resources defined in the embedded Tomcat.
+	 * 
+	 * @author innovent
+	 *
+	 */
+	private static class ThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
+		@Override
+		public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
+			return new ForkJoinWorkerThread(pool) {
+			};
+		}
 	}
 
 	@Bean
