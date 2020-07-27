@@ -32,24 +32,37 @@ public class BirtStarterException extends RuntimeException {
 
 	public BirtStarterException(final BirtErrorCode errorCode, final String message) {
 		super(message);
+		if (errorCode == null) {
+			throw new IllegalArgumentException("errorCode may not be null, message = " + message);
+		}
 		this.errorCode = errorCode;
 		log.error(getErrorMessage(), this);
 	}
 
 	public BirtStarterException(final BirtErrorCode errorCode, final String message, final Throwable cause) {
 		super(message, cause);
+		if (errorCode == null) {
+			throw new IllegalArgumentException(
+					"errorCode may not be null, message = " + message + ", cause = " + cause);
+		}
 		this.errorCode = errorCode;
 		log.error(getErrorMessage(), this);
 	}
 
 	public BirtStarterException(final BirtErrorCode errorCode, final Throwable cause) {
 		super(cause);
+		if(errorCode == null) {
+			throw new IllegalArgumentException("errorCode may not be null, cause = " + cause);
+		}
 		this.errorCode = errorCode;
 		log.error(getErrorMessage(), this);
 	}
 
 	public BirtStarterException(final BirtErrorCode errorCode, final List<EngineException> errors) {
 		super("Engine Exception");
+		if(errorCode == null) {
+			throw new IllegalArgumentException("errorCode may not be null, errors = " + errors);
+		}
 		for (final EngineException exception : errors) {
 			log.error("BIRT error", exception);
 			exceptions.add(exception);
