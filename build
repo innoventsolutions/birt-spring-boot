@@ -11,6 +11,6 @@ if ! ./mvn-install-local; then
 	exit 1
 fi
 echo "install succeeded"
-if ! ./birt-simple/build "0.0.7-SNAPSHOT"; then
+if ! ./birt-simple/build "0.0.8-SNAPSHOT"; then
 	exit 1
 fi

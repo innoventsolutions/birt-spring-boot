@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BirtStarterException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
-	private BirtErrorCode errorCode;
+	private final BirtErrorCode errorCode;
 	private final List<Exception> exceptions = new ArrayList<>();
 
 	public BirtStarterException(final BirtErrorCode errorCode, final String message) {
@@ -63,6 +63,7 @@ public class BirtStarterException extends RuntimeException {
 		if(errorCode == null) {
 			throw new IllegalArgumentException("errorCode may not be null, errors = " + errors);
 		}
+		this.errorCode = errorCode;
 		for (final EngineException exception : errors) {
 			log.error("BIRT error", exception);
 			exceptions.add(exception);
