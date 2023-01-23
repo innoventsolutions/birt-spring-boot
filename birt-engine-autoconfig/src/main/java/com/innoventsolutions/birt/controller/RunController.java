@@ -93,7 +93,7 @@ public class RunController {
 	 * StreamingResponseBody
 	 *
 	 */
-	@PostMapping(value = "/runReport",consumes = {"text/plain", "application/*"},produces = {"text/plain", "application/*"})
+	@PostMapping(value = "/runReport", consumes = {"text/plain", "application/*"}, produces = {"text/plain", "application/*"})
 	public ResponseEntity<StreamingResponseBody> executeRunReport(@RequestBody final ExecuteRequest request,
 			final HttpServletResponse response) {
 
